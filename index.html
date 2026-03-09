@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>ForgeSlot</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
@@ -412,9 +413,95 @@ body::before {
 .red   { color: var(--red);   }
 .cyan  { color: var(--cyan);  }
 small  { color: var(--text-muted); }
+
+/* ── Mobile drawer toggle button ── */
+.sidebar-toggle {
+  display: none;
+  position: fixed; bottom: 16px; left: 16px; z-index: 600;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--surface2); border: 1px solid var(--border-hi);
+  color: var(--text-muted); font-size: 1.1rem; cursor: pointer;
+  align-items: center; justify-content: center;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+  transition: border-color 0.15s, color 0.15s;
+}
+.sidebar-toggle:hover { border-color: var(--gold); color: var(--gold); }
+.sidebar-open-overlay {
+  display: none; position: fixed; inset: 0; z-index: 590;
+  background: rgba(2,5,15,0.7); backdrop-filter: blur(3px);
+}
+
+@media (max-width: 700px) {
+  :root { --sym-size: 54px; }
+
+  /* ── Sidebar becomes a slide-in drawer ── */
+  .sidebar-toggle { display: flex; }
+
+  .sidebar {
+    position: fixed; left: 0; top: 0; bottom: 0; z-index: 600;
+    transform: translateX(-100%);
+    transition: transform 0.28s cubic-bezier(0.22,1,0.36,1);
+    width: 240px; height: 100%;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.6);
+  }
+  .sidebar.drawer-open { transform: translateX(0); }
+  .sidebar-open-overlay.active { display: block; }
+
+  /* ── Game area fills full width ── */
+  .layout { flex-direction: column; }
+  .game-area { max-width: 100%; padding: 10px 8px 90px; }
+
+  /* ── HUD tighter ── */
+  .hud { padding: 7px 10px; }
+  .hud-spins, .hud-gold { font-size: 1.3rem; }
+  .hud-round-name { font-size: 0.78rem; }
+
+  /* ── Token HUD: wrap into 2 rows ── */
+  .token-hud { flex-wrap: wrap; gap: 8px; padding: 7px 10px; }
+  .token-sep  { display: none; }
+  .token-group { flex: 1 1 calc(33% - 8px); justify-content: center; }
+  .token-label { font-size: 0.55rem; }
+
+  /* ── Reel frame ── */
+  .reel-frame { padding: 7px 4px; gap: 3px; border-radius: 13px; }
+  .payline-indicators { width: 6px; }
+  .pl-dot { width: 5px; height: 5px; }
+  .reels-wrap { gap: 3px; }
+  .reel { border-radius: 7px; }
+  .symbol { font-size: 1.6rem; border-radius: 5px; }
+  .reel-fade { height: 22px; }
+
+  /* ── Post-spin action columns ── */
+  .post-spin-actions { gap: 3px; }
+  .btn-nudge, .btn-hold { font-size: 0.5rem; padding: 3px 0; }
+
+  /* ── Result card ── */
+  .result-card { padding: 10px 11px 12px; }
+  .result-hand { font-size: 0.9rem; }
+  .line-win-row { grid-template-columns: 7px 52px auto 1fr auto auto; gap: 3px; padding: 4px 5px; }
+  .line-name  { font-size: 0.52rem; }
+  .line-sym   { font-size: 0.88rem; }
+  .line-combo { font-size: 0.56rem; }
+  .line-chips { font-size: 0.6rem; min-width: 32px; }
+  .chips-tag, .mult-tag { font-size: 0.76rem; padding: 3px 7px; }
+  .score-tag  { font-size: 0.84rem; padding: 3px 9px; }
+
+  /* ── Overlays fill screen ── */
+  .overlay-card { padding: 18px 15px; border-radius: 16px; }
+  .overlay-title { font-size: 1.2rem; }
+  .shop-grid { grid-template-columns: 1fr 1fr; gap: 6px; }
+  .blind-stats { gap: 6px; }
+
+  /* ── Spin button sits above toggle ── */
+  .spin-btn { font-size: 1rem; padding: 14px; border-radius: 12px; }
+}
 </style>
 </head>
 <body>
+<!-- Mobile sidebar drawer toggle -->
+<button class="sidebar-toggle" id="sidebar-toggle" onclick="toggleSidebar()" aria-label="Open deck & mods">☰</button>
+<div class="sidebar-open-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
 <div class="layout">
 
   <!-- ── SIDEBAR ─────────────────────────────────────────── -->
@@ -1722,6 +1809,17 @@ function showToast(msg,color){
 function setText(id,val){ const el=document.getElementById(id); if(el) el.textContent=val; }
 
 // ── Init ──────────────────────────────────────────────────
+function toggleSidebar(){
+  const sb=document.querySelector('.sidebar');
+  const ov=document.getElementById('sidebar-overlay');
+  const open=sb.classList.toggle('drawer-open');
+  ov.classList.toggle('active',open);
+}
+function closeSidebar(){
+  document.querySelector('.sidebar')?.classList.remove('drawer-open');
+  document.getElementById('sidebar-overlay')?.classList.remove('active');
+}
+
 function init(){
   UI.buildReelDOM();
   game=loadRun();
@@ -1742,6 +1840,7 @@ Object.assign(window,{
   nudgeReel, toggleHoldReel,
   handleShopBuy, handleShopReroll, handleShopSkip, handleShopContinue,
   handleRemoveSymbol, closeRemoveModal, resetRun, buyMeta, confirmForfeit,
+  toggleSidebar, closeSidebar,
 });
 </script>
 </body>
