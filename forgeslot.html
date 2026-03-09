@@ -1,0 +1,1748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ForgeSlot</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* ================================================================
+   ForgeSlot — midnight casino, navy + gold + forge-amber
+   ================================================================ */
+:root {
+  --bg:         #04070f;
+  --surface:    #080e1e;
+  --surface2:   #0d1630;
+  --surface3:   #121e3e;
+  --border:     #1a2d5a;
+  --border-hi:  #2a4a8f;
+  --gold:       #f5c518;
+  --gold-dim:   #c9960f;
+  --gold-glow:  rgba(245,197,24,0.22);
+  --cyan:       #00d4ff;
+  --cyan-dim:   #0099cc;
+  --green:      #00e676;
+  --red:        #ff3d3d;
+  --text:       #dde4f5;
+  --text-muted: #6e82b8;
+  --text-dim:   #364872;
+  --forge:      #ff7c2a;
+  --forge-dim:  #7a3200;
+  --nudge:      #00d4ff;
+  --hold:       #f5c518;
+  --sym-size:   76px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { height: 100%; }
+body {
+  background: var(--bg); color: var(--text);
+  font-family: 'Rajdhani', system-ui, sans-serif;
+  font-size: 15px; min-height: 100%; overflow-x: hidden;
+}
+body::before {
+  content: ''; position: fixed; inset: 0;
+  background-image:
+    linear-gradient(rgba(0,80,200,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,80,200,0.03) 1px, transparent 1px);
+  background-size: 40px 40px; pointer-events: none; z-index: 0;
+}
+
+/* ── Layout ─────────────────────────────────────────────── */
+.layout { display: flex; flex-direction: row; min-height: 100vh; position: relative; z-index: 1; }
+
+/* ── Sidebar ─────────────────────────────────────────────── */
+.sidebar {
+  width: 220px; flex-shrink: 0; background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  position: sticky; top: 0; height: 100vh; overflow-y: auto;
+}
+.sidebar-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 14px 12px; border-bottom: 1px solid var(--border);
+  background: linear-gradient(135deg, #060c1a, #0d1b40);
+}
+.game-title {
+  font-family: 'Cinzel', serif; font-size: 0.95rem; font-weight: 900;
+  color: var(--gold); letter-spacing: 0.12em;
+  text-shadow: 0 0 20px var(--gold-glow); display: block;
+}
+.game-subtitle { font-size: 0.58rem; color: var(--text-dim); font-family: 'Cinzel', serif; letter-spacing: 0.1em; }
+.shard-badge {
+  font-family: 'Cinzel', serif; font-size: 0.72rem; color: var(--cyan);
+  background: rgba(0,212,255,0.08); border: 1px solid var(--cyan-dim);
+  border-radius: 20px; padding: 3px 8px; white-space: nowrap;
+}
+.sidebar-body { padding: 12px; flex: 1; overflow-y: auto; }
+.section-label {
+  font-family: 'Cinzel', serif; font-size: 0.58rem; font-weight: 700;
+  letter-spacing: 0.14em; color: var(--text-muted);
+  padding-bottom: 5px; border-bottom: 1px solid var(--border);
+  margin-bottom: 7px; margin-top: 12px; text-transform: uppercase;
+}
+.section-label:first-child { margin-top: 0; }
+.deck-row {
+  display: grid; grid-template-columns: 22px 1fr auto auto;
+  align-items: center; gap: 4px; padding: 4px 7px; margin-bottom: 3px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 7px; font-size: 0.77rem;
+}
+.deck-sym { font-size: 1rem; }
+.deck-name { color: var(--text-muted); }
+.deck-count { color: var(--text-dim); font-size: 0.68rem; }
+.chip-pos { color: var(--gold); font-weight: 700; font-size: 0.7rem; }
+.chip-neg { color: var(--red);  font-weight: 700; font-size: 0.7rem; }
+.mod-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 9px; padding: 8px 9px; margin-bottom: 6px; position: relative; overflow: hidden; }
+.mod-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
+.rarity-common::before   { background: #3a8a5c; }
+.rarity-uncommon::before { background: #3a6cbf; }
+.rarity-rare::before     { background: linear-gradient(90deg, #8b44cc, var(--gold)); }
+.mod-header { display: flex; align-items: center; gap: 5px; margin-bottom: 2px; }
+.mod-emoji  { font-size: 0.95rem; }
+.mod-name   { font-weight: 700; font-size: 0.76rem; }
+.mod-desc   { font-size: 0.65rem; color: var(--text-muted); line-height: 1.3; }
+.empty-mods { color: var(--text-dim); font-size: 0.72rem; text-align: center; padding: 14px 0; font-style: italic; }
+.sidebar-footer { padding: 10px; border-top: 1px solid var(--border); }
+.btn-forfeit {
+  width: 100%; background: none; border: 1px solid var(--border);
+  color: var(--text-dim); padding: 7px; border-radius: 8px; cursor: pointer;
+  font-family: 'Cinzel', serif; font-size: 0.65rem; letter-spacing: 0.1em; transition: all 0.2s;
+}
+.btn-forfeit:hover { border-color: var(--red); color: var(--red); }
+
+/* ── Main game area ──────────────────────────────────────── */
+.game-area {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  padding: 16px 14px 28px; max-width: 580px; margin: 0 auto; width: 100%;
+}
+
+/* ── HUD ─────────────────────────────────────────────────── */
+.hud {
+  display: grid; grid-template-columns: 1fr auto 1fr;
+  align-items: center; width: 100%; padding: 9px 14px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 13px; margin-bottom: 9px;
+}
+.hud-right { text-align: right; }
+.hud-center { text-align: center; }
+.hud-stat-label { font-size: 0.56rem; font-family: 'Cinzel', serif; letter-spacing: 0.1em; color: var(--text-dim); margin-bottom: 1px; }
+.hud-stage { font-family: 'Cinzel', serif; font-size: 0.64rem; letter-spacing: 0.12em; color: var(--text-muted); }
+.hud-round-name { font-family: 'Cinzel', serif; font-size: 0.86rem; font-weight: 700; color: var(--text); }
+.hud-round-name.boss { color: var(--red); text-shadow: 0 0 12px rgba(255,61,61,0.4); }
+.hud-spins { font-family: 'Cinzel', serif; font-size: 1.6rem; font-weight: 700; color: var(--cyan); line-height: 1; }
+.hud-gold  { font-family: 'Cinzel', serif; font-size: 1.6rem; font-weight: 700; color: var(--gold); line-height: 1; }
+.progress-wrap { width: 100%; margin-bottom: 10px; }
+.progress-bar { height: 8px; background: var(--surface2); border-radius: 999px; overflow: hidden; border: 1px solid var(--border); }
+.progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #14327a, var(--cyan)); border-radius: 999px; transition: width 0.55s cubic-bezier(0.25,1,0.5,1); }
+.progress-fill.complete { background: linear-gradient(90deg, var(--gold-dim), var(--gold)); box-shadow: 0 0 10px var(--gold-glow); }
+.progress-label { text-align: center; font-size: 0.68rem; font-family: 'Cinzel', serif; color: var(--text-muted); margin-top: 3px; letter-spacing: 0.05em; }
+
+/* ── Token HUD ───────────────────────────────────────────── */
+.token-hud {
+  display: flex; align-items: center; justify-content: center;
+  gap: 14px; width: 100%; padding: 9px 14px; margin-bottom: 9px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 11px;
+}
+.token-group { display: flex; align-items: center; gap: 6px; }
+.token-label {
+  font-family: 'Cinzel', serif; font-size: 0.58rem; font-weight: 700;
+  letter-spacing: 0.1em; color: var(--text-dim); text-transform: uppercase; cursor: pointer;
+  transition: color 0.15s; user-select: none;
+}
+.token-label.forge-lbl { color: var(--forge-dim); }
+.token-label.forge-lbl.active { color: var(--forge); text-shadow: 0 0 10px rgba(255,124,42,0.6); }
+.token-label.nudge-lbl { color: var(--text-dim); }
+.token-label.hold-lbl  { color: var(--text-dim); }
+.token-pips { display: flex; gap: 4px; align-items: center; }
+.token-pip {
+  width: 9px; height: 9px; border-radius: 50%;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+.pip-forge       { background: var(--forge); box-shadow: 0 0 6px rgba(255,124,42,0.5); }
+.pip-forge.spent { background: #2a1400; box-shadow: none; }
+.pip-nudge       { background: var(--nudge); box-shadow: 0 0 6px rgba(0,212,255,0.5); }
+.pip-nudge.spent { background: #002030; box-shadow: none; }
+.pip-hold        { background: var(--hold);  box-shadow: 0 0 6px rgba(245,197,24,0.5); }
+.pip-hold.spent  { background: var(--surface3); box-shadow: none; }
+.token-sep { width: 1px; height: 22px; background: var(--border); }
+
+/* ── Slot machine ────────────────────────────────────────── */
+.slot-machine { width: 100%; margin-bottom: 10px; }
+.reel-frame {
+  background: #020510; border: 2px solid var(--border-hi); border-radius: 17px;
+  padding: 10px 8px; display: flex; align-items: center; gap: 6px; position: relative;
+  box-shadow: 0 0 0 1px rgba(0,50,150,0.3), 0 8px 40px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.04);
+}
+.payline-indicators {
+  display: flex; flex-direction: column; gap: 0; width: 8px; flex-shrink: 0;
+  align-items: center; height: calc(var(--sym-size) * 3); justify-content: space-between; padding: 4px 0;
+}
+.pl-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border-hi); opacity: 0.35; transition: all 0.3s; }
+.pl-dot.pl-lit { opacity: 1; box-shadow: 0 0 5px currentColor; }
+.pl-1{color:#f5c518;background:#f5c518}.pl-2{color:#00d4ff;background:#00d4ff}.pl-3{color:#00e676;background:#00e676}
+.pl-4{color:#ff6b6b;background:#ff6b6b}.pl-5{color:#c77dff;background:#c77dff}.pl-6{color:#ff9a3c;background:#ff9a3c}
+.pl-7{color:#3ef5ff;background:#3ef5ff}.pl-8{color:#a8ff3e;background:#a8ff3e}.pl-9{color:#ff5fcf;background:#ff5fcf}
+.reels-wrap { display: flex; gap: 5px; flex: 1; justify-content: center; position: relative; }
+.reel {
+  width: var(--sym-size); height: calc(var(--sym-size) * 3);
+  overflow: hidden; border-radius: 9px; background: var(--surface3);
+  border: 1px solid var(--border-hi); position: relative; flex-shrink: 0;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.reel.forged { border-color: var(--forge); box-shadow: 0 0 12px rgba(255,124,42,0.3), inset 0 0 8px rgba(255,124,42,0.06); cursor: pointer; }
+.reel.held   { border-color: var(--hold);  box-shadow: 0 0 12px rgba(245,197,24,0.3), inset 0 0 8px rgba(245,197,24,0.06); }
+.reel.forge-mode { cursor: pointer; }
+.reel.forge-mode:hover { border-color: var(--forge); box-shadow: 0 0 10px rgba(255,124,42,0.2); }
+.symbols-container { display: flex; flex-direction: column; will-change: transform; }
+.symbol {
+  width: var(--sym-size); height: var(--sym-size);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.2rem; flex-shrink: 0; user-select: none;
+  transition: background 0.25s, box-shadow 0.25s; border-radius: 7px;
+}
+.symbol.sym-win { background: rgba(255,255,255,0.06); animation: symPulse 0.65s ease-in-out infinite alternate; }
+.symbol.sym-dim { opacity: 0.45; filter: brightness(0.7) saturate(0.5); transition: opacity 0.2s, filter 0.2s; }
+.symbol.nudge-flash { animation: nudgeFlash 0.4s ease; }
+@keyframes symPulse { to { background: rgba(255,255,255,0.11); } }
+@keyframes nudgeFlash { 0%,100%{background:transparent} 40%{background:rgba(0,212,255,0.18)} }
+.reel-fade { position: absolute; left: 0; right: 0; height: 28px; pointer-events: none; z-index: 2; }
+.reel-fade.top    { top: 9px;    background: linear-gradient(to bottom, #020510 0%, transparent 100%); border-radius: 14px 14px 0 0; }
+.reel-fade.bottom { bottom: 9px; background: linear-gradient(to top,   #020510 0%, transparent 100%); border-radius: 0 0 14px 14px; }
+.forge-pin {
+  position: absolute; top: 3px; right: 3px; z-index: 5;
+  background: var(--forge); border-radius: 5px; padding: 1px 4px;
+  font-size: 0.7rem; line-height: 1.3; font-weight: 700;
+  color: #fff; display: none; pointer-events: none;
+}
+.reel.forged .forge-pin { display: block; }
+.held-badge {
+  position: absolute; bottom: 3px; left: 50%; transform: translateX(-50%); z-index: 5;
+  background: var(--hold); color: #0a0e1a; border-radius: 4px; padding: 1px 5px;
+  font-family: 'Cinzel', serif; font-size: 0.48rem; font-weight: 700; letter-spacing: 0.1em;
+  display: none; pointer-events: none;
+}
+.reel.held .held-badge { display: block; }
+#payline-svg {
+  position: absolute; left: 0; top: 0; width: 100%; height: 100%;
+  pointer-events: none; overflow: visible;
+}
+.payline-line { transition: none; }
+.payline-line-draw { stroke-dashoffset: 0 !important; transition: stroke-dashoffset 0.45s ease-out !important; }
+.payline-line-pulse { filter: drop-shadow(0 0 8px currentColor) !important; }
+
+/* ── Post-spin actions ───────────────────────────────────── */
+.post-spin-actions {
+  display: flex; gap: 5px; width: 100%; margin-bottom: 8px;
+  transition: opacity 0.2s;
+}
+.post-spin-actions.hidden { opacity: 0; pointer-events: none; height: 0; margin: 0; overflow: hidden; }
+.reel-action-col {
+  flex: 1; display: flex; flex-direction: column; gap: 4px; align-items: center;
+}
+.btn-nudge, .btn-hold {
+  width: 100%; border: none; border-radius: 6px; padding: 4px 0;
+  font-family: 'Cinzel', serif; font-size: 0.56rem; font-weight: 700;
+  letter-spacing: 0.06em; cursor: pointer; transition: all 0.14s; display: block;
+}
+.btn-nudge-up   { background: rgba(0,212,255,0.12); color: var(--nudge); border: 1px solid rgba(0,212,255,0.25); }
+.btn-nudge-down { background: rgba(0,212,255,0.12); color: var(--nudge); border: 1px solid rgba(0,212,255,0.25); }
+.btn-nudge-up:hover:not(:disabled), .btn-nudge-down:hover:not(:disabled) { background: rgba(0,212,255,0.22); }
+.btn-hold-reel { background: rgba(245,197,24,0.1); color: var(--hold); border: 1px solid rgba(245,197,24,0.25); }
+.btn-hold-reel:hover:not(:disabled) { background: rgba(245,197,24,0.2); }
+.btn-nudge:disabled, .btn-hold:disabled { opacity: 0.22; cursor: not-allowed; }
+.reel.held .btn-hold-reel { background: rgba(245,197,24,0.25); }
+
+/* ── SPIN button ─────────────────────────────────────────── */
+.spin-btn {
+  width: 100%; background: linear-gradient(135deg, var(--gold) 0%, #d4960a 60%, #b87d08 100%);
+  color: #0a0e1a; border: none; border-radius: 14px; padding: 16px;
+  font-family: 'Cinzel', serif; font-size: 1.2rem; font-weight: 900; letter-spacing: 0.18em;
+  cursor: pointer; transition: filter 0.14s, transform 0.1s, box-shadow 0.14s;
+  box-shadow: 0 4px 24px rgba(245,197,24,0.35), 0 2px 0 rgba(0,0,0,0.4);
+  margin-top: 8px; flex-shrink: 0; position: relative; overflow: hidden;
+}
+.spin-btn::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(255,255,255,0.18) 0%, transparent 55%); pointer-events: none; }
+.spin-btn:hover:not(:disabled) { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 6px 32px rgba(245,197,24,0.5), 0 2px 0 rgba(0,0,0,0.4); }
+.spin-btn:active:not(:disabled) { transform: translateY(1px); box-shadow: 0 2px 12px rgba(245,197,24,0.3); }
+.spin-btn:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(0.4); }
+
+/* ── Result card ─────────────────────────────────────────── */
+.result-card {
+  background: linear-gradient(160deg, rgba(10,15,35,0.97) 0%, rgba(5,10,25,0.99) 100%);
+  border: 1px solid rgba(245,197,24,0.18); border-radius: 15px;
+  padding: 13px 15px 15px; width: 100%; opacity: 0; transform: translateY(6px);
+  margin-top: 10px;
+}
+.result-card.hidden { display: none; }
+.result-card.result-card-in { animation: rcSlideIn 0.28s cubic-bezier(0.22,1,0.36,1) forwards; }
+@keyframes rcSlideIn { to { opacity: 1; transform: translateY(0); } }
+.result-hand {
+  font-family: 'Cinzel', serif; font-size: clamp(0.9rem, 3vw, 1.2rem); font-weight: 700;
+  letter-spacing: 0.1em; color: var(--gold); text-align: center;
+  text-shadow: 0 0 18px rgba(245,197,24,0.55); margin-bottom: 2px;
+}
+.result-hand.no-win-label { color: rgba(255,255,255,0.28); text-shadow: none; font-size: 0.82rem; }
+.result-hand.consolation  { color: #6e82b8; text-shadow: none; font-size: 0.88rem; }
+.lines-count-badge { text-align: center; font-family: 'Cinzel', serif; font-size: 0.57rem; letter-spacing: 0.22em; color: rgba(255,255,255,0.3); margin-bottom: 7px; }
+.line-win-list { display: flex; flex-direction: column; gap: 3px; width: 100%; margin-bottom: 5px; }
+.line-win-row {
+  display: grid; grid-template-columns: 8px 64px auto 1fr auto auto;
+  align-items: center; gap: 5px; padding: 5px 7px; border-radius: 6px;
+  background: rgba(255,255,255,0.03); border-left: 3px solid var(--line-color, #f5c518);
+  font-family: 'Cinzel', serif; cursor: pointer; opacity: 0; transform: translateX(-5px);
+  animation: lineRowIn 0.22s ease forwards; transition: background 0.14s;
+}
+@keyframes lineRowIn { to { opacity: 1; transform: translateX(0); } }
+.line-win-row:hover, .line-win-row.row-hover { background: rgba(255,255,255,0.07) !important; }
+.line-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.line-name { font-size: 0.56rem; letter-spacing: 0.03em; color: rgba(255,255,255,0.35); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.line-syms { display: flex; gap: 1px; align-items: center; flex-shrink: 0; }
+.line-sym { font-size: 1rem; line-height: 1; }
+.line-sym.sym-dim-row { opacity: 0.32; }
+.line-combo { font-size: 0.63rem; font-weight: 700; letter-spacing: 0.04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lr-mult { font-size: 0.6rem; color: rgba(255,100,100,0.85); font-weight: 600; flex-shrink: 0; background: rgba(255,100,100,0.12); border-radius: 4px; padding: 1px 4px; font-family: 'Cinzel', serif; }
+.line-chips { font-size: 0.67rem; font-weight: 700; color: #69f0ae; flex-shrink: 0; text-align: right; min-width: 38px; }
+.line-win-divider { height: 1px; background: rgba(245,197,24,0.14); margin: 5px 0; }
+.result-breakdown { display: flex; align-items: center; justify-content: center; gap: 7px; flex-wrap: wrap; padding: 3px 0 1px; }
+.chips-tag { background: rgba(105,240,174,0.18); color: #69f0ae; border: 1px solid rgba(105,240,174,0.4); border-radius: 7px; padding: 3px 9px; font-family: 'Cinzel', serif; font-size: 0.84rem; font-weight: 700; }
+.chips-tag.sm { font-size: 0.68rem; padding: 2px 6px; }
+.mult-tag  { background: rgba(255,80,80,0.18); color: #ff6464; border: 1px solid rgba(255,80,80,0.4); border-radius: 7px; padding: 3px 9px; font-family: 'Cinzel', serif; font-size: 0.84rem; font-weight: 700; }
+.mult-tag.sm { font-size: 0.68rem; padding: 2px 6px; }
+.score-tag { background: rgba(245,197,24,0.18); color: var(--gold); border: 1px solid rgba(245,197,24,0.45); border-radius: 7px; padding: 3px 11px; font-family: 'Cinzel', serif; font-size: 0.92rem; font-weight: 700; }
+.result-x, .result-eq { color: rgba(255,255,255,0.38); font-family: 'Cinzel', serif; font-size: 0.76rem; }
+.effects-block { margin-top: 7px; display: flex; flex-direction: column; gap: 2px; }
+.effect-line { display: flex; align-items: center; gap: 5px; font-family: 'Cinzel', serif; font-size: 0.64rem; color: rgba(255,255,255,0.5); padding: 2px 3px; }
+.result-card.pending-update { border-color: rgba(0,212,255,0.3); }
+
+/* ── Overlays ────────────────────────────────────────────── */
+.overlay { display: none; position: fixed; inset: 0; background: rgba(2,5,15,0.95); backdrop-filter: blur(5px); z-index: 100; align-items: center; justify-content: center; padding: 16px; }
+.overlay.active { display: flex; }
+.overlay-card { background: var(--surface); border: 1px solid var(--border-hi); border-radius: 19px; padding: 24px 20px; width: 100%; max-width: 430px; max-height: 92vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,30,0.85), 0 0 0 1px rgba(255,255,255,0.04); }
+.overlay-eyebrow { font-family: 'Cinzel', serif; font-size: 0.58rem; letter-spacing: 0.2em; color: var(--text-dim); margin-bottom: 4px; text-transform: uppercase; }
+.overlay-title { font-family: 'Cinzel', serif; font-size: 1.45rem; font-weight: 900; letter-spacing: 0.08em; margin-bottom: 18px; line-height: 1.1; }
+.overlay-title.gold { color: var(--gold); text-shadow: 0 0 24px var(--gold-glow); }
+.overlay-title.red  { color: var(--red); }
+.boss-badge { display: inline-block; background: linear-gradient(135deg, #700000, #e03030); color: white; font-family: 'Cinzel', serif; font-size: 0.58rem; font-weight: 700; letter-spacing: 0.15em; padding: 3px 9px; border-radius: 20px; margin-bottom: 7px; }
+.blind-stats { display: flex; gap: 9px; margin-bottom: 20px; }
+.blind-stat { flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: 11px; padding: 10px 7px; text-align: center; }
+.blind-stat-label { font-family: 'Cinzel', serif; font-size: 0.55rem; letter-spacing: 0.12em; color: var(--text-dim); display: block; margin-bottom: 4px; }
+.blind-stat-value { font-family: 'Cinzel', serif; font-size: 1.1rem; font-weight: 700; }
+.blind-stat-value.gold  { color: var(--gold); }
+.blind-stat-value.green { color: var(--green); }
+.shop-card-wrap { max-width: 500px; }
+.shop-header-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.shop-gold-badge { display: flex; flex-direction: column; align-items: flex-end; background: var(--surface2); border: 1px solid var(--gold-dim); border-radius: 9px; padding: 5px 11px; }
+.shop-gold-val { font-family: 'Cinzel', serif; font-size: 1.25rem; font-weight: 700; color: var(--gold); line-height: 1; }
+.shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 13px; }
+.shop-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 11px; padding: 12px 9px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 4px; position: relative; transition: border-color 0.15s; }
+.shop-card:hover:not(.shop-disabled) { border-color: var(--border-hi); }
+.shop-card.shop-disabled { opacity: 0.4; }
+.sold-badge { position: absolute; top: 0; right: 0; background: var(--surface3); color: var(--text-dim); font-size: 0.46rem; font-weight: 700; letter-spacing: 0.1em; padding: 2px 5px; border-radius: 0 9px 0 6px; }
+.badge-rare::before     { content: 'RARE';     position: absolute; top: 0; left: 0; background: linear-gradient(135deg, #8b44cc, var(--gold));  color: white; font-size: 0.44rem; font-weight: 700; padding: 2px 5px; border-radius: 9px 0 6px 0; letter-spacing: 0.08em; }
+.badge-uncommon::before { content: 'UNCOMMON'; position: absolute; top: 0; left: 0; background: linear-gradient(135deg, #1e5799, #4a7fd4); color: white; font-size: 0.44rem; font-weight: 700; padding: 2px 5px; border-radius: 9px 0 6px 0; letter-spacing: 0.08em; }
+.shop-icon      { font-size: 1.75rem; line-height: 1; }
+.shop-item-name { font-weight: 700; font-size: 0.79rem; }
+.shop-item-desc { font-size: 0.66rem; color: var(--text-muted); line-height: 1.3; }
+.shop-buy-btn { background: var(--gold); color: #0a0e1a; border: none; border-radius: 6px; padding: 5px 10px; font-weight: 700; cursor: pointer; font-size: 0.76rem; font-family: 'Rajdhani', sans-serif; margin-top: 3px; transition: background 0.12s; }
+.shop-buy-btn:hover:not(:disabled) { background: #ffe066; }
+.shop-buy-btn:disabled { background: var(--surface3); color: var(--text-dim); cursor: not-allowed; }
+.shop-actions { display: flex; gap: 7px; flex-wrap: wrap; }
+.go-stats { background: var(--surface2); border: 1px solid var(--border); border-radius: 11px; overflow: hidden; }
+.go-stat { display: flex; justify-content: space-between; align-items: center; padding: 8px 13px; border-bottom: 1px solid var(--border); font-size: 0.84rem; }
+.go-stat:last-child { border-bottom: none; }
+.go-stat .gold { color: var(--gold); font-weight: 700; }
+.go-stat .cyan { color: var(--cyan); font-weight: 700; }
+.meta-row { display: flex; justify-content: space-between; align-items: center; background: var(--surface2); border: 1px solid var(--border); border-radius: 9px; padding: 8px 12px; margin-bottom: 5px; }
+.meta-label { font-weight: 700; font-size: 0.82rem; }
+.meta-desc  { font-size: 0.67rem; color: var(--text-muted); margin-top: 2px; }
+.meta-buy-btn { background: rgba(0,212,255,0.1); border: 1px solid var(--cyan-dim); color: var(--cyan); padding: 5px 10px; border-radius: 7px; font-weight: 700; cursor: pointer; font-size: 0.75rem; white-space: nowrap; transition: background 0.14s; }
+.meta-buy-btn:hover:not(:disabled) { background: rgba(0,212,255,0.2); }
+.meta-buy-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.btn-primary { width: 100%; background: linear-gradient(135deg, var(--gold), var(--gold-dim)); color: #0a0e1a; border: none; border-radius: 11px; padding: 12px; font-family: 'Cinzel', serif; font-size: 0.92rem; font-weight: 700; letter-spacing: 0.1em; cursor: pointer; transition: filter 0.14s; }
+.btn-primary:hover { filter: brightness(1.1); }
+.btn-secondary { background: var(--surface2); border: 1px solid var(--border-hi); color: var(--text-muted); padding: 8px 11px; border-radius: 9px; font-family: 'Cinzel', serif; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.07em; cursor: pointer; transition: all 0.14s; flex: 1; }
+.btn-secondary:hover:not(:disabled) { border-color: var(--cyan-dim); color: var(--cyan); }
+.btn-secondary:disabled { opacity: 0.3; cursor: not-allowed; }
+.btn-skip     { background: none; border: 1px solid var(--border); color: var(--green); padding: 8px 11px; border-radius: 9px; font-family: 'Cinzel', serif; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.07em; cursor: pointer; transition: border-color 0.14s; flex: 1; }
+.btn-skip:hover { border-color: var(--green); }
+.btn-continue { background: linear-gradient(135deg, var(--gold), #d4960a); color: #0a0e1a; border: none; padding: 8px 14px; border-radius: 9px; font-family: 'Cinzel', serif; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.07em; cursor: pointer; transition: filter 0.14s; flex: 1; }
+.btn-continue:hover { filter: brightness(1.1); }
+.modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(2,5,15,0.92); z-index: 200; align-items: center; justify-content: center; padding: 16px; }
+.modal-backdrop.active { display: flex; }
+.modal-box { background: var(--surface); border: 1px solid var(--border-hi); border-radius: 15px; padding: 20px; width: 100%; max-width: 320px; }
+.modal-box h3 { font-family: 'Cinzel', serif; font-size: 0.9rem; color: var(--text); margin-bottom: 3px; }
+.remove-list { display: flex; flex-direction: column; gap: 5px; }
+.remove-sym-btn { display: flex; align-items: center; gap: 9px; background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 8px 11px; border-radius: 7px; cursor: pointer; font-size: 0.84rem; transition: border-color 0.14s; text-align: left; }
+.remove-sym-btn:hover { border-color: var(--red); }
+/* ── Forge Modal ── */
+.forge-modal-box { background: var(--surface); border: 1px solid var(--forge); border-radius: 15px; padding: 20px; width: 100%; max-width: 340px; box-shadow: 0 0 30px rgba(255,124,42,0.15); }
+.forge-modal-title { font-family: 'Cinzel', serif; font-size: 1rem; font-weight: 700; color: var(--forge); margin-bottom: 4px; letter-spacing: 0.08em; }
+.forge-modal-sub { font-size: 0.68rem; color: var(--text-dim); margin-bottom: 14px; }
+.forge-sym-grid { display: flex; flex-wrap: wrap; gap: 7px; }
+.forge-sym-btn {
+  background: var(--surface2); border: 1px solid var(--border); border-radius: 9px;
+  padding: 10px 8px; text-align: center; cursor: pointer; transition: all 0.14s;
+  min-width: 68px; flex: 1;
+}
+.forge-sym-btn:hover { border-color: var(--forge); background: rgba(255,124,42,0.08); }
+.forge-sym-icon { font-size: 1.6rem; display: block; }
+.forge-sym-name { font-size: 0.6rem; color: var(--text-muted); display: block; margin-top: 2px; }
+.forge-sym-count { font-size: 0.55rem; color: var(--text-dim); display: block; }
+.forge-cancel-btn { width: 100%; margin-top: 10px; background: none; border: 1px solid var(--border); color: var(--text-dim); padding: 7px; border-radius: 7px; cursor: pointer; font-family: 'Cinzel', serif; font-size: 0.65rem; transition: all 0.14s; }
+.forge-cancel-btn:hover { border-color: var(--red); color: var(--red); }
+/* ── Toast ── */
+.toast { position: fixed; top: 16px; left: 50%; transform: translateX(-50%); background: var(--surface); border: 1px solid var(--gold); color: var(--gold); padding: 8px 18px; border-radius: 28px; font-family: 'Cinzel', serif; font-size: 0.76rem; font-weight: 600; letter-spacing: 0.08em; z-index: 500; white-space: nowrap; pointer-events: none; transition: opacity 0.28s, transform 0.28s; }
+.toast-show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast-hide { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+/* ── Jackpot ── */
+#jackpot-overlay { display: none; position: fixed; inset: 0; z-index: 300; align-items: center; justify-content: center; flex-direction: column; background: rgba(0,0,0,0.5); }
+#jackpot-overlay.active { display: flex; }
+#jackpot-canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.jackpot-text { position: relative; z-index: 1; text-align: center; animation: jpIn 0.35s cubic-bezier(0.2,1.4,0.4,1) both; }
+@keyframes jpIn { from{transform:scale(0.4);opacity:0} to{transform:scale(1);opacity:1} }
+.jackpot-word { font-family: 'Cinzel', serif; font-size: clamp(2.5rem,9vw,4rem); font-weight: 900; color: var(--gold); letter-spacing: 0.15em; text-shadow: 0 0 40px var(--gold-glow), 0 0 80px rgba(245,197,24,0.3); display: block; }
+.jackpot-score { font-family: 'Cinzel', serif; font-size: clamp(1.4rem,5vw,2.2rem); color: var(--green); letter-spacing: 0.1em; text-shadow: 0 0 30px rgba(0,230,118,0.5); display: block; margin-top: 6px; }
+#screen-flash { display: none; position: fixed; inset: 0; background: rgba(245,197,24,0.15); z-index: 290; pointer-events: none; animation: screenFlash 0.6s ease forwards; }
+@keyframes screenFlash { 0%,100%{opacity:0} 25%{opacity:1} }
+/* ── Payline diagram ─────────────────────────────────────── */
+.payline-diagram-row { display: flex; justify-content: space-between; align-items: center; padding: 3px 0; border-bottom: 1px solid var(--border); font-size: 0.7rem; color: var(--text-muted); }
+.payline-diagram-row:last-child { border-bottom: none; }
+.pl-label { font-size: 0.62rem; }
+.gold  { color: var(--gold);  }
+.green { color: var(--green); }
+.red   { color: var(--red);   }
+.cyan  { color: var(--cyan);  }
+small  { color: var(--text-muted); }
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <!-- ── SIDEBAR ─────────────────────────────────────────── -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div>
+        <span class="game-title">FORGESLOT</span>
+        <span class="game-subtitle">REEL ROGUELIKE</span>
+      </div>
+      <div class="shard-badge" id="shard-count">✧ 0</div>
+    </div>
+    <div class="sidebar-body">
+      <div class="section-label">Reel Pool</div>
+      <div id="deck-list"></div>
+      <div class="section-label">Modifiers</div>
+      <div id="modifier-list"><div class="empty-mods">No modifiers yet</div></div>
+    </div>
+    <div class="sidebar-footer">
+      <button class="btn-forfeit" onclick="confirmForfeit()">✕ Forfeit Run</button>
+    </div>
+  </aside>
+
+  <!-- ── MAIN ────────────────────────────────────────────── -->
+  <main class="game-area">
+
+    <!-- HUD -->
+    <div class="hud">
+      <div class="hud-left">
+        <div class="hud-stat-label">GOLD</div>
+        <div class="hud-gold" id="hud-gold">0</div>
+      </div>
+      <div class="hud-center">
+        <div class="hud-stage"    id="hud-stage">STAGE 1</div>
+        <div class="hud-round-name" id="hud-round-name">Warm Up</div>
+        <div class="hud-stat-label" id="mod-slot-count" style="margin-top:3px">0/5 MODS</div>
+      </div>
+      <div class="hud-right">
+        <div class="hud-stat-label">SPINS LEFT</div>
+        <div class="hud-spins" id="hud-spins">9</div>
+      </div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+      <div class="progress-label" id="progress-label">0 / 500</div>
+    </div>
+
+    <!-- Token HUD -->
+    <div class="token-hud">
+      <div class="token-group">
+        <span class="token-label forge-lbl" id="forge-label" onclick="toggleForgeMode()" title="Click to enter FORGE mode, then click a reel to pin a symbol">⚡ FORGE</span>
+        <div class="token-pips" id="forge-pips"></div>
+      </div>
+      <div class="token-sep"></div>
+      <div class="token-group">
+        <span class="token-label nudge-lbl">↕ NUDGE</span>
+        <div class="token-pips" id="nudge-pips"></div>
+      </div>
+      <div class="token-sep"></div>
+      <div class="token-group">
+        <span class="token-label hold-lbl">🔒 HOLD</span>
+        <div class="token-pips" id="hold-pips"></div>
+      </div>
+    </div>
+
+    <!-- Slot machine -->
+    <div class="slot-machine">
+      <div class="reel-frame">
+        <div class="payline-indicators" id="pl-left">
+          <div class="pl-dot pl-1"></div><div class="pl-dot pl-2"></div><div class="pl-dot pl-3"></div>
+          <div class="pl-dot pl-4"></div><div class="pl-dot pl-5"></div><div class="pl-dot pl-6"></div>
+          <div class="pl-dot pl-7"></div><div class="pl-dot pl-8"></div><div class="pl-dot pl-9"></div>
+        </div>
+        <div class="reels-wrap" id="reels-wrap">
+          <svg id="payline-svg" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible"></svg>
+          <!-- Reels injected by JS -->
+        </div>
+        <div class="payline-indicators" id="pl-right">
+          <div class="pl-dot pl-1"></div><div class="pl-dot pl-2"></div><div class="pl-dot pl-3"></div>
+          <div class="pl-dot pl-4"></div><div class="pl-dot pl-5"></div><div class="pl-dot pl-6"></div>
+          <div class="pl-dot pl-7"></div><div class="pl-dot pl-8"></div><div class="pl-dot pl-9"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Post-spin actions (nudge / hold per reel) -->
+    <div class="post-spin-actions hidden" id="post-spin-actions"></div>
+
+    <!-- Spin button -->
+    <button class="spin-btn" id="spin-btn" onclick="spin()">SPIN</button>
+
+    <!-- Result card -->
+    <div class="result-card hidden" id="result-card"></div>
+
+  </main>
+</div>
+
+<!-- ── PRE-ROUND OVERLAY ──────────────────────────── -->
+<div class="overlay" id="phase-pre-round">
+  <div class="overlay-card">
+    <div class="overlay-eyebrow" id="pre-stage-label">Stage 1 · Round 1/3</div>
+    <div id="pre-boss-badge" class="boss-badge" style="display:none">⚠ BOSS ROUND</div>
+    <div class="overlay-title gold" id="pre-round-name">Warm Up</div>
+    <div class="blind-stats">
+      <div class="blind-stat"><span class="blind-stat-label">TARGET</span><span class="blind-stat-value gold" id="pre-target">500</span></div>
+      <div class="blind-stat"><span class="blind-stat-label">SPINS</span><span class="blind-stat-value green" id="pre-spins">9</span></div>
+      <div class="blind-stat"><span class="blind-stat-label">REWARD</span><span class="blind-stat-value gold" id="pre-reward">+4G</span></div>
+    </div>
+    <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:16px;line-height:1.6">
+      <b style="color:var(--forge)">⚡ Forge Charges</b> — click to enter Forge Mode, then click any reel to guarantee a symbol lands on the payline.<br>
+      <b style="color:var(--nudge)">↕ Nudge</b> — after spinning, shift a reel ±1 row. Score updates live.<br>
+      <b style="color:var(--hold)">🔒 Hold</b> — lock a reel's position for the next spin.
+    </div>
+    <button class="btn-primary" onclick="startRound()">PULL THE LEVER</button>
+  </div>
+</div>
+
+<!-- ── SHOP OVERLAY ──────────────────────────────── -->
+<div class="overlay" id="phase-shop">
+  <div class="overlay-card shop-card-wrap">
+    <div class="shop-header-row">
+      <div>
+        <div class="overlay-eyebrow">BETWEEN ROUNDS</div>
+        <div class="overlay-title gold" style="margin-bottom:0;font-size:1.2rem">THE FORGE SHOP</div>
+      </div>
+      <div class="shop-gold-badge">
+        <div style="font-size:0.52rem;color:var(--text-dim);font-family:'Cinzel',serif;letter-spacing:0.1em">GOLD</div>
+        <div class="shop-gold-val" id="shop-gold-display">0G</div>
+      </div>
+    </div>
+    <div class="shop-grid" id="shop-items"></div>
+    <div class="shop-actions">
+      <button class="btn-secondary" id="shop-reroll-btn" onclick="handleShopReroll()">↺ Reroll (1G)</button>
+      <button class="btn-skip"     onclick="handleShopSkip()">Skip (+2G)</button>
+      <button class="btn-continue" onclick="handleShopContinue()">Continue →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── GAME OVER OVERLAY ─────────────────────────── -->
+<div class="overlay" id="phase-game-over">
+  <div class="overlay-card">
+    <div class="overlay-eyebrow">RUN ENDED</div>
+    <div class="overlay-title red" id="go-reason">Out of Spins</div>
+    <div class="go-stats" style="margin-bottom:16px">
+      <div class="go-stat"><span>Stage reached</span><span class="gold" id="go-stage">—</span></div>
+      <div class="go-stat"><span>Best single spin</span><span class="gold" id="go-best">—</span></div>
+      <div class="go-stat"><span>Total score</span><span class="gold" id="go-total">—</span></div>
+      <div class="go-stat shards-row"><span>Shards earned</span><span class="cyan" id="go-shards-earned">+0 ✧</span></div>
+    </div>
+    <div style="margin-bottom:12px">
+      <div class="overlay-eyebrow">META UPGRADES</div>
+      <div class="hud-stat-label" style="margin-bottom:8px;color:var(--cyan)" id="go-shards">✧ 0</div>
+      <div id="meta-upgrades"></div>
+    </div>
+    <button class="btn-primary" onclick="resetRun()">NEW RUN</button>
+  </div>
+</div>
+
+<!-- ── FORGE MODAL ───────────────────────────────── -->
+<div class="modal-backdrop" id="forge-modal">
+  <div class="forge-modal-box">
+    <div class="forge-forge-title forge-modal-title">⚡ FORGE REEL <span id="forge-reel-num">1</span></div>
+    <div class="forge-modal-sub">Choose a symbol to pin to this reel's payline row</div>
+    <div class="forge-sym-grid" id="forge-sym-grid"></div>
+    <button class="forge-cancel-btn" onclick="closeForgeModal()">Cancel</button>
+  </div>
+</div>
+
+<!-- ── REMOVE MODAL ──────────────────────────────── -->
+<div class="modal-backdrop" id="remove-modal">
+  <div class="modal-box">
+    <h3>Remove a Symbol</h3>
+    <p style="font-size:0.68rem;color:var(--text-muted);margin:4px 0 12px">Choose one copy to remove from your reel pool.</p>
+    <div class="remove-list" id="remove-list"></div>
+    <button class="forge-cancel-btn" style="margin-top:10px" onclick="closeRemoveModal()">Cancel</button>
+  </div>
+</div>
+
+<!-- ── JACKPOT ───────────────────────────────────── -->
+<div id="jackpot-overlay">
+  <canvas id="jackpot-canvas"></canvas>
+  <div class="jackpot-text">
+    <span class="jackpot-word">JACKPOT!</span>
+    <span class="jackpot-score" id="jackpot-score">+0</span>
+  </div>
+</div>
+<div id="screen-flash" style="display:none"></div>
+
+<!-- ── TOAST ─────────────────────────────────────── -->
+<div class="toast toast-hide" id="toast"></div>
+
+<script>
+'use strict';
+
+// ================================================================
+// CONFIG
+// ================================================================
+const CFG = {
+  SYMBOLS: {
+    '💎': { name:'Diamond', chips:8,  weight:2,  color:'#7ee8fa' },
+    '7️⃣':  { name:'Seven',   chips:7,  weight:3,  color:'#f5c518' },
+    '⭐':  { name:'Star',    chips:5,  weight:6,  color:'#fff9c4' },
+    '🔔':  { name:'Bell',    chips:4,  weight:8,  color:'#ffd740' },
+    '🍀':  { name:'Clover',  chips:4,  weight:9,  color:'#69f0ae' },
+    '🍒':  { name:'Cherry',  chips:3,  weight:10, color:'#ef5350' },
+    '🍋':  { name:'Lemon',   chips:3,  weight:10, color:'#ffee58' },
+    '🍎':  { name:'Apple',   chips:2,  weight:11, color:'#ff7043' },
+    '🪙':  { name:'Coin',    chips:4,  weight:8,  color:'#ffd740' },
+    '💀':  { name:'Skull',   chips:0,  weight:4,  color:'#9e9e9e', penalty:4 },
+  },
+  COMBOS: {
+    JACKPOT:    { name:'🎰 JACKPOT!',        chips:250, mult:12,  },
+    FIVE_KIND:  { name:'FIVE OF A KIND',     chips:120, mult:6,   },
+    FOUR_KIND:  { name:'FOUR IN A ROW',      chips:55,  mult:3.5, },
+    THREE_KIND: { name:'THREE IN A ROW',     chips:22,  mult:2,   },
+    NO_WIN:     { name:'NO WIN',             chips:0,   mult:1,   },
+  },
+  SCATTER: {
+    symbol:'⭐',
+    tiers:[
+      { count:3, name:'⭐ SCATTER ×3', chips:22,  mult:0.6 },
+      { count:4, name:'⭐ SCATTER ×4', chips:55,  mult:1.2 },
+      { count:5, name:'⭐ SCATTER ×5', chips:120, mult:2.5 },
+    ],
+  },
+  PAYLINES: [
+    [1,1,1,1,1],[0,0,0,0,0],[2,2,2,2,2],
+    [0,1,2,1,0],[2,1,0,1,2],[0,0,1,2,2],[2,2,1,0,0],
+    [1,0,0,0,1],[1,2,2,2,1],[0,1,1,1,2],[2,1,1,1,0],
+    [0,0,1,1,2],[2,2,1,1,0],[1,0,1,0,1],[1,2,1,2,1],
+    [0,1,0,1,0],[2,1,2,1,2],[0,0,0,1,2],[2,2,2,1,0],[1,0,2,0,1],
+  ],
+  PAYLINE_NAMES:[
+    'Middle','Top','Bottom','V-Shape','Λ-Shape','Step Down','Step Up',
+    'Top Arch','Bot Arch','Slide Down','Slide Up','Stair Down','Stair Up',
+    'Top Weave','Bot Weave','Top Zigzag','Bot Zigzag','Top Drop','Bot Rise','W-Shape',
+  ],
+  MODIFIERS:[
+    { id:'gambler',        emoji:'🎲', name:'The Gambler',      desc:'+2 Mult any time a line pays out.',                          rarity:'common',   cost:5, effect:{type:'win_mult',value:2} },
+    { id:'diamond_dealer', emoji:'💠', name:'Diamond Dealer',   desc:'Each 💎 visible on reels: +3 Mult.',                        rarity:'uncommon', cost:7, effect:{type:'per_symbol_mult',symbol:'💎',value:3} },
+    { id:'skull_pact',     emoji:'☠️', name:'Skull Pact',       desc:'Each 💀 on reels: +4 Mult (penalty still applies).',        rarity:'uncommon', cost:6, effect:{type:'per_skull_mult',value:4} },
+    { id:'cherry_picker',  emoji:'🍒', name:'Cherry Picker',    desc:'Each 🍒 on reels: +4 Chips.',                               rarity:'common',   cost:4, effect:{type:'per_symbol_chips',symbol:'🍒',value:4} },
+    { id:'gold_fever',     emoji:'🌕', name:'Gold Fever',       desc:'Each 🪙 on reels: +5 Chips, +1 Mult.',                     rarity:'uncommon', cost:6, effect:{type:'per_symbol_both',symbol:'🪙',chips:5,mult:1} },
+    { id:'seven_stars',    emoji:'✨', name:'Seven Stars',      desc:'Each 7️⃣ on reels: +5 Chips, +2 Mult.',                     rarity:'rare',     cost:8, effect:{type:'per_symbol_both',symbol:'7️⃣',chips:5,mult:2} },
+    { id:'fortune_teller', emoji:'🔮', name:'Fortune Teller',   desc:'No-win consolation score ×3.',                              rarity:'common',   cost:5, effect:{type:'consolation_scale',scale:3} },
+    { id:'glass_cannon',   emoji:'💥', name:'Glass Cannon',     desc:'All Mult ×1.5, but 💀 penalty ×2.',                        rarity:'rare',     cost:7, effect:{type:'global_mult_scale',scale:1.5,skull_scale:2} },
+    { id:'triple_hat',     emoji:'🎩', name:'Triple Hat',       desc:'Each THREE IN A ROW line: +25 bonus Chips.',                rarity:'common',   cost:4, effect:{type:'combo_chips',combo:'THREE_KIND',value:25} },
+    { id:'the_reaper',     emoji:'🌑', name:'The Reaper',       desc:'+2 Mult for every 💀 in your reel pool.',                  rarity:'uncommon', cost:6, effect:{type:'deck_count_mult',symbol:'💀',value:2} },
+    { id:'wild_seven',     emoji:'🌀', name:'Wild Seven',       desc:'7️⃣ acts as any symbol for line matching.',                 rarity:'rare',     cost:9, effect:{type:'wild',symbol:'7️⃣'} },
+    { id:'ironclad',       emoji:'🛡️', name:'Ironclad',         desc:'First spin of each round: Mult ×2.',                       rarity:'uncommon', cost:6, effect:{type:'first_spin_scale',scale:2} },
+    { id:'near_miss',      emoji:'📋', name:'Near Miss',        desc:'Each FOUR IN A ROW line: +40 bonus Chips.',                 rarity:'common',   cost:5, effect:{type:'combo_chips',combo:'FOUR_KIND',value:40} },
+    { id:'gilded_edge',    emoji:'🏅', name:'Gilded Edge',      desc:'+1.5 base Mult per winning line this spin.',               rarity:'rare',     cost:8, effect:{type:'base_mult_bonus',value:1.5} },
+    { id:'clover_luck',    emoji:'🍀', name:'Clover Luck',      desc:'Each 🍀 on reels: +2 Mult.',                               rarity:'common',   cost:5, effect:{type:'per_symbol_mult',symbol:'🍀',value:2} },
+    { id:'bell_choir',     emoji:'🔔', name:'Bell Choir',       desc:'FIVE OF A KIND 🔔: +80 bonus Chips.',                      rarity:'uncommon', cost:6, effect:{type:'specific_five_chips',symbol:'🔔',value:80} },
+    { id:'void_walker',    emoji:'👻', name:'Void Walker',      desc:'💀 give +5 Chips each instead of penalizing.',             rarity:'rare',     cost:8, effect:{type:'skull_to_chips',value:5} },
+    { id:'triple_threat',  emoji:'🎯', name:'Triple Threat',    desc:'Each THREE IN A ROW line: Mult ×1.5.',                     rarity:'uncommon', cost:7, effect:{type:'combo_mult_scale',combo:'THREE_KIND',scale:1.5} },
+    { id:'lucky_streak',   emoji:'🔥', name:'Lucky Streak',     desc:'Each consecutive winning spin: +1.5 Mult (resets on loss).',rarity:'rare',     cost:7, effect:{type:'streak_mult',value:1.5} },
+    { id:'star_power',     emoji:'⭐', name:'Star Power',       desc:'Each ⭐ on reels: +3 Chips, +1 Mult.',                     rarity:'common',   cost:5, effect:{type:'per_symbol_both',symbol:'⭐',chips:3,mult:1} },
+    { id:'payline_king',   emoji:'👑', name:'Payline King',     desc:'+10 Chips per winning line this spin.',                    rarity:'uncommon', cost:6, effect:{type:'per_hit_line',value:10} },
+    { id:'lucky_lemon',    emoji:'🍋', name:'Lucky Lemon',      desc:'Each 🍋 on reels: +3 Chips, +0.5 Mult.',                  rarity:'common',   cost:4, effect:{type:'per_symbol_both',symbol:'🍋',chips:3,mult:0.5} },
+    // Forge-specific mods (new!)
+    { id:'forge_master',   emoji:'⚒️', name:'Forge Master',     desc:'+2 Forge Charges at the start of every round.',            rarity:'uncommon', cost:7, effect:{type:'bonus_forge',value:2} },
+    { id:'second_chance',  emoji:'♻️', name:'Second Chance',    desc:'+2 Nudge Tokens at the start of every round.',             rarity:'common',   cost:5, effect:{type:'bonus_nudge',value:2} },
+    { id:'anchor',         emoji:'⚓', name:'Anchor',           desc:'+2 Hold Tokens at the start of every round.',              rarity:'uncommon', cost:6, effect:{type:'bonus_hold',value:2} },
+    { id:'hot_forge',      emoji:'🔥', name:'Hot Forge',        desc:'Forged symbols score +20 bonus Chips when they hit.',      rarity:'rare',     cost:8, effect:{type:'forge_bonus_chips',value:20} },
+  ],
+  STAGES:[
+    { stage:1, rounds:[
+      { name:'Warm Up',     target:500,    spins:9, reward:4,  boss:false },
+      { name:'High Stakes', target:1200,   spins:8, reward:5,  boss:false },
+      { name:'Pit Boss',    target:2500,   spins:8, reward:8,  boss:true  },
+    ]},
+    { stage:2, rounds:[
+      { name:'Warm Up',     target:6000,   spins:8, reward:5,  boss:false },
+      { name:'High Stakes', target:14000,  spins:8, reward:7,  boss:false },
+      { name:'Vault Guard', target:32000,  spins:8, reward:10, boss:true  },
+    ]},
+    { stage:3, rounds:[
+      { name:'Warm Up',     target:70000,  spins:8, reward:6,  boss:false },
+      { name:'High Stakes', target:160000, spins:8, reward:9,  boss:false },
+      { name:'House Rules', target:350000, spins:8, reward:12, boss:true  },
+    ]},
+    { stage:4, rounds:[
+      { name:'Warm Up',     target:750000, spins:9, reward:8,  boss:false },
+      { name:'Final Stand', target:2000000,spins:9, reward:14, boss:true  },
+    ]},
+  ],
+  STARTER_DECK: ['🍀','🍎','🍒','🪙','🍋','🍋','💀'],
+  SYMBOL_COSTS: {'💎':8,'7️⃣':7,'⭐':5,'🔔':4,'🍀':3,'🍒':2,'🍋':2,'🍎':2,'🪙':4,'💀':1},
+  REMOVE_SYMBOL_COST: 3,
+  REROLL_COST: 1,
+  MAX_MODIFIERS: 5,
+  SHARD_RATE: 2000,
+  NUM_REELS: 5,
+  VISIBLE_ROWS: 3,
+  STRIP_LEN: 7,       // symbols per reel strip per spin
+  STRIP_INIT_STOP: 2, // initial top-row index into strip (mid row = stop+1)
+  BASE_FORGE: 2,
+  BASE_NUDGE: 1,
+  BASE_HOLD:  1,
+  META_UPGRADES:{
+    starterGold:{ baseCost:5,  perLevel:5, label:'Starter Fund',  desc:'+5 Gold at run start' },
+    taxLvl:     { baseCost:10, perLevel:5, label:'Lucky Breaks',  desc:'Slower target scaling' },
+    deckSlot:   { baseCost:8,  perLevel:8, label:'Modifier Slot', desc:'+1 Modifier slot'      },
+  },
+};
+
+// ================================================================
+// ENGINE — pure functions
+// ================================================================
+const Engine = (() => {
+  const COMBO_RANK = ['JACKPOT','FIVE_KIND','FOUR_KIND','THREE_KIND','NO_WIN'];
+
+  function weightedDraw(deck) {
+    const w = CFG.SYMBOLS;
+    let total = deck.reduce((s,x) => s+(w[x]?.weight??5),0);
+    let r = Math.random()*total;
+    for (const sym of deck) { r -= (w[sym]?.weight??5); if (r<=0) return sym; }
+    return deck[0];
+  }
+
+  // Build per-reel strips for a spin
+  function buildStrips(deck, pinnedSymbols, heldReels, lastStrips, lastStops) {
+    const strips = [], stops = [];
+    for (let ri=0; ri<CFG.NUM_REELS; ri++) {
+      if (heldReels[ri] && lastStrips) {
+        strips.push([...lastStrips[ri]]); stops.push(lastStops[ri]);
+      } else {
+        const strip = Array.from({length:CFG.STRIP_LEN}, ()=>weightedDraw(deck));
+        // Pin symbol to mid row (stop+1 = STRIP_INIT_STOP+1 = index 3)
+        if (pinnedSymbols[ri]) strip[CFG.STRIP_INIT_STOP+1] = pinnedSymbols[ri];
+        strips.push(strip); stops.push(CFG.STRIP_INIT_STOP);
+      }
+    }
+    return {strips, stops};
+  }
+
+  // Extract 3×5 grid from strips+stops (row 0=top, 1=mid, 2=bot)
+  function gridFromState(strips, stops) {
+    return strips.map((strip,ri) => {
+      const s = stops[ri];
+      return [strip[s], strip[s+1], strip[s+2]];
+    });
+  }
+
+  function applyWilds(syms, modIds) {
+    if (!modIds.includes('wild_seven')) return [...syms];
+    const nonWild = syms.filter(s=>s!=='7️⃣');
+    if (!nonWild.length) return [...syms];
+    const counts = {};
+    nonWild.forEach(s=>counts[s]=(counts[s]||0)+1);
+    const best = Object.keys(counts).sort((a,b)=>counts[b]-counts[a])[0];
+    return syms.map(s=>s==='7️⃣'?best:s);
+  }
+
+  function evaluatePayline(rawSyms, modIds) {
+    const syms = applyWilds(rawSyms, modIds);
+    const w = CFG.SYMBOLS;
+    let skullCount=0, rawChips=0;
+    rawSyms.forEach(s=>{ if(w[s]?.penalty) skullCount++; else rawChips+=(w[s]?.chips??0); });
+    let runLen=0, winSymbol=null;
+    if (syms[0] && !w[syms[0]]?.penalty) {
+      const leftSym=syms[0];
+      for (const s of syms) { if(s===leftSym) runLen++; else break; }
+      if (runLen>=3) winSymbol=leftSym; else runLen=0;
+    }
+    let comboKey;
+    if      (runLen===5&&(winSymbol==='💎'||winSymbol==='7️⃣')) comboKey='JACKPOT';
+    else if (runLen===5) comboKey='FIVE_KIND';
+    else if (runLen===4) comboKey='FOUR_KIND';
+    else if (runLen>=3)  comboKey='THREE_KIND';
+    else                 comboKey='NO_WIN';
+    const combo    = CFG.COMBOS[comboKey];
+    const baseChips= Math.max(0, rawChips + combo.chips - skullCount*4);
+    return { comboKey, baseChips, baseMult:combo.mult, skullCount, rawSyms, runLen, winSymbol };
+  }
+
+  function calculateScore(grid, modIds, deck, isFirstSpin, winStreak, forgedReels) {
+    const voidWalker  = modIds.includes('void_walker');
+    const glassCannon = modIds.includes('glass_cannon');
+    const hotForge    = modIds.includes('hot_forge');
+
+    const lineResults = CFG.PAYLINES.map((pl,plIdx)=>{
+      const syms = pl.map((rowIdx,ri)=>grid[ri][rowIdx]);
+      return {...evaluatePayline(syms,modIds), plIdx};
+    });
+
+    const hitLines     = lineResults.filter(r=>r.comboKey!=='NO_WIN');
+    const bestComboKey = lineResults.reduce((best,r)=>
+      COMBO_RANK.indexOf(r.comboKey)<COMBO_RANK.indexOf(best)?r.comboKey:best,'NO_WIN');
+    const allSymbols   = grid.flat();
+    const totalSkulls  = allSymbols.filter(s=>CFG.SYMBOLS[s]?.penalty).length;
+
+    let totalBaseChips = hitLines.reduce((s,r)=>s+r.baseChips,0);
+    let bestMult       = hitLines.length>0 ? Math.max(...hitLines.map(r=>r.baseMult)) : 1;
+
+    if (voidWalker)  totalBaseChips += totalSkulls*(CFG.MODIFIERS.find(m=>m.id==='void_walker').effect.value);
+    if (glassCannon) {
+      const gc=CFG.MODIFIERS.find(m=>m.id==='glass_cannon');
+      bestMult=parseFloat((bestMult*gc.effect.scale).toFixed(2));
+      totalBaseChips -= totalSkulls*4*(gc.effect.skull_scale-1);
+    }
+    if (modIds.includes('gilded_edge')) bestMult=parseFloat((bestMult+hitLines.length*1.5).toFixed(2));
+
+    // Hot forge bonus: if a forged reel's symbol landed on payline and it won
+    let forgeBonus = 0;
+    if (hotForge && forgedReels) {
+      hitLines.forEach(lr=>{
+        const pl=CFG.PAYLINES[lr.plIdx];
+        for (let ri=0; ri<CFG.NUM_REELS; ri++) {
+          if (forgedReels[ri] && ri<lr.runLen && pl[ri]===1) forgeBonus+=20;
+        }
+      });
+    }
+    totalBaseChips += forgeBonus;
+
+    // Modifier pipeline
+    let modChips=0, modMult=0;
+    const effects=[];
+    for (const modId of modIds) {
+      const mod=CFG.MODIFIERS.find(m=>m.id===modId); if(!mod) continue;
+      const e=mod.effect; let cd=0,md=0;
+      switch(e.type) {
+        case 'win_mult':       if(hitLines.length>0) md=e.value; break;
+        case 'per_symbol_mult':{ const c=allSymbols.filter(s=>s===e.symbol).length; if(c) md=e.value*c; break;}
+        case 'per_symbol_chips':{ const c=allSymbols.filter(s=>s===e.symbol).length; if(c) cd=e.value*c; break;}
+        case 'per_symbol_both':{ const c=allSymbols.filter(s=>s===e.symbol).length; if(c){cd=e.chips*c;md=e.mult*c;} break;}
+        case 'per_skull_mult': if(totalSkulls>0) md=e.value*totalSkulls; break;
+        case 'combo_chips':    { const c=hitLines.filter(r=>r.comboKey===e.combo).length; if(c) cd=e.value*c; break;}
+        case 'combo_mult_scale':{ const c=hitLines.filter(r=>r.comboKey===e.combo).length; if(c) bestMult=parseFloat((bestMult*Math.pow(e.scale,c)).toFixed(2)); break;}
+        case 'deck_count_mult':{ const c=deck.filter(s=>s===e.symbol).length; if(c) md=e.value*c; break;}
+        case 'first_spin_scale': if(isFirstSpin) bestMult=parseFloat((bestMult*e.scale).toFixed(2)); break;
+        case 'specific_five_chips': if(bestComboKey==='FIVE_KIND'&&allSymbols.filter(s=>s===e.symbol).length>=5) cd=e.value; break;
+        case 'per_hit_line':   if(hitLines.length>0) cd=e.value*hitLines.length; break;
+        case 'streak_mult':    if(winStreak>0) md=e.value*winStreak; break;
+      }
+      if(cd!==0||md!==0){ modChips+=cd; modMult=parseFloat((modMult+md).toFixed(2)); effects.push({modId,chipsDelta:cd,multDelta:md}); }
+    }
+
+    // Consolation chips on no-win (always gives something)
+    const rawConsChips = Math.floor(allSymbols.reduce((s,sym)=>s+(CFG.SYMBOLS[sym]?.chips??0),0)/6);
+    const consScale    = modIds.includes('fortune_teller') ? 3 : 1;
+    const consolationChips = rawConsChips * consScale;
+
+    const hasFortuneTeller = modIds.includes('fortune_teller');
+    const trulyNoWin = hitLines.length===0;
+
+    let chips, mult;
+    if (trulyNoWin) {
+      // Always give consolation — Fortune Teller triples it
+      chips = Math.max(consolationChips, Math.round(modChips)); // per_symbol_chips mods still fire
+      mult  = 1;
+    } else {
+      chips = Math.max(0, Math.round(totalBaseChips + modChips));
+      mult  = Math.max(1, parseFloat((bestMult+modMult).toFixed(2)));
+    }
+
+    // Scatter (board-wide ⭐)
+    const starCount   = allSymbols.filter(s=>s==='⭐').length;
+    let scatterResult = null;
+    const tiers = CFG.SCATTER.tiers.slice().reverse();
+    for (const t of tiers) {
+      if (starCount>=t.count) { scatterResult=t; break; }
+    }
+
+    const paylineScore = Math.round(chips*mult);
+    const scatterScore = scatterResult ? Math.round((scatterResult.chips+chips)*scatterResult.mult) - Math.round(chips*scatterResult.mult)+Math.round(chips*scatterResult.mult) : 0;
+    // Simpler: scatter adds flat chips + mult bonus applied separately
+    let scatterBonus=0;
+    if (scatterResult) {
+      scatterBonus = Math.round(scatterResult.chips * mult + scatterResult.mult * chips);
+    }
+
+    const score = paylineScore + scatterBonus;
+
+    return {chips, mult, score, paylineScore, scatterBonus, scatterResult,
+            bestComboKey, lineResults, hitLines, effects, allSymbols, trulyNoWin, consolationChips};
+  }
+
+  return { buildStrips, gridFromState, calculateScore, weightedDraw };
+})();
+
+// ================================================================
+// SHOP
+// ================================================================
+const Shop = (() => {
+  const SYM_POOL = Object.keys(CFG.SYMBOLS).filter(s=>s!=='💀');
+
+  function generateShop(currentModIds) {
+    const syms = shuffle([...SYM_POOL]).slice(0,2).map(sym=>({
+      type:'symbol', symbol:sym, name:CFG.SYMBOLS[sym].name,
+      cost:CFG.SYMBOL_COSTS[sym], desc:`Add ${sym} to your reel pool (+${CFG.SYMBOLS[sym].chips}⚡ base)`,
+    }));
+    const avail = CFG.MODIFIERS.filter(m=>!currentModIds.includes(m.id));
+    const mods  = shuffle(avail).slice(0,2).map(m=>({
+      type:'modifier', id:m.id, name:m.name, emoji:m.emoji,
+      cost:m.cost, desc:m.desc, rarity:m.rarity,
+    }));
+    const remove = { type:'remove', cost:CFG.REMOVE_SYMBOL_COST, name:'REMOVE SYMBOL', desc:'Remove one copy of any symbol from your reel pool.', emoji:'🗑️' };
+    return { items:[...syms,...mods,remove], rerolled:0 };
+  }
+
+  function rerollShop(shop, modIds) {
+    const fresh=generateShop(modIds); fresh.rerolled=shop.rerolled+1; return fresh;
+  }
+
+  function shuffle(arr) {
+    for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}
+    return arr;
+  }
+  return { generateShop, rerollShop };
+})();
+
+// ================================================================
+// UI
+// ================================================================
+const UI = (() => {
+  const REEL_COUNT=5, REEL_ROWS=3, REEL_DEPTH=50, TARGET_IDX=40;
+  const PAYLINE_COLORS=['#f5c518','#00d4ff','#00e676','#ff6b6b','#c77dff','#ff9a3c','#3ef5ff','#a8ff3e','#ff5fcf'];
+  const _svgTimers=[];
+  let _lastLineResults=[];
+
+  // ── Reel DOM building ─────────────────────────────────────
+  function buildReelDOM() {
+    const wrap=document.getElementById('reels-wrap');
+    // Clear existing reels (keep SVG)
+    [...wrap.children].forEach(c=>{ if(c.id!=='payline-svg') c.remove(); });
+    for(let i=0;i<REEL_COUNT;i++){
+      const reel=document.createElement('div');
+      reel.className='reel'; reel.id=`reel-${i}`;
+      reel.onclick=()=>onReelClick(i);
+      const cont=document.createElement('div'); cont.className='symbols-container';
+      const fadeT=document.createElement('div'); fadeT.className='reel-fade top';
+      const fadeB=document.createElement('div'); fadeB.className='reel-fade bottom';
+      const pin=document.createElement('div');  pin.className='forge-pin'; pin.id=`forge-pin-${i}`; pin.textContent='⚡';
+      const held=document.createElement('div'); held.className='held-badge'; held.textContent='HELD';
+      reel.appendChild(cont); reel.appendChild(fadeT); reel.appendChild(fadeB); reel.appendChild(pin); reel.appendChild(held);
+      wrap.insertBefore(reel, document.getElementById('payline-svg'));
+    }
+  }
+
+  function addSymEl(container,sym){ const d=document.createElement('div'); d.className='symbol'; d.textContent=sym; container.appendChild(d); }
+
+  function fillReels(deck, lastGrid) {
+    for(let i=0;i<REEL_COUNT;i++){
+      const cont=document.querySelector(`#reel-${i} .symbols-container`);
+      if(!cont) continue;
+      cont.style.transition='none'; cont.innerHTML='';
+      for(let r=0;r<REEL_ROWS;r++) addSymEl(cont, lastGrid?lastGrid[i][r]:Engine.weightedDraw(deck));
+      for(let j=REEL_ROWS;j<REEL_DEPTH+REEL_ROWS;j++) addSymEl(cont, Engine.weightedDraw(deck));
+      cont.style.transform='translateY(0)';
+    }
+  }
+
+  function injectGrid(grid) {
+    for(let i=0;i<REEL_COUNT;i++){
+      const cont=document.querySelector(`#reel-${i} .symbols-container`); if(!cont) continue;
+      if(cont.children[TARGET_IDX-1]) cont.children[TARGET_IDX-1].textContent=grid[i][0];
+      if(cont.children[TARGET_IDX  ]) cont.children[TARGET_IDX  ].textContent=grid[i][1];
+      if(cont.children[TARGET_IDX+1]) cont.children[TARGET_IDX+1].textContent=grid[i][2];
+    }
+  }
+
+  function injectSingleReel(ri, rows) {
+    const cont=document.querySelector(`#reel-${ri} .symbols-container`); if(!cont) return;
+    if(cont.children[TARGET_IDX-1]) cont.children[TARGET_IDX-1].textContent=rows[0];
+    if(cont.children[TARGET_IDX  ]) cont.children[TARGET_IDX  ].textContent=rows[1];
+    if(cont.children[TARGET_IDX+1]) cont.children[TARGET_IDX+1].textContent=rows[2];
+    // Flash the 3 cells
+    [TARGET_IDX-1, TARGET_IDX, TARGET_IDX+1].forEach(idx=>{
+      const el=cont.children[idx]; if(!el) return;
+      el.classList.remove('nudge-flash');
+      void el.offsetWidth;
+      el.classList.add('nudge-flash');
+    });
+  }
+
+  function getSymSize(){ const r=document.querySelector('.reel'); return r?r.offsetHeight/REEL_ROWS:76; }
+
+  function animateReel(i, delayFactor) {
+    return new Promise(resolve=>{
+      const el=document.querySelector(`#reel-${i} .symbols-container`); if(!el) return resolve();
+      const sym=getSymSize();
+      const offset=(TARGET_IDX-1)*sym;
+      const dur=0.85+delayFactor*0.2;
+      el.style.transition='none'; el.style.transform='translateY(0)';
+      el.offsetHeight;
+      el.style.transition=`transform ${dur}s cubic-bezier(0.15,0,0.08,1)`;
+      el.style.transform=`translateY(-${offset}px)`;
+      setTimeout(resolve,dur*1000);
+    });
+  }
+
+  // ── Payline highlights ────────────────────────────────────
+  function highlightPaylines(lineResults) {
+    document.querySelectorAll('.symbol').forEach(el=>{ el.classList.remove('sym-win','sym-dim'); el.removeAttribute('data-glow'); el.style.removeProperty('box-shadow'); });
+    while(_svgTimers.length) clearTimeout(_svgTimers.pop());
+    clearPaylineLines();
+    const winning=lineResults.filter(r=>r.comboKey!=='NO_WIN');
+    if(!winning.length) return;
+    const CRANK=['JACKPOT','FIVE_KIND','FOUR_KIND','THREE_KIND'];
+    const sorted=[...winning].sort((a,b)=>CRANK.indexOf(a.comboKey)-CRANK.indexOf(b.comboKey));
+    sorted.forEach(({comboKey,plIdx,runLen})=>{
+      const color=PAYLINE_COLORS[plIdx]||'#f5c518';
+      const pl=CFG.PAYLINES[plIdx];
+      pl.forEach((rowIdx,reel)=>{
+        const cont=document.querySelector(`#reel-${reel} .symbols-container`); if(!cont) return;
+        const el=cont.children[TARGET_IDX-1+rowIdx]; if(!el) return;
+        if(reel<runLen){ el.classList.add('sym-win'); const prev=el.getAttribute('data-glow')||''; el.setAttribute('data-glow',prev+color+','); el.style.boxShadow=buildGlow(el.getAttribute('data-glow')); }
+        else { if(!el.classList.contains('sym-win')) el.classList.add('sym-dim'); }
+      });
+    });
+    sorted.slice(0,6).forEach(({plIdx,runLen},i)=>{
+      const color=PAYLINE_COLORS[plIdx]||'#f5c518';
+      _svgTimers.push(setTimeout(()=>drawPaylineSVG(plIdx,color,runLen),i*140));
+    });
+  }
+
+  function buildGlow(colors){ return (colors||'').split(',').filter(Boolean).map(c=>`0 0 0 2px ${c},0 0 18px 5px ${c}66`).join(','); }
+
+  function clearPaylineLines() {
+    document.querySelectorAll('.symbol').forEach(el=>el.removeAttribute('data-glow'));
+    const svg=document.getElementById('payline-svg'); if(svg) svg.innerHTML='';
+    document.querySelectorAll('.pl-dot').forEach(d=>d.classList.remove('pl-lit'));
+  }
+
+  function drawPaylineSVG(plIdx, color, clipAt) {
+    const svg=document.getElementById('payline-svg'); if(!svg) return;
+    const wrap=document.querySelector('.reels-wrap'); if(!wrap) return;
+    const wrapRect=wrap.getBoundingClientRect();
+    const symH=(document.querySelector('.reel')?.offsetHeight||228)/REEL_ROWS;
+    const pl=CFG.PAYLINES[plIdx];
+    const pts=pl.map((rowIdx,ri)=>{
+      const reel=document.getElementById('reel-'+ri); if(!reel) return null;
+      const r=reel.getBoundingClientRect();
+      return {x:r.left-wrapRect.left+r.width/2, y:r.top-wrapRect.top+rowIdx*symH+symH/2};
+    }).filter(Boolean);
+    if(pts.length<2) return;
+    function mkPoly(points,stroke,w,op,dashed,anim){
+      const el=document.createElementNS('http://www.w3.org/2000/svg','polyline');
+      el.setAttribute('points',points.map(p=>p.x.toFixed(1)+','+p.y.toFixed(1)).join(' '));
+      el.setAttribute('fill','none'); el.setAttribute('stroke',stroke);
+      el.setAttribute('stroke-width',String(w)); el.setAttribute('stroke-linecap','round'); el.setAttribute('stroke-linejoin','round');
+      if(op<1) el.setAttribute('opacity',String(op));
+      if(dashed) el.setAttribute('stroke-dasharray','7 5');
+      el.style.filter=anim?('drop-shadow(0 0 5px '+stroke+')'):'none';
+      svg.appendChild(el);
+      if(anim){ const len=el.getTotalLength?el.getTotalLength():400; el.style.strokeDasharray=len; el.style.strokeDashoffset=len; el.classList.add('payline-line'); void el.getBoundingClientRect(); el.classList.add('payline-line-draw'); setTimeout(()=>el.classList.add('payline-line-pulse'),470); }
+      return el;
+    }
+    if(clipAt==null||clipAt>=pts.length){ mkPoly(pts,color,3.5,1,false,true); }
+    else { mkPoly(pts.slice(0,clipAt),color,3.5,1,false,true); mkPoly(pts.slice(clipAt-1),color,1.5,0.28,true,false); }
+    document.querySelectorAll('.pl-'+(plIdx+1)).forEach(d=>d.classList.add('pl-lit'));
+  }
+
+  // ── Token HUD ─────────────────────────────────────────────
+  function updateTokenHUD(game) {
+    renderPips('forge-pips', game.forgeCharges, CFG.BASE_FORGE+bonusForge(game), 'pip-forge');
+    renderPips('nudge-pips', game.nudgeTokens,  CFG.BASE_NUDGE+bonusNudge(game), 'pip-nudge');
+    renderPips('hold-pips',  game.holdTokens,   CFG.BASE_HOLD +bonusHold(game),  'pip-hold');
+    const lbl=document.getElementById('forge-label');
+    if(lbl) { lbl.classList.toggle('active', !!game.forgeMode); }
+  }
+
+  function bonusForge(game){ return game.modifiers.filter(m=>m==='forge_master').length*2; }
+  function bonusNudge(game){ return game.modifiers.filter(m=>m==='second_chance').length*2; }
+  function bonusHold(game){  return game.modifiers.filter(m=>m==='anchor').length*2; }
+
+  function renderPips(id, remaining, total, cls) {
+    const el=document.getElementById(id); if(!el) return;
+    el.innerHTML='';
+    for(let i=0;i<Math.max(total,remaining);i++){
+      const p=document.createElement('div'); p.className='token-pip '+cls+(i>=remaining?' spent':''); el.appendChild(p);
+    }
+  }
+
+  // ── Post-spin action row ──────────────────────────────────
+  function showPostSpinActions(game) {
+    const container=document.getElementById('post-spin-actions'); if(!container) return;
+    container.classList.remove('hidden');
+    container.innerHTML='';
+    for(let ri=0;ri<CFG.NUM_REELS;ri++){
+      const col=document.createElement('div'); col.className='reel-action-col';
+      const canNudge=game.nudgeTokens>0&&!game.heldReels[ri];
+      const isHeld=game.heldReels[ri];
+      col.innerHTML=`
+        <button class="btn-nudge btn-nudge-up" ${!canNudge?'disabled':''} onclick="nudgeReel(${ri},-1)">↑</button>
+        <button class="btn-hold btn-hold-reel" onclick="toggleHoldReel(${ri})">${isHeld?'🔒 HELD':'HOLD'}</button>
+        <button class="btn-nudge btn-nudge-down" ${!canNudge?'disabled':''} onclick="nudgeReel(${ri},+1)">↓</button>
+      `;
+      container.appendChild(col);
+    }
+  }
+
+  function hidePostSpinActions() {
+    const el=document.getElementById('post-spin-actions'); if(el) el.classList.add('hidden');
+  }
+
+  // ── Reel visual state ─────────────────────────────────────
+  function updateReelVisuals(game) {
+    for(let ri=0;ri<CFG.NUM_REELS;ri++){
+      const reel=document.getElementById(`reel-${ri}`); if(!reel) continue;
+      reel.classList.toggle('forged', !!game.pinnedSymbols[ri]);
+      reel.classList.toggle('held',   !!game.heldReels[ri]);
+      reel.classList.toggle('forge-mode', !!game.forgeMode && !game.pinnedSymbols[ri]);
+      const pin=document.getElementById(`forge-pin-${ri}`);
+      if(pin) pin.textContent=game.pinnedSymbols[ri]?game.pinnedSymbols[ri]:'⚡';
+    }
+  }
+
+  // ── Result card ───────────────────────────────────────────
+  function showResultCard(result, isPending) {
+    const {chips,mult,score,bestComboKey,hitLines,effects,lineResults,trulyNoWin,consolationChips,scatterResult,scatterBonus}=result;
+    _lastLineResults=lineResults;
+    const bestCombo=CFG.COMBOS[bestComboKey];
+    const CRANK=['JACKPOT','FIVE_KIND','FOUR_KIND','THREE_KIND','SCATTER','NO_WIN'];
+    const sortedHits=[...hitLines].sort((a,b)=>CRANK.indexOf(a.comboKey)-CRANK.indexOf(b.comboKey));
+
+    const winRows=sortedHits.map((lr,i)=>{
+      const color=PAYLINE_COLORS[lr.plIdx]||'#f5c518';
+      const lineName=CFG.PAYLINE_NAMES[lr.plIdx]||('Line '+(lr.plIdx+1));
+      const combo=CFG.COMBOS[lr.comboKey];
+      const multStr=combo.mult>1?`<span class="lr-mult">×${combo.mult}</span>`:'';
+      const pl=CFG.PAYLINES[lr.plIdx];
+      const rawSymbols=lr.rawSyms||pl.map((rowIdx,ri)=>window._lastGrid?window._lastGrid[ri][rowIdx]:'?');
+      let symStrip='';
+      rawSymbols.forEach((sym,ri)=>{ const isWin=ri<lr.runLen; symStrip+=`<span class="line-sym${isWin?'':' sym-dim-row'}">${sym}</span>`; });
+      return `<div class="line-win-row" data-plidx="${lr.plIdx}" style="--line-color:${color};animation-delay:${i*55}ms">
+        <span class="line-dot" style="background:${color};box-shadow:0 0 6px ${color}88"></span>
+        <span class="line-name">L${lr.plIdx+1} ${lineName}</span>
+        <span class="line-syms">${symStrip}</span>
+        <span class="line-combo" style="color:${color}">${combo.name}</span>
+        ${multStr}
+        <span class="line-chips">+${lr.baseChips}⚡</span>
+      </div>`;
+    }).join('');
+
+    let effectLines='';
+    for(const e of effects){
+      const mod=CFG.MODIFIERS.find(m=>m.id===e.modId); if(!mod) continue;
+      const parts=[];
+      if(e.chipsDelta) parts.push(`<span class="chips-tag sm">+${e.chipsDelta}⚡</span>`);
+      if(e.multDelta)  parts.push(`<span class="mult-tag sm">+${e.multDelta.toFixed(1)}×</span>`);
+      if(parts.length) effectLines+=`<div class="effect-line">${mod.emoji} ${mod.name}: ${parts.join(' ')}</div>`;
+    }
+
+    const headClass= trulyNoWin ? 'result-hand consolation' : 'result-hand';
+    const headLabel= trulyNoWin ? `CONSOLATION (+${consolationChips}⚡)` : bestCombo.name;
+    const scatterHTML= scatterResult
+      ? `<div class="effect-line" style="color:#fff9c4">⭐ ${scatterResult.name}: +${scatterBonus}</div>` : '';
+
+    const pendingNote= isPending ? `<div style="font-size:0.6rem;color:var(--nudge);text-align:center;margin-top:4px;font-family:'Cinzel',serif;letter-spacing:0.08em">NUDGE OR HOLD TO ADJUST</div>` : '';
+
+    const el=document.getElementById('result-card');
+    el.innerHTML=
+      `<div class="${headClass}">${headLabel}</div>`
+      +(hitLines.length>1?`<div class="lines-count-badge">${hitLines.length} LINES HIT</div>`:'')
+      +(winRows?`<div class="line-win-list">${winRows}</div><div class="line-win-divider"></div>`:'')
+      +`<div class="result-breakdown">
+          <span class="chips-tag">${chips}⚡</span>
+          <span class="result-x">×</span>
+          <span class="mult-tag">${mult.toFixed(1)}×</span>
+          <span class="result-eq">=</span>
+          <span class="score-tag">+${score.toLocaleString()}</span>
+        </div>`
+      +(effectLines||scatterHTML?`<div class="effects-block">${effectLines}${scatterHTML}</div>`:'')
+      +pendingNote;
+
+    el.classList.remove('hidden','result-card-in','pending-update');
+    void el.offsetWidth;
+    el.classList.add('result-card-in');
+    if(isPending) el.classList.add('pending-update');
+
+    // Hover spotlight handlers
+    const list=el.querySelector('.line-win-list');
+    if(list){
+      list.addEventListener('mouseover',e=>{
+        const row=e.target.closest('.line-win-row'); if(!row) return;
+        if(row.classList.contains('row-hover')) return;
+        list.querySelectorAll('.line-win-row').forEach(r=>r.classList.remove('row-hover'));
+        row.classList.add('row-hover');
+        const plIdx=parseInt(row.getAttribute('data-plidx'),10);
+        const color=PAYLINE_COLORS[plIdx]||'#f5c518';
+        const lr=_lastLineResults[plIdx];
+        spotlightPayline(plIdx,color,lr);
+      });
+      list.addEventListener('mouseleave',()=>{
+        list.querySelectorAll('.line-win-row').forEach(r=>r.classList.remove('row-hover'));
+        clearSpotlight();
+        if(_lastLineResults.length) highlightPaylines(_lastLineResults);
+      });
+    }
+  }
+
+  function spotlightPayline(plIdx,color,lr){
+    document.querySelectorAll('.symbol').forEach(el=>{ el.classList.remove('sym-win'); el.style.removeProperty('box-shadow'); el.style.opacity='0.2'; el.style.filter='saturate(0.2)'; });
+    const pl=CFG.PAYLINES[plIdx];
+    pl.forEach((rowIdx,reel)=>{
+      const cont=document.querySelector('#reel-'+reel+' .symbols-container'); if(!cont) return;
+      const el=cont.children[TARGET_IDX-1+rowIdx]; if(!el) return;
+      const isWin=lr?(reel<lr.runLen):true;
+      el.style.opacity='1'; el.style.filter='saturate(1)';
+      if(isWin){ el.classList.add('sym-win'); el.style.boxShadow='0 0 0 2px '+color+',0 0 20px 6px '+color+'66'; }
+    });
+    clearPaylineLines();
+    drawPaylineSVG(plIdx,color,lr?lr.runLen:null);
+  }
+
+  function clearSpotlight(){
+    while(_svgTimers.length) clearTimeout(_svgTimers.pop());
+    document.querySelectorAll('.symbol').forEach(el=>{ el.style.removeProperty('opacity'); el.style.removeProperty('filter'); el.classList.remove('sym-win'); el.removeAttribute('data-glow'); el.style.removeProperty('box-shadow'); });
+    clearPaylineLines();
+  }
+
+  // ── Progress ──────────────────────────────────────────────
+  function updateProgress(roundScore,target){
+    const pct=Math.min(100,(roundScore/target)*100);
+    const bar=document.getElementById('progress-fill'); const lbl=document.getElementById('progress-label');
+    if(bar){ bar.style.width=pct+'%'; pct>=100?bar.classList.add('complete'):bar.classList.remove('complete'); }
+    if(lbl) lbl.textContent=`${roundScore.toLocaleString()} / ${target.toLocaleString()}`;
+  }
+
+  // ── HUD ───────────────────────────────────────────────────
+  function updateHUD(game){
+    const stage=CFG.STAGES[game.stageIndex]; const round=stage?.rounds[game.roundIndex];
+    setText('hud-gold',game.gold); setText('hud-spins',game.spinsLeft);
+    setText('hud-stage',`STAGE ${game.stageIndex+1}`);
+    setText('hud-round-name',round?round.name:'—');
+    const rn=document.getElementById('hud-round-name');
+    if(rn) round?.boss?rn.classList.add('boss'):rn.classList.remove('boss');
+    const maxSlots=(window.META?.deckSlot??0)+CFG.MAX_MODIFIERS;
+    setText('mod-slot-count',`${game.modifiers.length}/${maxSlots} MODS`);
+    updateProgress(game.roundScore,round?.target??1);
+  }
+
+  // ── Sidebar ───────────────────────────────────────────────
+  function updateSidebar(game){
+    const deckEl=document.getElementById('deck-list');
+    if(deckEl){
+      const counts={}; game.playerDeck.forEach(s=>counts[s]=(counts[s]||0)+1);
+      deckEl.innerHTML=Object.keys(counts).sort().map(sym=>{
+        const info=CFG.SYMBOLS[sym];
+        const chipText=info.penalty?`<span class="chip-neg">-${info.penalty}⚡</span>`:`<span class="chip-pos">+${info.chips}⚡</span>`;
+        return `<div class="deck-row"><span class="deck-sym">${sym}</span><span class="deck-name">${info.name}</span>${chipText}<span class="deck-count">×${counts[sym]}</span></div>`;
+      }).join('');
+    }
+    const modEl=document.getElementById('modifier-list');
+    if(modEl){
+      modEl.innerHTML=game.modifiers.length===0?'<div class="empty-mods">No modifiers yet</div>':
+        game.modifiers.map(id=>{ const m=CFG.MODIFIERS.find(mod=>mod.id===id); if(!m) return '';
+          return `<div class="mod-card rarity-${m.rarity}"><div class="mod-header"><span class="mod-emoji">${m.emoji}</span><span class="mod-name">${m.name}</span></div><div class="mod-desc">${m.desc}</div></div>`;
+        }).join('');
+    }
+    const m=window.META||{};
+    setText('shard-count',`✧ ${m.shards??0}`);
+  }
+
+  // ── Shop ──────────────────────────────────────────────────
+  function renderShop(shop,game){
+    const el=document.getElementById('shop-items'); if(!el) return;
+    const m=window.META||{}; const maxMods=(m.deckSlot??0)+CFG.MAX_MODIFIERS;
+    setText('shop-gold-display',`${game.gold}G`);
+    el.innerHTML=shop.items.map((item,idx)=>{
+      if(!item) return '';
+      const canAfford=game.gold>=item.cost;
+      const isMaxMods=item.type==='modifier'&&game.modifiers.length>=maxMods;
+      const alreadyOwned=item.type==='modifier'&&game.modifiers.includes(item.id);
+      const disabled=!canAfford||isMaxMods||alreadyOwned;
+      const rc=item.rarity==='rare'?'badge-rare':item.rarity==='uncommon'?'badge-uncommon':item.type==='symbol'?'badge-symbol':'';
+      const icon=item.emoji??item.symbol??'';
+      const soldTag=alreadyOwned?'<div class="sold-badge">OWNED</div>':'';
+      return `<div class="shop-card ${disabled?'shop-disabled':''} ${rc}">${soldTag}
+        <div class="shop-icon">${icon}</div>
+        <div class="shop-item-name">${item.name}</div>
+        <div class="shop-item-desc">${item.desc}</div>
+        <button class="shop-buy-btn" onclick="handleShopBuy(${idx})" ${disabled?'disabled':''}>${item.cost}G</button>
+      </div>`;
+    }).join('');
+    const rb=document.getElementById('shop-reroll-btn'); if(rb) rb.disabled=game.gold<CFG.REROLL_COST;
+  }
+
+  // ── Phase overlays ────────────────────────────────────────
+  function showPhase(phase,game){
+    ['phase-pre-round','phase-shop','phase-game-over'].forEach(id=>document.getElementById(id)?.classList.remove('active'));
+    if(phase==='pre_round'){
+      const stage=CFG.STAGES[game.stageIndex]; const round=stage?.rounds[game.roundIndex];
+      setText('pre-round-name',round?.name??'');
+      setText('pre-target',round?round.target.toLocaleString():'');
+      setText('pre-spins',round?.spins??8);
+      setText('pre-reward',`+${round?.reward??0}G`);
+      setText('pre-stage-label',`Stage ${game.stageIndex+1} · Round ${game.roundIndex+1}/3`);
+      const b=document.getElementById('pre-boss-badge'); if(b) b.style.display=round?.boss?'inline-block':'none';
+      document.getElementById('phase-pre-round')?.classList.add('active');
+    } else if(phase==='shop'){
+      document.getElementById('phase-shop')?.classList.add('active');
+    } else if(phase==='game_over'){
+      renderGameOver(game); document.getElementById('phase-game-over')?.classList.add('active');
+    }
+  }
+
+  function renderGameOver(game){
+    const m=window.META||{};
+    setText('go-shards',`✧ ${m.shards??0}`);
+    setText('go-best',(game.bestSpin??0).toLocaleString());
+    setText('go-total',(game.totalScore??0).toLocaleString());
+    setText('go-stage',`Stage ${(game.stageIndex??0)+1}`);
+    renderMetaUpgrades();
+  }
+
+  function renderMetaUpgrades(){
+    const el=document.getElementById('meta-upgrades'); if(!el) return;
+    const m=window.META||{};
+    el.innerHTML=Object.entries(CFG.META_UPGRADES).map(([key,upg])=>{
+      const lvl=m[key]??0; const cost=upg.baseCost+lvl*upg.perLevel;
+      return `<div class="meta-row"><div><div class="meta-label">${upg.label} <small>(Lvl ${lvl})</small></div><div class="meta-desc">${upg.desc}</div></div>
+        <button class="meta-buy-btn" onclick="buyMeta('${key}')" ${(m.shards??0)<cost?'disabled':''}>✧ ${cost}</button></div>`;
+    }).join('');
+  }
+
+  // ── Remove prompt ─────────────────────────────────────────
+  function showRemovePrompt(deck){
+    const modal=document.getElementById('remove-modal'); const list=document.getElementById('remove-list'); if(!modal||!list) return;
+    const counts={}; deck.forEach(s=>counts[s]=(counts[s]||0)+1);
+    list.innerHTML=Object.keys(counts).map(sym=>
+      `<button class="remove-sym-btn" onclick="handleRemoveSymbol('${sym}')">
+        ${sym}<span class="deck-name">${CFG.SYMBOLS[sym]?.name}</span><span class="deck-count">×${counts[sym]}</span>
+      </button>`
+    ).join('');
+    modal.classList.add('active');
+  }
+  function hideRemovePrompt(){ document.getElementById('remove-modal')?.classList.remove('active'); }
+
+  // ── Forge modal ───────────────────────────────────────────
+  function showForgeModal(ri, deck) {
+    const modal=document.getElementById('forge-modal'); if(!modal) return;
+    setText('forge-reel-num', ri+1);
+    const counts={}; deck.forEach(s=>counts[s]=(counts[s]||0)+1);
+    const grid=document.getElementById('forge-sym-grid'); if(!grid) return;
+    grid.innerHTML=Object.keys(counts).map(sym=>`
+      <div class="forge-sym-btn" onclick="selectForgeSym(${ri},'${sym}')">
+        <span class="forge-sym-icon">${sym}</span>
+        <span class="forge-sym-name">${CFG.SYMBOLS[sym]?.name}</span>
+        <span class="forge-sym-count">×${counts[sym]}</span>
+      </div>`).join('');
+    modal.classList.add('active');
+  }
+  function hideForgeModal(){ document.getElementById('forge-modal')?.classList.remove('active'); }
+
+  // ── Jackpot ───────────────────────────────────────────────
+  function triggerJackpot(score){
+    const overlay=document.getElementById('jackpot-overlay'); if(!overlay) return;
+    setText('jackpot-score',`+${score.toLocaleString()}`);
+    overlay.classList.add('active');
+    startJackpotParticles();
+    const flash=document.getElementById('screen-flash');
+    if(flash){ flash.style.display='block'; setTimeout(()=>flash.style.display='none',700); }
+    const dismiss=()=>{ overlay.classList.remove('active'); stopJackpotParticles(); overlay.removeEventListener('click',dismiss); };
+    overlay.addEventListener('click',dismiss); setTimeout(dismiss,4800);
+  }
+
+  let jpAnimId=null, jpParticles=[];
+  function startJackpotParticles(){
+    const canvas=document.getElementById('jackpot-canvas'); if(!canvas) return;
+    const ctx=canvas.getContext('2d'); canvas.width=canvas.offsetWidth; canvas.height=canvas.offsetHeight;
+    const W=canvas.width,H=canvas.height;
+    const EMOJIS=['🪙','⭐','💎','✨','7️⃣','🔔','🍀']; const COLORS=['#f5c518','#00d4ff','#00e676','#ff6b6b','#c77dff','#fff'];
+    jpParticles=[];
+    for(let i=0;i<80;i++) jpParticles.push({x:Math.random()*W,y:-30-Math.random()*H*0.7,vx:(Math.random()-0.5)*2.5,vy:2.5+Math.random()*5,rot:Math.random()*Math.PI*2,rotV:(Math.random()-0.5)*0.18,size:20+Math.random()*20,emoji:EMOJIS[~~(Math.random()*EMOJIS.length)],color:COLORS[~~(Math.random()*COLORS.length)],alpha:1,type:Math.random()>0.45?'emoji':'circle'});
+    for(let i=0;i<40;i++){const angle=(i/40)*Math.PI*2,speed=5+Math.random()*10;jpParticles.push({x:W/2,y:H*0.35,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed-4,rot:0,rotV:(Math.random()-0.5)*0.25,size:8+Math.random()*16,color:COLORS[~~(Math.random()*COLORS.length)],emoji:'',alpha:1,type:'circle'});}
+    function frame(){
+      ctx.clearRect(0,0,W,H);
+      jpParticles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=0.15;p.rot+=p.rotV;if(p.y>H*0.8)p.alpha-=0.018;else if(p.y>H+30)p.alpha=0;
+        ctx.save();ctx.globalAlpha=Math.max(0,p.alpha);ctx.translate(p.x,p.y);ctx.rotate(p.rot);
+        if(p.type==='emoji'){ctx.font=`${p.size}px serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(p.emoji,0,0);}
+        else{ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(0,0,p.size/2,0,Math.PI*2);ctx.fill();}
+        ctx.restore();
+      });
+      jpParticles=jpParticles.filter(p=>p.alpha>0);
+      if(jpParticles.length>0) jpAnimId=requestAnimationFrame(frame);
+    }
+    stopJackpotParticles(); jpAnimId=requestAnimationFrame(frame);
+  }
+  function stopJackpotParticles(){ if(jpAnimId){cancelAnimationFrame(jpAnimId);jpAnimId=null;} jpParticles=[]; const c=document.getElementById('jackpot-canvas'); if(c) c.getContext('2d').clearRect(0,0,c.width,c.height); }
+
+  function setText(id,val){ const el=document.getElementById(id); if(el) el.textContent=val; }
+
+  return {
+    buildReelDOM, fillReels, injectGrid, injectSingleReel, animateReel,
+    highlightPaylines, clearPaylineLines,
+    triggerJackpot, stopJackpotParticles,
+    showResultCard, updateProgress, updateHUD, updateSidebar,
+    showPhase, renderShop, renderMetaUpgrades, renderGameOver,
+    showRemovePrompt, hideRemovePrompt,
+    showForgeModal, hideForgeModal,
+    showPostSpinActions, hidePostSpinActions,
+    updateTokenHUD, updateReelVisuals,
+  };
+})();
+
+// ================================================================
+// MAIN
+// ================================================================
+window.META = JSON.parse(localStorage.getItem('forgeslot_meta')) || {
+  shards:0, starterGold:0, taxLvl:0, deckSlot:0, highScore:0,
+};
+['shards','starterGold','taxLvl','deckSlot','highScore'].forEach(k=>{ if(!Number.isFinite(META[k])) META[k]=0; });
+
+let game={}, currentShop=null, spinning=false;
+
+function newRunState(){
+  return {
+    gold: 6+(META.starterGold??0)*5,
+    stageIndex:0, roundIndex:0,
+    roundScore:0, totalScore:0, bestSpin:0,
+    spinsLeft:CFG.STAGES[0].rounds[0].spins,
+    spinsUsedThisRound:0, winStreak:0,
+    playerDeck:[...CFG.STARTER_DECK],
+    modifiers:[],
+    phase:'pre_round',
+    lastGrid:null,
+    // Forge/Nudge/Hold state
+    forgeCharges:CFG.BASE_FORGE,
+    nudgeTokens: CFG.BASE_NUDGE,
+    holdTokens:  CFG.BASE_HOLD,
+    forgeMode:   false,
+    pinnedSymbols:[null,null,null,null,null],
+    heldReels:   [false,false,false,false,false],
+    lastPinned:  [null,null,null,null,null], // for hot_forge detection
+    spinStrips:  null,
+    spinStops:   null,
+  };
+}
+
+function save(){
+  try {
+    localStorage.setItem('forgeslot_meta', JSON.stringify(META));
+    localStorage.setItem('forgeslot_run',  JSON.stringify(game));
+  } catch(e){}
+}
+
+function loadRun(){
+  try {
+    const s=localStorage.getItem('forgeslot_run');
+    if(s){ const p=JSON.parse(s); if(p&&Array.isArray(p.playerDeck)) return p; }
+  } catch(e){}
+  return newRunState();
+}
+
+function getCurrentRound(){ return CFG.STAGES[game.stageIndex]?.rounds[game.roundIndex]??null; }
+
+function startRound(){
+  const round=getCurrentRound(); if(!round) return;
+  game.roundScore=0; game.spinsLeft=round.spins; game.spinsUsedThisRound=0; game.winStreak=0;
+  game.phase='playing';
+  // Reset tokens each round + bonus from mods
+  game.forgeCharges = CFG.BASE_FORGE + game.modifiers.filter(m=>m==='forge_master').length*2;
+  game.nudgeTokens  = CFG.BASE_NUDGE + game.modifiers.filter(m=>m==='second_chance').length*2;
+  game.holdTokens   = CFG.BASE_HOLD  + game.modifiers.filter(m=>m==='anchor').length*2;
+  game.forgeMode=false; game.pinnedSymbols=[null,null,null,null,null];
+  game.heldReels=[false,false,false,false,false];
+  document.getElementById('phase-pre-round')?.classList.remove('active');
+  document.getElementById('result-card')?.classList.add('hidden');
+  UI.hidePostSpinActions();
+  UI.fillReels(game.playerDeck, game.lastGrid);
+  UI.updateHUD(game); UI.updateSidebar(game);
+  UI.updateTokenHUD(game); UI.updateReelVisuals(game);
+  updateSpinBtn(false); save();
+}
+
+function showPreRound(){
+  game.phase='pre_round'; UI.showPhase('pre_round',game); UI.updateHUD(game); UI.updateSidebar(game); save();
+}
+
+function advanceToShop(){
+  game.phase='shop'; currentShop=Shop.generateShop(game.modifiers);
+  UI.showPhase('shop',game); UI.renderShop(currentShop,game); UI.updateHUD(game); save();
+}
+
+function proceedFromShop(){
+  const stage=CFG.STAGES[game.stageIndex];
+  game.roundIndex++;
+  if(game.roundIndex>=stage.rounds.length){ game.roundIndex=0; game.stageIndex++; }
+  if(game.stageIndex>=CFG.STAGES.length){ endRun('Victory! 🎰'); return; }
+  document.getElementById('phase-shop')?.classList.remove('active');
+  showPreRound();
+}
+
+// ── Forge / Token actions ──────────────────────────────────
+function toggleForgeMode(){
+  if(game.spinning||game.phase!=='playing') return;
+  if(game.forgeCharges<=0&&!game.forgeMode){ showToast('No Forge Charges left!','#ff7c2a'); return; }
+  game.forgeMode=!game.forgeMode;
+  UI.updateReelVisuals(game); UI.updateTokenHUD(game);
+}
+
+function onReelClick(ri){
+  if(game.spinning||game.phase!=='playing') return;
+  if(!game.forgeMode) return;
+  if(game.pinnedSymbols[ri]){
+    // Un-pin: refund charge
+    game.pinnedSymbols[ri]=null; game.forgeCharges++;
+    game.forgeMode=false;
+    UI.updateReelVisuals(game); UI.updateTokenHUD(game);
+    showToast('Forge pin removed, charge refunded.','#ff7c2a');
+    return;
+  }
+  if(game.forgeCharges<=0){ showToast('No Forge Charges left!','#ff7c2a'); return; }
+  UI.showForgeModal(ri, game.playerDeck);
+}
+
+function selectForgeSym(ri, sym){
+  UI.hideForgeModal();
+  game.pinnedSymbols[ri]=sym; game.forgeCharges--;
+  game.forgeMode=false;
+  UI.updateReelVisuals(game); UI.updateTokenHUD(game);
+  showToast(`${sym} forged onto Reel ${ri+1}!`,'#ff7c2a');
+}
+function closeForgeModal(){ UI.hideForgeModal(); game.forgeMode=false; UI.updateReelVisuals(game); }
+
+function nudgeReel(ri, dir){
+  if(!game.spinStrips||!game.spinStops) return;
+  if(game.nudgeTokens<=0){ showToast('No Nudge Tokens left!','#00d4ff'); return; }
+  if(game.heldReels[ri]){ showToast("Can't nudge a held reel",'#ff3d3d'); return; }
+  const newStop=game.spinStops[ri]+dir;
+  const maxStop=game.spinStrips[ri].length-CFG.VISIBLE_ROWS;
+  if(newStop<0||newStop>maxStop){ showToast("Can't nudge further!",'#00d4ff'); return; }
+  game.spinStops[ri]=newStop; game.nudgeTokens--;
+  const strip=game.spinStrips[ri];
+  const s=newStop;
+  UI.injectSingleReel(ri,[strip[s],strip[s+1],strip[s+2]]);
+  // Re-score with updated grid
+  const grid=Engine.gridFromState(game.spinStrips,game.spinStops);
+  window._lastGrid=grid;
+  const result=Engine.calculateScore(grid,game.modifiers,game.playerDeck,false,game.winStreak,game.lastPinned);
+  UI.showResultCard(result,true);
+  UI.highlightPaylines(result.lineResults);
+  UI.updateTokenHUD(game);
+  UI.showPostSpinActions(game);
+  // Store result for commit
+  game._pendingResult=result; game._pendingGrid=grid;
+  save();
+}
+
+function toggleHoldReel(ri){
+  if(game.phase!=='playing') return;
+  if(game.heldReels[ri]){
+    // Unheld: refund token
+    game.heldReels[ri]=false; game.holdTokens++;
+    showToast(`Reel ${ri+1} released.`,'#f5c518');
+  } else {
+    if(game.holdTokens<=0){ showToast('No Hold Tokens left!','#f5c518'); return; }
+    game.heldReels[ri]=true; game.holdTokens--;
+    showToast(`Reel ${ri+1} held for next spin!`,'#f5c518');
+  }
+  UI.updateReelVisuals(game); UI.updateTokenHUD(game); UI.showPostSpinActions(game); save();
+}
+
+// ── Spin ──────────────────────────────────────────────────
+async function spin(){
+  if(spinning||game.phase!=='playing'||game.spinsLeft<=0) return;
+  spinning=true; updateSpinBtn(true);
+  document.getElementById('result-card')?.classList.add('hidden');
+  UI.clearPaylineLines(); UI.hidePostSpinActions();
+  document.querySelectorAll('.symbol').forEach(el=>{ el.classList.remove('sym-win','sym-dim'); el.removeAttribute('data-glow'); el.style.removeProperty('box-shadow'); });
+
+  game.spinsLeft--; game.spinsUsedThisRound++;
+  UI.updateHUD(game);
+
+  // Remember which reels were pinned (for hot_forge bonus)
+  game.lastPinned=[...game.pinnedSymbols];
+
+  // Build strips (respects hold and forge pins)
+  const {strips,stops}=Engine.buildStrips(game.playerDeck,game.pinnedSymbols,game.heldReels,game.spinStrips,game.spinStops);
+  game.spinStrips=strips; game.spinStops=stops;
+
+  // Clear pins (consumed this spin)
+  game.pinnedSymbols=[null,null,null,null,null];
+  game.forgeMode=false;
+
+  // Inject grid before animation
+  const grid=Engine.gridFromState(strips,stops);
+  window._lastGrid=grid;
+  UI.injectGrid(grid);
+
+  // Animate non-held reels
+  await Promise.all(Array.from({length:CFG.NUM_REELS},(_,i)=>{
+    if(game.heldReels[i]) return Promise.resolve();
+    return UI.animateReel(i,i);
+  }));
+
+  // Score
+  const isFirstSpin=game.spinsUsedThisRound===1;
+  const result=Engine.calculateScore(grid,game.modifiers,game.playerDeck,isFirstSpin,game.winStreak,game.lastPinned);
+  game._pendingResult=result; game._pendingGrid=grid;
+
+  // Update streak based on win (commit step)
+  const isWin=result.hitLines.length>0;
+  game.winStreak=isWin?game.winStreak+1:0;
+
+  game.roundScore+=result.score; game.totalScore+=result.score;
+  if(result.score>game.bestSpin) game.bestSpin=result.score;
+  game.lastGrid=grid;
+
+  UI.highlightPaylines(result.lineResults);
+  UI.showResultCard(result, (game.nudgeTokens>0||game.holdTokens>0));
+  if(result.bestComboKey==='JACKPOT') setTimeout(()=>UI.triggerJackpot(result.score),350);
+  UI.updateHUD(game); UI.updateSidebar(game);
+  UI.updateReelVisuals(game); UI.updateTokenHUD(game);
+
+  // Show post-spin actions if tokens remain
+  if(game.nudgeTokens>0||game.holdTokens>0) UI.showPostSpinActions(game);
+
+  // After holds are used for next spin (not cleared yet — they persist until next spin call)
+  spinning=false; save();
+
+  const round=getCurrentRound();
+  if(round&&game.roundScore>=round.target){
+    setTimeout(roundWin,600);
+  } else if(game.spinsLeft<=0){
+    updateSpinBtn(true); setTimeout(()=>{ if(game.roundScore<round.target) roundFail(); },600);
+  } else {
+    updateSpinBtn(false);
+  }
+}
+
+function roundWin(){
+  const round=getCurrentRound(); if(!round) return;
+  game.gold+=round.reward;
+  game.heldReels=[false,false,false,false,false];
+  showToast(`Round Complete! +${round.reward}G`,'#00e676');
+  const btn=document.getElementById('spin-btn');
+  if(btn){
+    btn.disabled=false;
+    btn.textContent='NEXT ROUND →';
+    btn.style.background='linear-gradient(135deg,#00e676,#00a854)';
+    btn.style.boxShadow='0 4px 24px rgba(0,230,118,0.4),0 2px 0 rgba(0,0,0,0.4)';
+    btn.onclick=proceedToShop;
+  }
+  game.phase='round_won'; save();
+}
+
+function proceedToShop(){
+  const btn=document.getElementById('spin-btn');
+  if(btn){ btn.textContent='SPIN'; btn.style.background=''; btn.style.boxShadow=''; btn.onclick=spin; }
+  advanceToShop();
+}
+
+function roundFail(){ endRun('Out of Spins'); }
+
+// ── Shop handlers ─────────────────────────────────────────
+function handleShopBuy(idx){
+  if(!currentShop) return;
+  const item=currentShop.items[idx]; if(!item||game.gold<item.cost) return;
+  const maxMods=(META.deckSlot??0)+CFG.MAX_MODIFIERS;
+  if(item.type==='symbol'){ game.gold-=item.cost; game.playerDeck.push(item.symbol); currentShop.items[idx]=null; showToast(`Added ${item.symbol} to reel pool!`,'#69f0ae'); }
+  else if(item.type==='modifier'){ if(game.modifiers.length>=maxMods){showToast('Modifier slots full!','#f5c518');return;} game.gold-=item.cost; game.modifiers.push(item.id); currentShop.items[idx]=null; showToast(`Equipped ${item.emoji} ${item.name}!`,'#7ee8fa'); }
+  else if(item.type==='remove'){ game.gold-=item.cost; currentShop.items[idx]=null; UI.showRemovePrompt(game.playerDeck); }
+  currentShop.items=currentShop.items.filter(Boolean);
+  UI.renderShop(currentShop,game); UI.updateHUD(game); UI.updateSidebar(game); save();
+}
+
+function handleShopReroll(){ if(game.gold<CFG.REROLL_COST) return; game.gold-=CFG.REROLL_COST; currentShop=Shop.rerollShop(currentShop,game.modifiers); UI.renderShop(currentShop,game); UI.updateHUD(game); save(); }
+function handleShopSkip(){ game.gold+=2; showToast('+2G for skipping shop!','#f5c518'); proceedFromShop(); }
+function handleShopContinue(){ proceedFromShop(); }
+function handleRemoveSymbol(sym){ const idx=game.playerDeck.indexOf(sym); if(idx===-1)return; game.playerDeck.splice(idx,1); UI.hideRemovePrompt(); UI.updateSidebar(game); showToast(`Removed ${sym} from reel pool`,'#ef5350'); save(); }
+function closeRemoveModal(){ UI.hideRemovePrompt(); }
+
+// ── End run ───────────────────────────────────────────────
+function endRun(reason){
+  const earned=Math.floor(game.totalScore/CFG.SHARD_RATE);
+  META.shards+=earned; if(game.totalScore>(META.highScore??0)) META.highScore=game.totalScore;
+  game.phase='game_over';
+  setText('go-reason',reason); setText('go-shards-earned',`+${earned} ✧`);
+  UI.showPhase('game_over',game); save();
+}
+
+function resetRun(){
+  localStorage.removeItem('forgeslot_run'); game=newRunState();
+  ['phase-game-over','phase-shop','phase-pre-round'].forEach(id=>document.getElementById(id)?.classList.remove('active'));
+  document.getElementById('result-card')?.classList.add('hidden');
+  document.querySelectorAll('.symbol').forEach(el=>el.classList.remove('sym-win','sym-dim'));
+  UI.hidePostSpinActions(); UI.fillReels(game.playerDeck,null);
+  UI.updateTokenHUD(game); UI.updateReelVisuals(game);
+  showPreRound();
+}
+
+function buyMeta(key){
+  const upg=CFG.META_UPGRADES[key]; if(!upg) return;
+  const lvl=META[key]??0; const cost=upg.baseCost+lvl*upg.perLevel;
+  if(META.shards<cost) return;
+  META.shards-=cost; META[key]=lvl+1; save();
+  UI.renderMetaUpgrades(); setText('go-shards',`✧ ${META.shards}`);
+}
+
+function updateSpinBtn(disabled){ const btn=document.getElementById('spin-btn'); if(btn) btn.disabled=disabled??(game.spinsLeft<=0); }
+function confirmForfeit(){ if(confirm('Forfeit run? Shards will be saved.')) endRun('Forfeited'); }
+
+function showToast(msg,color){
+  const t=document.getElementById('toast'); if(!t) return;
+  t.textContent=msg; t.style.borderColor=color??'#f5c518'; t.style.color=color??'#f5c518';
+  t.classList.remove('toast-hide'); t.classList.add('toast-show'); clearTimeout(t._timer);
+  t._timer=setTimeout(()=>{ t.classList.replace('toast-show','toast-hide'); },2100);
+}
+
+function setText(id,val){ const el=document.getElementById(id); if(el) el.textContent=val; }
+
+// ── Init ──────────────────────────────────────────────────
+function init(){
+  UI.buildReelDOM();
+  game=loadRun();
+  UI.updateHUD(game); UI.updateSidebar(game);
+  UI.fillReels(game.playerDeck, game.lastGrid);
+  UI.updateTokenHUD(game); UI.updateReelVisuals(game);
+  if(game.phase==='playing'){ showPreRound(); }
+  else if(game.phase==='shop'){ currentShop=Shop.generateShop(game.modifiers); UI.showPhase('shop',game); UI.renderShop(currentShop,game); }
+  else if(game.phase==='game_over'){ UI.showPhase('game_over',game); }
+  else { showPreRound(); }
+}
+
+window.addEventListener('DOMContentLoaded', init);
+
+// Expose for inline handlers
+Object.assign(window,{
+  spin, startRound, toggleForgeMode, onReelClick, selectForgeSym, closeForgeModal,
+  nudgeReel, toggleHoldReel,
+  handleShopBuy, handleShopReroll, handleShopSkip, handleShopContinue,
+  handleRemoveSymbol, closeRemoveModal, resetRun, buyMeta, confirmForfeit,
+});
+</script>
+</body>
+</html>
