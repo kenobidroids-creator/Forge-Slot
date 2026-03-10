@@ -24,8 +24,8 @@
   --green:      #00e676;
   --red:        #ff3d3d;
   --text:       #dde4f5;
-  --text-muted: #6e82b8;
-  --text-dim:   #364872;
+  --text-muted: #9aabd0;
+  --text-dim:   #8895b8;
   --forge:      #ff7c2a;
   --forge-dim:  #7a3200;
   --nudge:      #00d4ff;
@@ -37,7 +37,7 @@ html { height: 100%; }
 body {
   background: var(--bg); color: var(--text);
   font-family: 'Rajdhani', system-ui, sans-serif;
-  font-size: 15px; min-height: 100%; overflow-x: hidden;
+  font-size: 16px; min-height: 100%; overflow-x: hidden;
 }
 body::before {
   content: ''; position: fixed; inset: 0;
@@ -67,15 +67,15 @@ body::before {
   color: var(--gold); letter-spacing: 0.12em;
   text-shadow: 0 0 20px var(--gold-glow); display: block;
 }
-.game-subtitle { font-size: 0.58rem; color: var(--text-dim); font-family: 'Cinzel', serif; letter-spacing: 0.1em; }
+.game-subtitle { font-size: 0.75rem; color: var(--text-dim); font-family: 'Cinzel', serif; letter-spacing: 0.1em; }
 .shard-badge {
-  font-family: 'Cinzel', serif; font-size: 0.72rem; color: var(--cyan);
+  font-family: 'Cinzel', serif; font-size: 0.75rem; color: var(--cyan);
   background: rgba(0,212,255,0.08); border: 1px solid var(--cyan-dim);
   border-radius: 20px; padding: 3px 8px; white-space: nowrap;
 }
 .sidebar-body { padding: 12px; flex: 1; overflow-y: auto; }
 .section-label {
-  font-family: 'Cinzel', serif; font-size: 0.58rem; font-weight: 700;
+  font-family: 'Cinzel', serif; font-size: 0.75rem; font-weight: 700;
   letter-spacing: 0.14em; color: var(--text-muted);
   padding-bottom: 5px; border-bottom: 1px solid var(--border);
   margin-bottom: 7px; margin-top: 12px; text-transform: uppercase;
@@ -90,8 +90,8 @@ body::before {
 .deck-sym { font-size: 1rem; }
 .deck-name { color: var(--text-muted); display:flex; align-items:center; gap:4px; }
 .deck-count-badge { color: var(--cyan); font-size: 0.62rem; font-weight:700; background:rgba(0,212,255,0.1); border:1px solid rgba(0,212,255,0.25); border-radius:4px; padding:0 4px; line-height:1.4; }
-.chip-pos { color: var(--gold); font-weight: 700; font-size: 0.7rem; }
-.chip-neg { color: var(--red);  font-weight: 700; font-size: 0.7rem; }
+.chip-pos { color: var(--gold); font-weight: 700; font-size: 0.75rem; }
+.chip-neg { color: var(--red);  font-weight: 700; font-size: 0.75rem; }
 .mod-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 9px; padding: 8px 9px; margin-bottom: 6px; position: relative; overflow: hidden; }
 .mod-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
 .rarity-common::before   { background: #3a8a5c; }
@@ -100,13 +100,13 @@ body::before {
 .mod-header { display: flex; align-items: center; gap: 5px; margin-bottom: 2px; }
 .mod-emoji  { font-size: 0.95rem; }
 .mod-name   { font-weight: 700; font-size: 0.76rem; }
-.mod-desc   { font-size: 0.65rem; color: var(--text-muted); line-height: 1.3; }
-.empty-mods { color: var(--text-dim); font-size: 0.72rem; text-align: center; padding: 14px 0; font-style: italic; }
+.mod-desc   { font-size: 0.75rem; color: var(--text-muted); line-height: 1.3; }
+.empty-mods { color: var(--text-dim); font-size: 0.75rem; text-align: center; padding: 14px 0; font-style: italic; }
 .sidebar-footer { padding: 10px; border-top: 1px solid var(--border); }
 .btn-forfeit {
   width: 100%; background: none; border: 1px solid var(--border);
   color: var(--text-dim); padding: 7px; border-radius: 8px; cursor: pointer;
-  font-family: 'Cinzel', serif; font-size: 0.65rem; letter-spacing: 0.1em; transition: all 0.2s;
+  font-family: 'Cinzel', serif; font-size: 0.75rem; letter-spacing: 0.1em; transition: all 0.2s;
 }
 .btn-forfeit:hover { border-color: var(--red); color: var(--red); }
 
@@ -125,8 +125,8 @@ body::before {
 }
 .hud-right { text-align: right; }
 .hud-center { text-align: center; }
-.hud-stat-label { font-size: 0.56rem; font-family: 'Cinzel', serif; letter-spacing: 0.1em; color: var(--text-dim); margin-bottom: 1px; }
-.hud-stage { font-family: 'Cinzel', serif; font-size: 0.64rem; letter-spacing: 0.12em; color: var(--text-muted); }
+.hud-stat-label { font-size: 0.75rem; font-family: 'Cinzel', serif; letter-spacing: 0.1em; color: var(--text-dim); margin-bottom: 1px; }
+.hud-stage { font-family: 'Cinzel', serif; font-size: 0.75rem; letter-spacing: 0.12em; color: var(--text-muted); }
 .hud-round-name { font-family: 'Cinzel', serif; font-size: 0.86rem; font-weight: 700; color: var(--text); }
 .hud-round-name.boss { color: var(--red); text-shadow: 0 0 12px rgba(255,61,61,0.4); }
 .hud-spins { font-family: 'Cinzel', serif; font-size: 1.6rem; font-weight: 700; color: var(--cyan); line-height: 1; }
@@ -135,7 +135,7 @@ body::before {
 .progress-bar { height: 8px; background: var(--surface2); border-radius: 999px; overflow: hidden; border: 1px solid var(--border); }
 .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #14327a, var(--cyan)); border-radius: 999px; transition: width 0.55s cubic-bezier(0.25,1,0.5,1); }
 .progress-fill.complete { background: linear-gradient(90deg, var(--gold-dim), var(--gold)); box-shadow: 0 0 10px var(--gold-glow); }
-.progress-label { text-align: center; font-size: 0.68rem; font-family: 'Cinzel', serif; color: var(--text-muted); margin-top: 3px; letter-spacing: 0.05em; }
+.progress-label { text-align: center; font-size: 0.75rem; font-family: 'Cinzel', serif; color: var(--text-muted); margin-top: 3px; letter-spacing: 0.05em; }
 
 /* ── Token HUD ───────────────────────────────────────────── */
 .token-hud {
@@ -145,7 +145,7 @@ body::before {
 }
 .token-group { display: flex; align-items: center; gap: 6px; }
 .token-label {
-  font-family: 'Cinzel', serif; font-size: 0.58rem; font-weight: 700;
+  font-family: 'Cinzel', serif; font-size: 0.75rem; font-weight: 700;
   letter-spacing: 0.1em; color: var(--text-dim); text-transform: uppercase; cursor: pointer;
   transition: color 0.15s; user-select: none;
 }
@@ -211,14 +211,14 @@ body::before {
 .forge-pin {
   position: absolute; top: 3px; right: 3px; z-index: 5;
   background: var(--forge); border-radius: 5px; padding: 1px 4px;
-  font-size: 0.7rem; line-height: 1.3; font-weight: 700;
+  font-size: 0.75rem; line-height: 1.3; font-weight: 700;
   color: #fff; display: none; pointer-events: none;
 }
 .reel.forged .forge-pin { display: block; }
 .held-badge {
   position: absolute; bottom: 3px; left: 50%; transform: translateX(-50%); z-index: 5;
   background: var(--hold); color: #0a0e1a; border-radius: 4px; padding: 1px 5px;
-  font-family: 'Cinzel', serif; font-size: 0.48rem; font-weight: 700; letter-spacing: 0.1em;
+  font-family: 'Cinzel', serif; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em;
   display: none; pointer-events: none;
 }
 .reel.held .held-badge { display: block; }
@@ -230,27 +230,7 @@ body::before {
 .payline-line-draw { stroke-dashoffset: 0 !important; transition: stroke-dashoffset 0.45s ease-out !important; }
 .payline-line-pulse { filter: drop-shadow(0 0 8px currentColor) !important; }
 
-/* ── Post-spin actions ───────────────────────────────────── */
-.post-spin-actions {
-  display: flex; gap: 5px; width: 100%; margin-bottom: 8px;
-  transition: opacity 0.2s;
-}
-.post-spin-actions.hidden { opacity: 0; pointer-events: none; height: 0; margin: 0; overflow: hidden; }
-.reel-action-col {
-  flex: 1; display: flex; flex-direction: column; gap: 4px; align-items: center;
-}
-.btn-nudge, .btn-hold {
-  width: 100%; border: none; border-radius: 6px; padding: 4px 0;
-  font-family: 'Cinzel', serif; font-size: 0.56rem; font-weight: 700;
-  letter-spacing: 0.06em; cursor: pointer; transition: all 0.14s; display: block;
-}
-.btn-nudge-up   { background: rgba(0,212,255,0.12); color: var(--nudge); border: 1px solid rgba(0,212,255,0.25); }
-.btn-nudge-down { background: rgba(0,212,255,0.12); color: var(--nudge); border: 1px solid rgba(0,212,255,0.25); }
-.btn-nudge-up:hover:not(:disabled), .btn-nudge-down:hover:not(:disabled) { background: rgba(0,212,255,0.22); }
-.btn-hold-reel { background: rgba(245,197,24,0.1); color: var(--hold); border: 1px solid rgba(245,197,24,0.25); }
-.btn-hold-reel:hover:not(:disabled) { background: rgba(245,197,24,0.2); }
-.btn-nudge:disabled, .btn-hold:disabled { opacity: 0.22; cursor: not-allowed; }
-.reel.held .btn-hold-reel { background: rgba(245,197,24,0.25); }
+/* post-spin action row removed — nudge arrows now live inside reel frame */
 
 /* ── SPIN button ─────────────────────────────────────────── */
 .spin-btn {
@@ -281,9 +261,9 @@ body::before {
   letter-spacing: 0.1em; color: var(--gold); text-align: center;
   text-shadow: 0 0 18px rgba(245,197,24,0.55); margin-bottom: 2px;
 }
-.result-hand.no-win-label { color: rgba(255,255,255,0.28); text-shadow: none; font-size: 0.82rem; }
+.result-hand.no-win-label { color: rgba(255,255,255,0.65); text-shadow: none; font-size: 0.82rem; }
 .result-hand.consolation  { color: #6e82b8; text-shadow: none; font-size: 0.88rem; }
-.lines-count-badge { text-align: center; font-family: 'Cinzel', serif; font-size: 0.57rem; letter-spacing: 0.22em; color: rgba(255,255,255,0.3); margin-bottom: 7px; }
+.lines-count-badge { text-align: center; font-family: 'Cinzel', serif; font-size: 0.75rem; letter-spacing: 0.22em; color: rgba(255,255,255,0.65); margin-bottom: 7px; }
 .line-win-list { display: flex; flex-direction: column; gap: 3px; width: 100%; margin-bottom: 5px; }
 .line-win-row {
   display: grid; grid-template-columns: 8px 64px auto 1fr auto auto;
@@ -295,37 +275,37 @@ body::before {
 @keyframes lineRowIn { to { opacity: 1; transform: translateX(0); } }
 .line-win-row:hover, .line-win-row.row-hover { background: rgba(255,255,255,0.07) !important; }
 .line-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-.line-name { font-size: 0.56rem; letter-spacing: 0.03em; color: rgba(255,255,255,0.35); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.line-name { font-size: 0.75rem; letter-spacing: 0.03em; color: rgba(255,255,255,0.65); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .line-syms { display: flex; gap: 1px; align-items: center; flex-shrink: 0; }
 .line-sym { font-size: 1rem; line-height: 1; }
 .line-sym.sym-dim-row { opacity: 0.32; }
-.line-combo { font-size: 0.63rem; font-weight: 700; letter-spacing: 0.04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.lr-mult { font-size: 0.6rem; color: rgba(255,100,100,0.85); font-weight: 600; flex-shrink: 0; background: rgba(255,100,100,0.12); border-radius: 4px; padding: 1px 4px; font-family: 'Cinzel', serif; }
-.line-chips { font-size: 0.67rem; font-weight: 700; color: #69f0ae; flex-shrink: 0; text-align: right; min-width: 38px; }
+.line-combo { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lr-mult { font-size: 0.75rem; color: rgba(255,100,100,0.85); font-weight: 600; flex-shrink: 0; background: rgba(255,100,100,0.12); border-radius: 4px; padding: 1px 4px; font-family: 'Cinzel', serif; }
+.line-chips { font-size: 0.75rem; font-weight: 700; color: #69f0ae; flex-shrink: 0; text-align: right; min-width: 38px; }
 .line-win-divider { height: 1px; background: rgba(245,197,24,0.14); margin: 5px 0; }
 .result-breakdown { display: flex; align-items: center; justify-content: center; gap: 7px; flex-wrap: wrap; padding: 3px 0 1px; }
 .chips-tag { background: rgba(105,240,174,0.18); color: #69f0ae; border: 1px solid rgba(105,240,174,0.4); border-radius: 7px; padding: 3px 9px; font-family: 'Cinzel', serif; font-size: 0.84rem; font-weight: 700; }
-.chips-tag.sm { font-size: 0.68rem; padding: 2px 6px; }
+.chips-tag.sm { font-size: 0.75rem; padding: 2px 6px; }
 .mult-tag  { background: rgba(255,80,80,0.18); color: #ff6464; border: 1px solid rgba(255,80,80,0.4); border-radius: 7px; padding: 3px 9px; font-family: 'Cinzel', serif; font-size: 0.84rem; font-weight: 700; }
-.mult-tag.sm { font-size: 0.68rem; padding: 2px 6px; }
+.mult-tag.sm { font-size: 0.75rem; padding: 2px 6px; }
 .score-tag { background: rgba(245,197,24,0.18); color: var(--gold); border: 1px solid rgba(245,197,24,0.45); border-radius: 7px; padding: 3px 11px; font-family: 'Cinzel', serif; font-size: 0.92rem; font-weight: 700; }
-.result-x, .result-eq { color: rgba(255,255,255,0.38); font-family: 'Cinzel', serif; font-size: 0.76rem; }
+.result-x, .result-eq { color: rgba(255,255,255,0.65); font-family: 'Cinzel', serif; font-size: 0.76rem; }
 .effects-block { margin-top: 7px; display: flex; flex-direction: column; gap: 2px; }
-.effect-line { display: flex; align-items: center; gap: 5px; font-family: 'Cinzel', serif; font-size: 0.64rem; color: rgba(255,255,255,0.5); padding: 2px 3px; }
+.effect-line { display: flex; align-items: center; gap: 5px; font-family: 'Cinzel', serif; font-size: 0.75rem; color: rgba(255,255,255,0.72); padding: 2px 3px; }
 .result-card.pending-update { border-color: rgba(0,212,255,0.3); }
 
 /* ── Overlays ────────────────────────────────────────────── */
 .overlay { display: none; position: fixed; inset: 0; background: rgba(2,5,15,0.95); backdrop-filter: blur(5px); z-index: 100; align-items: center; justify-content: center; padding: 16px; }
 .overlay.active { display: flex; }
 .overlay-card { background: var(--surface); border: 1px solid var(--border-hi); border-radius: 19px; padding: 24px 20px; width: 100%; max-width: 430px; max-height: 92vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,30,0.85), 0 0 0 1px rgba(255,255,255,0.04); }
-.overlay-eyebrow { font-family: 'Cinzel', serif; font-size: 0.58rem; letter-spacing: 0.2em; color: var(--text-dim); margin-bottom: 4px; text-transform: uppercase; }
+.overlay-eyebrow { font-family: 'Cinzel', serif; font-size: 0.75rem; letter-spacing: 0.2em; color: var(--text-dim); margin-bottom: 4px; text-transform: uppercase; }
 .overlay-title { font-family: 'Cinzel', serif; font-size: 1.45rem; font-weight: 900; letter-spacing: 0.08em; margin-bottom: 18px; line-height: 1.1; }
 .overlay-title.gold { color: var(--gold); text-shadow: 0 0 24px var(--gold-glow); }
 .overlay-title.red  { color: var(--red); }
-.boss-badge { display: inline-block; background: linear-gradient(135deg, #700000, #e03030); color: white; font-family: 'Cinzel', serif; font-size: 0.58rem; font-weight: 700; letter-spacing: 0.15em; padding: 3px 9px; border-radius: 20px; margin-bottom: 7px; }
+.boss-badge { display: inline-block; background: linear-gradient(135deg, #700000, #e03030); color: white; font-family: 'Cinzel', serif; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.15em; padding: 3px 9px; border-radius: 20px; margin-bottom: 7px; }
 .blind-stats { display: flex; gap: 9px; margin-bottom: 20px; }
 .blind-stat { flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: 11px; padding: 10px 7px; text-align: center; }
-.blind-stat-label { font-family: 'Cinzel', serif; font-size: 0.55rem; letter-spacing: 0.12em; color: var(--text-dim); display: block; margin-bottom: 4px; }
+.blind-stat-label { font-family: 'Cinzel', serif; font-size: 0.75rem; letter-spacing: 0.12em; color: var(--text-dim); display: block; margin-bottom: 4px; }
 .blind-stat-value { font-family: 'Cinzel', serif; font-size: 1.1rem; font-weight: 700; }
 .blind-stat-value.gold  { color: var(--gold); }
 .blind-stat-value.green { color: var(--green); }
@@ -337,12 +317,12 @@ body::before {
 .shop-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 11px; padding: 12px 9px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 4px; position: relative; transition: border-color 0.15s; }
 .shop-card:hover:not(.shop-disabled) { border-color: var(--border-hi); }
 .shop-card.shop-disabled { opacity: 0.4; }
-.sold-badge { position: absolute; top: 0; right: 0; background: var(--surface3); color: var(--text-dim); font-size: 0.46rem; font-weight: 700; letter-spacing: 0.1em; padding: 2px 5px; border-radius: 0 9px 0 6px; }
-.badge-rare::before     { content: 'RARE';     position: absolute; top: 0; left: 0; background: linear-gradient(135deg, #8b44cc, var(--gold));  color: white; font-size: 0.44rem; font-weight: 700; padding: 2px 5px; border-radius: 9px 0 6px 0; letter-spacing: 0.08em; }
-.badge-uncommon::before { content: 'UNCOMMON'; position: absolute; top: 0; left: 0; background: linear-gradient(135deg, #1e5799, #4a7fd4); color: white; font-size: 0.44rem; font-weight: 700; padding: 2px 5px; border-radius: 9px 0 6px 0; letter-spacing: 0.08em; }
+.sold-badge { position: absolute; top: 0; right: 0; background: var(--surface3); color: var(--text-dim); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; padding: 2px 5px; border-radius: 0 9px 0 6px; }
+.badge-rare::before     { content: 'RARE';     position: absolute; top: 0; left: 0; background: linear-gradient(135deg, #8b44cc, var(--gold));  color: white; font-size: 0.75rem; font-weight: 700; padding: 2px 5px; border-radius: 9px 0 6px 0; letter-spacing: 0.08em; }
+.badge-uncommon::before { content: 'UNCOMMON'; position: absolute; top: 0; left: 0; background: linear-gradient(135deg, #1e5799, #4a7fd4); color: white; font-size: 0.75rem; font-weight: 700; padding: 2px 5px; border-radius: 9px 0 6px 0; letter-spacing: 0.08em; }
 .shop-icon      { font-size: 1.75rem; line-height: 1; }
 .shop-item-name { font-weight: 700; font-size: 0.79rem; }
-.shop-item-desc { font-size: 0.66rem; color: var(--text-muted); line-height: 1.3; }
+.shop-item-desc { font-size: 0.75rem; color: var(--text-muted); line-height: 1.3; }
 .shop-buy-btn { background: var(--gold); color: #0a0e1a; border: none; border-radius: 6px; padding: 5px 10px; font-weight: 700; cursor: pointer; font-size: 0.76rem; font-family: 'Rajdhani', sans-serif; margin-top: 3px; transition: background 0.12s; }
 .shop-buy-btn:hover:not(:disabled) { background: #ffe066; }
 .shop-buy-btn:disabled { background: var(--surface3); color: var(--text-dim); cursor: not-allowed; }
@@ -354,18 +334,18 @@ body::before {
 .go-stat .cyan { color: var(--cyan); font-weight: 700; }
 .meta-row { display: flex; justify-content: space-between; align-items: center; background: var(--surface2); border: 1px solid var(--border); border-radius: 9px; padding: 8px 12px; margin-bottom: 5px; }
 .meta-label { font-weight: 700; font-size: 0.82rem; }
-.meta-desc  { font-size: 0.67rem; color: var(--text-muted); margin-top: 2px; }
+.meta-desc  { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
 .meta-buy-btn { background: rgba(0,212,255,0.1); border: 1px solid var(--cyan-dim); color: var(--cyan); padding: 5px 10px; border-radius: 7px; font-weight: 700; cursor: pointer; font-size: 0.75rem; white-space: nowrap; transition: background 0.14s; }
 .meta-buy-btn:hover:not(:disabled) { background: rgba(0,212,255,0.2); }
 .meta-buy-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 .btn-primary { width: 100%; background: linear-gradient(135deg, var(--gold), var(--gold-dim)); color: #0a0e1a; border: none; border-radius: 11px; padding: 12px; font-family: 'Cinzel', serif; font-size: 0.92rem; font-weight: 700; letter-spacing: 0.1em; cursor: pointer; transition: filter 0.14s; }
 .btn-primary:hover { filter: brightness(1.1); }
-.btn-secondary { background: var(--surface2); border: 1px solid var(--border-hi); color: var(--text-muted); padding: 8px 11px; border-radius: 9px; font-family: 'Cinzel', serif; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.07em; cursor: pointer; transition: all 0.14s; flex: 1; }
+.btn-secondary { background: var(--surface2); border: 1px solid var(--border-hi); color: var(--text-muted); padding: 8px 11px; border-radius: 9px; font-family: 'Cinzel', serif; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.07em; cursor: pointer; transition: all 0.14s; flex: 1; }
 .btn-secondary:hover:not(:disabled) { border-color: var(--cyan-dim); color: var(--cyan); }
 .btn-secondary:disabled { opacity: 0.3; cursor: not-allowed; }
-.btn-skip     { background: none; border: 1px solid var(--border); color: var(--green); padding: 8px 11px; border-radius: 9px; font-family: 'Cinzel', serif; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.07em; cursor: pointer; transition: border-color 0.14s; flex: 1; }
+.btn-skip     { background: none; border: 1px solid var(--border); color: var(--green); padding: 8px 11px; border-radius: 9px; font-family: 'Cinzel', serif; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.07em; cursor: pointer; transition: border-color 0.14s; flex: 1; }
 .btn-skip:hover { border-color: var(--green); }
-.btn-continue { background: linear-gradient(135deg, var(--gold), #d4960a); color: #0a0e1a; border: none; padding: 8px 14px; border-radius: 9px; font-family: 'Cinzel', serif; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.07em; cursor: pointer; transition: filter 0.14s; flex: 1; }
+.btn-continue { background: linear-gradient(135deg, var(--gold), #d4960a); color: #0a0e1a; border: none; padding: 8px 14px; border-radius: 9px; font-family: 'Cinzel', serif; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.07em; cursor: pointer; transition: filter 0.14s; flex: 1; }
 .btn-continue:hover { filter: brightness(1.1); }
 .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(2,5,15,0.92); z-index: 200; align-items: center; justify-content: center; padding: 16px; }
 .modal-backdrop.active { display: flex; }
@@ -377,7 +357,7 @@ body::before {
 /* ── Forge Modal ── */
 .forge-modal-box { background: var(--surface); border: 1px solid var(--forge); border-radius: 15px; padding: 20px; width: 100%; max-width: 340px; box-shadow: 0 0 30px rgba(255,124,42,0.15); }
 .forge-modal-title { font-family: 'Cinzel', serif; font-size: 1rem; font-weight: 700; color: var(--forge); margin-bottom: 4px; letter-spacing: 0.08em; }
-.forge-modal-sub { font-size: 0.68rem; color: var(--text-dim); margin-bottom: 14px; }
+.forge-modal-sub { font-size: 0.75rem; color: var(--text-dim); margin-bottom: 14px; }
 .forge-sym-grid { display: flex; flex-wrap: wrap; gap: 7px; }
 .forge-sym-btn {
   background: var(--surface2); border: 1px solid var(--border); border-radius: 9px;
@@ -386,9 +366,9 @@ body::before {
 }
 .forge-sym-btn:hover { border-color: var(--forge); background: rgba(255,124,42,0.08); }
 .forge-sym-icon { font-size: 1.6rem; display: block; }
-.forge-sym-name { font-size: 0.6rem; color: var(--text-muted); display: block; margin-top: 2px; }
-.forge-sym-count { font-size: 0.55rem; color: var(--text-dim); display: block; }
-.forge-cancel-btn { width: 100%; margin-top: 10px; background: none; border: 1px solid var(--border); color: var(--text-dim); padding: 7px; border-radius: 7px; cursor: pointer; font-family: 'Cinzel', serif; font-size: 0.65rem; transition: all 0.14s; }
+.forge-sym-name { font-size: 0.75rem; color: var(--text-muted); display: block; margin-top: 2px; }
+.forge-sym-count { font-size: 0.75rem; color: var(--text-dim); display: block; }
+.forge-cancel-btn { width: 100%; margin-top: 10px; background: none; border: 1px solid var(--border); color: var(--text-dim); padding: 7px; border-radius: 7px; cursor: pointer; font-family: 'Cinzel', serif; font-size: 0.75rem; transition: all 0.14s; }
 .forge-cancel-btn:hover { border-color: var(--red); color: var(--red); }
 /* ── Toast ── */
 .toast { position: fixed; top: 16px; left: 50%; transform: translateX(-50%); background: var(--surface); border: 1px solid var(--gold); color: var(--gold); padding: 8px 18px; border-radius: 28px; font-family: 'Cinzel', serif; font-size: 0.76rem; font-weight: 600; letter-spacing: 0.08em; z-index: 500; white-space: nowrap; pointer-events: none; transition: opacity 0.28s, transform 0.28s; }
@@ -405,7 +385,7 @@ body::before {
 #screen-flash { display: none; position: fixed; inset: 0; background: rgba(245,197,24,0.15); z-index: 290; pointer-events: none; animation: screenFlash 0.6s ease forwards; }
 @keyframes screenFlash { 0%,100%{opacity:0} 25%{opacity:1} }
 /* ── Payline diagram ─────────────────────────────────────── */
-.payline-diagram-row { display: flex; justify-content: space-between; align-items: center; padding: 3px 0; border-bottom: 1px solid var(--border); font-size: 0.7rem; color: var(--text-muted); }
+.payline-diagram-row { display: flex; justify-content: space-between; align-items: center; padding: 3px 0; border-bottom: 1px solid var(--border); font-size: 0.75rem; color: var(--text-muted); }
 .payline-diagram-row:last-child { border-bottom: none; }
 .pl-label { font-size: 0.62rem; }
 .gold  { color: var(--gold);  }
@@ -451,7 +431,7 @@ small  { color: var(--text-muted); }
 .btn-buy-nudge {
   background: rgba(0,212,255,0.1); border: 1px solid rgba(0,212,255,0.3);
   color: var(--nudge); border-radius: 5px; padding: 1px 5px;
-  font-family: 'Cinzel', serif; font-size: 0.52rem; font-weight: 700;
+  font-family: 'Cinzel', serif; font-size: 0.75rem; font-weight: 700;
   cursor: pointer; transition: background 0.14s, opacity 0.14s;
   letter-spacing: 0.04em; white-space: nowrap;
 }
@@ -463,7 +443,7 @@ small  { color: var(--text-muted); }
 .shop-hold-btn {
   background: rgba(245,197,24,0.1); border: 1px solid rgba(245,197,24,0.3);
   color: var(--hold); border-radius: 6px; padding: 5px 7px;
-  font-family: 'Cinzel', serif; font-size: 0.65rem; font-weight: 700;
+  font-family: 'Cinzel', serif; font-size: 0.75rem; font-weight: 700;
   cursor: pointer; transition: background 0.12s; white-space: nowrap;
   letter-spacing: 0.04em;
 }
@@ -472,9 +452,156 @@ small  { color: var(--text-muted); }
 .held-from-badge {
   position: absolute; top: 0; left: 0;
   background: linear-gradient(135deg, var(--gold-dim), var(--gold));
-  color: #0a0e1a; font-size: 0.44rem; font-weight: 700; padding: 2px 6px;
+  color: #0a0e1a; font-size: 0.75rem; font-weight: 700; padding: 2px 6px;
   border-radius: 9px 0 6px 0; letter-spacing: 0.1em;
 }
+
+
+/* ── Bonus Draft Modal ── */
+.bonus-draft-box {
+  background: linear-gradient(160deg, #1a1400 0%, #0a0e1a 60%);
+  border: 1px solid rgba(245,197,24,0.45);
+  border-radius: 16px; padding: 28px 24px 24px;
+  max-width: 420px; width: 92vw; text-align: center;
+  box-shadow: 0 0 60px rgba(245,197,24,0.18), 0 8px 32px rgba(0,0,0,0.7);
+  animation: bonusDraftIn 0.4s cubic-bezier(0.22,1,0.36,1);
+}
+@keyframes bonusDraftIn {
+  from { transform: scale(0.88) translateY(20px); opacity: 0; }
+  to   { transform: scale(1)    translateY(0);    opacity: 1; }
+}
+.bonus-draft-stars {
+  font-size: 1.8rem; margin-bottom: 6px; letter-spacing: 4px;
+  filter: drop-shadow(0 0 8px rgba(245,197,24,0.8));
+  animation: starPulse 1.6s ease-in-out infinite alternate;
+}
+@keyframes starPulse { to { filter: drop-shadow(0 0 16px rgba(245,197,24,1)); } }
+.bonus-draft-title {
+  font-family: 'Cinzel', serif; font-size: 1.3rem; font-weight: 900;
+  color: var(--gold); letter-spacing: 0.12em; margin-bottom: 4px;
+  text-shadow: 0 0 20px rgba(245,197,24,0.5);
+}
+.bonus-draft-sub {
+  font-size: 0.75rem; color: var(--text-muted); margin-bottom: 10px; letter-spacing: 0.05em;
+}
+.bonus-spins-badge {
+  display: inline-block; background: rgba(245,197,24,0.12);
+  border: 1px solid rgba(245,197,24,0.3); border-radius: 20px;
+  padding: 3px 14px; font-family: 'Cinzel', serif; font-size: 0.62rem;
+  color: var(--gold); letter-spacing: 0.1em; margin-bottom: 18px;
+}
+.bonus-sym-grid {
+  display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+}
+.bonus-sym-card {
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(245,197,24,0.25);
+  border-radius: 12px; padding: 16px 18px; cursor: pointer; transition: all 0.15s;
+  min-width: 90px; flex: 1;
+}
+.bonus-sym-card:hover {
+  background: rgba(245,197,24,0.12); border-color: rgba(245,197,24,0.6);
+  transform: translateY(-3px); box-shadow: 0 6px 20px rgba(245,197,24,0.2);
+}
+.bonus-sym-card .b-sym  { font-size: 2.4rem; display: block; margin-bottom: 6px; }
+.bonus-sym-card .b-name { font-size: 0.75rem; color: var(--text-muted); display: block; font-family: 'Cinzel', serif; letter-spacing: 0.06em; }
+.bonus-sym-card .b-chips{ font-size: 0.75rem; color: var(--green); font-weight: 700; display: block; margin-top: 2px; }
+/* Bonus round reel glow */
+.bonus-active .reel { box-shadow: 0 0 0 2px rgba(245,197,24,0.4), 0 0 18px rgba(245,197,24,0.15) !important; }
+.bonus-active .reel.bonus-pinned { box-shadow: 0 0 0 2px var(--gold), 0 0 24px rgba(245,197,24,0.35) !important; }
+/* Bonus banner */
+#bonus-banner {
+  display: none; text-align: center; padding: 5px 0 2px;
+  font-family: 'Cinzel', serif; font-size: 0.75rem; font-weight: 700;
+  color: var(--gold); letter-spacing: 0.12em;
+  text-shadow: 0 0 10px rgba(245,197,24,0.5);
+}
+#bonus-banner.active { display: block; }
+
+
+
+
+
+
+/* ── Last chance hint ── */
+#last-chance-hint {
+  display: none; text-align: center; padding: 7px 12px;
+  background: rgba(255,124,42,0.1); border: 1px solid rgba(255,124,42,0.35);
+  border-radius: 8px; margin: 6px 0 2px;
+  font-family: 'Cinzel', serif; font-size: 0.62rem; font-weight: 700;
+  color: var(--forge); letter-spacing: 0.07em; line-height: 1.5;
+  animation: hintPulse 1.8s ease-in-out infinite alternate;
+}
+#last-chance-hint.active { display: block; }
+@keyframes hintPulse { to { background: rgba(255,124,42,0.18); border-color: rgba(255,124,42,0.6); } }
+
+
+/* ── Reel column wrapper ─────────────────────────────── */
+.reel-col {
+  display: flex; flex-direction: column; align-items: center;
+  width: var(--sym-size); flex-shrink: 0; position: relative;
+  gap: 0;
+}
+
+/* ── In-reel nudge buttons (absolute overlay inside reel) ── */
+.reel-nudge-btn {
+  display: none; /* hidden until post-spin */
+  position: absolute; left: 0; right: 0; height: 13px; z-index: 6;
+  background: transparent; border: none; cursor: pointer;
+  transition: opacity 0.13s; opacity: 0.55;
+}
+/* Triangle via pseudo-element */
+.reel-nudge-btn::after {
+  content: ''; display: block; margin: 0 auto;
+  width: 0; height: 0; border-style: solid;
+}
+/* overlay the reel frame edges — peek slivers remain visible above/below */
+.reel-nudge-up  { top: 13px; } /* 13px = peek-top height, so arrow sits on reel top edge */
+.reel-nudge-up::after {
+  border-width: 0 8px 10px 8px;
+  border-color: transparent transparent var(--nudge) transparent;
+  filter: drop-shadow(0 0 4px var(--nudge));
+  margin-top: 2px;
+}
+.reel-nudge-down { bottom: 13px; } /* same offset from bottom */
+.reel-nudge-down::after {
+  border-width: 10px 8px 0 8px;
+  border-color: var(--nudge) transparent transparent transparent;
+  filter: drop-shadow(0 0 4px var(--nudge));
+  margin-top: 1px;
+}
+.reel-nudge-btn:hover:not(:disabled) { opacity: 1; }
+.reel-nudge-btn:disabled { opacity: 0.15; cursor: not-allowed; }
+
+/* ── Peek ghost symbols (sliver outside reel border) ── */
+.reel-peek {
+  width: 100%; height: 13px; overflow: hidden;
+  text-align: center; line-height: 1;
+  opacity: 0; font-size: 1.45rem; flex-shrink: 0;
+  pointer-events: none; filter: blur(0.8px) saturate(0.5);
+  transition: opacity 0.18s;
+}
+.reel-peek.visible { opacity: 0.32; }
+.reel-peek-top { display: flex; align-items: flex-end; justify-content: center; padding-bottom: 1px; }
+.reel-peek-bot { display: flex; align-items: flex-start; justify-content: center; padding-top: 1px; }
+
+/* ── Hold-mode reel glow ─────────────────────────────── */
+.reel.hold-mode {
+  cursor: pointer;
+  border-color: var(--hold);
+  box-shadow: 0 0 10px rgba(245,197,24,0.2);
+}
+.reel.hold-mode:hover {
+  border-color: var(--hold);
+  box-shadow: 0 0 14px rgba(245,197,24,0.35);
+}
+
+
+/* ── Scrollbar styling ───────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--surface2); border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: #2a3a5e; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--cyan); }
+* { scrollbar-width: thin; scrollbar-color: #2a3a5e var(--surface2); }
 
 /* ── Mobile drawer toggle button ── */
 .sidebar-toggle {
@@ -522,7 +649,7 @@ small  { color: var(--text-muted); }
   .token-hud { flex-wrap: wrap; gap: 8px; padding: 7px 10px; }
   .token-sep  { display: none; }
   .token-group { flex: 1 1 calc(33% - 8px); justify-content: center; }
-  .token-label { font-size: 0.55rem; }
+  .token-label { font-size: 0.75rem; }
 
   /* ── Reel frame ── */
   .reel-frame { padding: 7px 4px; gap: 3px; border-radius: 13px; }
@@ -533,18 +660,16 @@ small  { color: var(--text-muted); }
   .symbol { font-size: 1.6rem; border-radius: 5px; }
   .reel-fade { height: 22px; }
 
-  /* ── Post-spin action columns ── */
-  .post-spin-actions { gap: 3px; }
-  .btn-nudge, .btn-hold { font-size: 0.5rem; padding: 3px 0; }
+
 
   /* ── Result card ── */
   .result-card { padding: 10px 11px 12px; }
   .result-hand { font-size: 0.9rem; }
   .line-win-row { grid-template-columns: 7px 52px auto 1fr auto auto; gap: 3px; padding: 4px 5px; }
-  .line-name  { font-size: 0.52rem; }
+  .line-name  { font-size: 0.75rem; }
   .line-sym   { font-size: 0.88rem; }
-  .line-combo { font-size: 0.56rem; }
-  .line-chips { font-size: 0.6rem; min-width: 32px; }
+  .line-combo { font-size: 0.75rem; }
+  .line-chips { font-size: 0.75rem; min-width: 32px; }
   .chips-tag, .mult-tag { font-size: 0.76rem; padding: 3px 7px; }
   .score-tag  { font-size: 0.84rem; padding: 3px 9px; }
 
@@ -613,7 +738,7 @@ small  { color: var(--text-muted); }
     <!-- Token HUD -->
     <div class="token-hud">
       <div class="token-group">
-        <span class="token-label forge-lbl" id="forge-label" onclick="toggleForgeMode()" title="Click to enter FORGE mode, then click a reel to pin a symbol">⚡ FORGE</span>
+        <span class="token-label forge-lbl" id="forge-label" onclick="toggleForgeMode()" title="Enter Forge Mode, then click any symbol on a reel to replace it" style="cursor:pointer">⚡ FORGE</span>
         <div class="token-pips" id="forge-pips"></div>
       </div>
       <div class="token-sep"></div>
@@ -624,10 +749,13 @@ small  { color: var(--text-muted); }
       </div>
       <div class="token-sep"></div>
       <div class="token-group">
-        <span class="token-label hold-lbl">🔒 HOLD</span>
+        <span class="token-label hold-lbl" id="hold-label" onclick="toggleHoldMode()" title="Enter Hold Mode, then click a reel to lock it for the next spin" style="cursor:pointer">🔒 HOLD</span>
         <div class="token-pips" id="hold-pips"></div>
       </div>
     </div>
+
+    <!-- Bonus banner -->
+    <div id="bonus-banner">⭐ STAR FORGE BONUS — <span id="bonus-banner-spins"></span> SPIN(S) REMAINING ⭐</div>
 
     <!-- Slot machine -->
     <div class="slot-machine">
@@ -649,8 +777,8 @@ small  { color: var(--text-muted); }
       </div>
     </div>
 
-    <!-- Post-spin actions (nudge / hold per reel) -->
-    <div class="post-spin-actions hidden" id="post-spin-actions"></div>
+    <!-- Last chance hint -->
+    <div id="last-chance-hint"></div>
 
     <!-- Spin button -->
     <button class="spin-btn" id="spin-btn" onclick="spin()">SPIN</button>
@@ -672,8 +800,8 @@ small  { color: var(--text-muted); }
       <div class="blind-stat"><span class="blind-stat-label">SPINS</span><span class="blind-stat-value green" id="pre-spins">9</span></div>
       <div class="blind-stat"><span class="blind-stat-label">REWARD</span><span class="blind-stat-value gold" id="pre-reward">+4G</span></div>
     </div>
-    <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:16px;line-height:1.6">
-      <b style="color:var(--forge)">⚡ Forge Charges</b> — click to enter Forge Mode, then click any reel to guarantee a symbol lands on the payline.<br>
+    <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:16px;line-height:1.6">
+      <b style="color:var(--forge)">⚡ Forge</b> — after spinning, swap any visible cell to a symbol of your choice. Score updates live.<br>
       <b style="color:var(--nudge)">↕ Nudge</b> — after spinning, shift a reel ±1 row. Score updates live.<br>
       <b style="color:var(--hold)">🔒 Hold</b> — lock a reel's position for the next spin.
     </div>
@@ -690,7 +818,7 @@ small  { color: var(--text-muted); }
         <div class="overlay-title gold" style="margin-bottom:0;font-size:1.2rem">THE FORGE SHOP</div>
       </div>
       <div class="shop-gold-badge">
-        <div style="font-size:0.52rem;color:var(--text-dim);font-family:'Cinzel',serif;letter-spacing:0.1em">GOLD</div>
+        <div style="font-size:0.75rem;color:var(--text-dim);font-family:'Cinzel',serif;letter-spacing:0.1em">GOLD</div>
         <div class="shop-gold-val" id="shop-gold-display">0G</div>
       </div>
     </div>
@@ -723,11 +851,23 @@ small  { color: var(--text-muted); }
   </div>
 </div>
 
+
+<!-- ── BONUS DRAFT MODAL ─────────────────────────── -->
+<div class="modal-backdrop" id="bonus-draft-modal">
+  <div class="bonus-draft-box">
+    <div class="bonus-draft-stars" id="bonus-draft-stars">⭐⭐⭐</div>
+    <div class="bonus-draft-title">STAR FORGE BONUS</div>
+    <div class="bonus-draft-sub">Choose a symbol — it locks the first 4 reels' middle row</div>
+    <div class="bonus-spins-badge">BONUS SPIN <span id="bonus-spin-current">1</span> of <span id="bonus-spin-total">2</span></div>
+    <div class="bonus-sym-grid" id="bonus-sym-grid"></div>
+  </div>
+</div>
+
 <!-- ── FORGE MODAL ───────────────────────────────── -->
 <div class="modal-backdrop" id="forge-modal">
   <div class="forge-modal-box">
     <div class="forge-forge-title forge-modal-title">⚡ FORGE REEL <span id="forge-reel-num">1</span></div>
-    <div class="forge-modal-sub">Choose a symbol to pin to this reel's payline row</div>
+    <div class="forge-modal-sub" id="forge-modal-sub">Choose a symbol to replace</div>
     <div class="forge-sym-grid" id="forge-sym-grid"></div>
     <button class="forge-cancel-btn" onclick="closeForgeModal()">Cancel</button>
   </div>
@@ -785,9 +925,9 @@ const CFG = {
   SCATTER: {
     symbol:'⭐',
     tiers:[
-      { count:3, name:'⭐ SCATTER ×3', chips:22,  mult:0.6 },
-      { count:4, name:'⭐ SCATTER ×4', chips:55,  mult:1.2 },
-      { count:5, name:'⭐ SCATTER ×5', chips:120, mult:2.5 },
+      { count:3, name:'⭐ SCATTER ×3', chips:22,  mult:0.6, bonusSpins:2 },
+      { count:4, name:'⭐ SCATTER ×4', chips:55,  mult:1.2, bonusSpins:3 },
+      { count:5, name:'⭐ SCATTER ×5', chips:120, mult:2.5, bonusSpins:4 },
     ],
   },
   PAYLINES: [
@@ -853,6 +993,7 @@ const CFG = {
     ]},
   ],
   STARTER_DECK: ['🍀','🍎','🍒','🪙','🍋','🍋','💀'],
+  FORGE_POOL: ['🍀','🍎','🍒','🪙','🍋'], // base symbols always available to forge
   SYMBOL_COSTS: {'💎':8,'7️⃣':7,'⭐':5,'🔔':4,'🍀':3,'🍒':2,'🍋':2,'🍎':2,'🪙':4,'💀':1},
   REMOVE_SYMBOL_COST: 3,
   REROLL_COST: 1,
@@ -862,7 +1003,7 @@ const CFG = {
   VISIBLE_ROWS: 3,
   STRIP_LEN: 7,       // symbols per reel strip per spin
   STRIP_INIT_STOP: 2, // initial top-row index into strip (mid row = stop+1)
-  BASE_FORGE: 2,
+  BASE_FORGE: 1,
   BASE_NUDGE: 1,
   BASE_HOLD:  1,
   META_UPGRADES:{
@@ -1103,19 +1244,47 @@ const UI = (() => {
   // ── Reel DOM building ─────────────────────────────────────
   function buildReelDOM() {
     const wrap=document.getElementById('reels-wrap');
-    // Clear existing reels (keep SVG)
     [...wrap.children].forEach(c=>{ if(c.id!=='payline-svg') c.remove(); });
     for(let i=0;i<REEL_COUNT;i++){
+      // Outer column — holds peek+arrow above, reel, arrow+peek below
+      const col=document.createElement('div');
+      col.className='reel-col'; col.id=`reel-col-${i}`;
+
+      // Peek top — sliver above reel, always in DOM, shown when available
+      const peekT=document.createElement('div');
+      peekT.className='reel-peek reel-peek-top'; peekT.id=`peek-top-${i}`;
+
+      // Reel itself
       const reel=document.createElement('div');
       reel.className='reel'; reel.id=`reel-${i}`;
-      reel.onclick=()=>onReelClick(i);
+      reel.onclick=(e)=>onReelClick(i,e);
       const cont=document.createElement('div'); cont.className='symbols-container';
       const fadeT=document.createElement('div'); fadeT.className='reel-fade top';
       const fadeB=document.createElement('div'); fadeB.className='reel-fade bottom';
       const pin=document.createElement('div');  pin.className='forge-pin'; pin.id=`forge-pin-${i}`; pin.textContent='⚡';
       const held=document.createElement('div'); held.className='held-badge'; held.textContent='HELD';
-      reel.appendChild(cont); reel.appendChild(fadeT); reel.appendChild(fadeB); reel.appendChild(pin); reel.appendChild(held);
-      wrap.insertBefore(reel, document.getElementById('payline-svg'));
+      reel.appendChild(cont); reel.appendChild(fadeT); reel.appendChild(fadeB);
+      reel.appendChild(pin); reel.appendChild(held);
+
+      // Nudge buttons — absolute in reel-col, overlaying peek areas
+      const btnUp=document.createElement('button');
+      btnUp.className='reel-nudge-btn reel-nudge-up'; btnUp.id=`nudge-up-${i}`;
+      btnUp.onclick=(e)=>{e.stopPropagation();nudgeReel(i,+1);};
+      const btnDn=document.createElement('button');
+      btnDn.className='reel-nudge-btn reel-nudge-down'; btnDn.id=`nudge-dn-${i}`;
+      btnDn.onclick=(e)=>{e.stopPropagation();nudgeReel(i,-1);};
+
+      // Peek bottom — sliver below reel
+      const peekB=document.createElement('div');
+      peekB.className='reel-peek reel-peek-bot'; peekB.id=`peek-bot-${i}`;
+
+      col.appendChild(peekT);
+      col.appendChild(reel);
+      col.appendChild(peekB);
+      // Nudge buttons overlay the peek areas via absolute positioning in col
+      col.appendChild(btnUp);
+      col.appendChild(btnDn);
+      wrap.insertBefore(col, document.getElementById('payline-svg'));
     }
   }
 
@@ -1240,6 +1409,8 @@ const UI = (() => {
     renderPips('hold-pips',  game.holdTokens,   CFG.BASE_HOLD +bonusHold(game),  'pip-hold');
     const lbl=document.getElementById('forge-label');
     if(lbl) { lbl.classList.toggle('active', !!game.forgeMode); }
+    const hlbl=document.getElementById('hold-label');
+    if(hlbl) { hlbl.classList.toggle('active', !!game.holdMode); }
     const bnb=document.getElementById('btn-buy-nudge');
     if(bnb){ bnb.disabled=game.phase!=='playing'||game.gold<5; bnb.style.display=game.phase==='playing'?'':'none'; }
   }
@@ -1256,43 +1427,51 @@ const UI = (() => {
     }
   }
 
-  // ── Post-spin action row ──────────────────────────────────
+  // ── In-reel nudge controls ───────────────────────────────
   function showPostSpinActions(game) {
-    const container=document.getElementById('post-spin-actions'); if(!container) return;
-    container.classList.remove('hidden');
-    container.innerHTML='';
     for(let ri=0;ri<CFG.NUM_REELS;ri++){
-      const col=document.createElement('div'); col.className='reel-action-col';
       const canNudge=game.nudgeTokens>0&&!game.heldReels[ri];
-      const isHeld=game.heldReels[ri];
       const strip=game.spinStrips?.[ri];
       const stop =game.spinStops?.[ri]??CFG.STRIP_INIT_STOP;
       const maxStop=strip?(strip.length-CFG.VISIBLE_ROWS):0;
-      // Peek: symbol that would enter if nudged
+      // peekUp = symbol entering from bottom on ↑ nudge (shown below reel)
+      // peekDown = symbol entering from top on ↓ nudge (shown above reel)
       const peekUp  =strip&&stop<maxStop ? strip[stop+CFG.VISIBLE_ROWS] : null;
       const peekDown=strip&&stop>0        ? strip[stop-1]               : null;
-      col.innerHTML=`
-        <div class="nudge-peek${peekDown?' has-peek':''}" title="${peekDown?'Nudge ↓ reveals: '+peekDown:''}">${peekDown??''}</div>
-        <button class="btn-nudge btn-nudge-up" ${!canNudge||!peekUp?'disabled':''} onclick="nudgeReel(${ri},+1)">↑</button>
-        <button class="btn-hold btn-hold-reel" onclick="toggleHoldReel(${ri})">${isHeld?'🔒 HELD':'HOLD'}</button>
-        <button class="btn-nudge btn-nudge-down" ${!canNudge||!peekDown?'disabled':''} onclick="nudgeReel(${ri},-1)">↓</button>
-        <div class="nudge-peek${peekUp?' has-peek':''}" title="${peekUp?'Nudge ↑ reveals: '+peekUp:''}">${peekUp??''}</div>
-      `;
-      container.appendChild(col);
+
+      const btnUp=document.getElementById(`nudge-up-${ri}`);
+      const btnDn=document.getElementById(`nudge-dn-${ri}`);
+      const pkTop=document.getElementById(`peek-top-${ri}`);
+      const pkBot=document.getElementById(`peek-bot-${ri}`);
+
+      if(btnUp){ btnUp.style.display='block'; btnUp.disabled=!canNudge||!peekUp; }
+      if(btnDn){ btnDn.style.display='block'; btnDn.disabled=!canNudge||!peekDown; }
+      if(pkTop){ pkTop.textContent=peekDown??''; pkTop.classList.toggle('visible',!!peekDown); }
+      if(pkBot){ pkBot.textContent=peekUp??'';   pkBot.classList.toggle('visible',!!peekUp); }
     }
   }
 
   function hidePostSpinActions() {
-    const el=document.getElementById('post-spin-actions'); if(el) el.classList.add('hidden');
+    for(let ri=0;ri<CFG.NUM_REELS;ri++){
+      const btnUp=document.getElementById(`nudge-up-${ri}`);
+      const btnDn=document.getElementById(`nudge-dn-${ri}`);
+      const pkTop=document.getElementById(`peek-top-${ri}`);
+      const pkBot=document.getElementById(`peek-bot-${ri}`);
+      if(btnUp) btnUp.style.display='none';
+      if(btnDn) btnDn.style.display='none';
+      if(pkTop) pkTop.classList.remove('visible');
+      if(pkBot) pkBot.classList.remove('visible');
+    }
   }
 
   // ── Reel visual state ─────────────────────────────────────
   function updateReelVisuals(game) {
     for(let ri=0;ri<CFG.NUM_REELS;ri++){
       const reel=document.getElementById(`reel-${ri}`); if(!reel) continue;
-      reel.classList.toggle('forged', !!game.pinnedSymbols[ri]);
-      reel.classList.toggle('held',   !!game.heldReels[ri]);
-      reel.classList.toggle('forge-mode', !!game.forgeMode && !game.pinnedSymbols[ri]);
+      reel.classList.toggle('forged',     !!game.pinnedSymbols[ri]);
+      reel.classList.toggle('held',       !!game.heldReels[ri]);
+      reel.classList.toggle('forge-mode', !!game.forgeMode && !game.heldReels[ri]);
+      reel.classList.toggle('hold-mode',  !!game.holdMode  && !game.heldReels[ri]);
       const pin=document.getElementById(`forge-pin-${ri}`);
       if(pin) pin.textContent=game.pinnedSymbols[ri]?game.pinnedSymbols[ri]:'⚡';
     }
@@ -1351,7 +1530,7 @@ const UI = (() => {
     const scatterHTML= scatterResult
       ? `<div class="effect-line" style="color:#fff9c4">⭐ ${scatterResult.name}: +${scatterBonus}</div>` : '';
 
-    const pendingNote= isPending ? `<div style="font-size:0.6rem;color:var(--nudge);text-align:center;margin-top:4px;font-family:'Cinzel',serif;letter-spacing:0.08em">NUDGE OR HOLD TO ADJUST</div>` : '';
+    const pendingNote= isPending ? `<div style="font-size:0.6rem;color:var(--nudge);text-align:center;margin-top:4px;font-family:'Cinzel',serif;letter-spacing:0.08em">FORGE · NUDGE · HOLD TO ADJUST</div>` : '';
 
     const el=document.getElementById('result-card');
     el.innerHTML=
@@ -1607,7 +1786,20 @@ const UI = (() => {
 
 
   // ── Score popups over winning symbols ────────────────────
-  function spawnScorePopups(hitLines, grid) {
+  function showBonusBanner(spinsLeft) {
+    const el=document.getElementById('bonus-banner');
+    const sp=document.getElementById('bonus-banner-spins');
+    if(!el) return;
+    if(spinsLeft>0){ el.classList.add('active'); if(sp) sp.textContent=spinsLeft; }
+    else el.classList.remove('active');
+    document.querySelector('.slot-machine')?.classList.toggle('bonus-active', spinsLeft>0);
+  }
+  function hideBonusBanner() {
+    document.getElementById('bonus-banner')?.classList.remove('active');
+    document.querySelector('.slot-machine')?.classList.remove('bonus-active');
+  }
+
+    function spawnScorePopups(hitLines, grid) {
     // Collect unique winning cells: key = "reel-row" → best chip value
     const cellChips = {};
     hitLines.forEach(lr => {
@@ -1650,7 +1842,7 @@ const UI = (() => {
     showForgeModal, hideForgeModal,
     showPostSpinActions, hidePostSpinActions,
     updateTokenHUD, updateReelVisuals,
-    spawnScorePopups,
+    spawnScorePopups, showBonusBanner, hideBonusBanner,
   };
 })();
 
@@ -1680,12 +1872,15 @@ function newRunState(){
     nudgeTokens: CFG.BASE_NUDGE,
     holdTokens:  CFG.BASE_HOLD,
     forgeMode:   false,
+    holdMode:    false,
     pinnedSymbols:[null,null,null,null,null],
     heldReels:   [false,false,false,false,false],
     lastPinned:  [null,null,null,null,null], // for hot_forge detection
     spinStrips:  null,
     spinStops:   null,
     heldShopItem: null,
+    bonusSpinsLeft: 0,
+    bonusTotalSpins: 0,
   };
 }
 
@@ -1720,10 +1915,12 @@ function startRound(){
   game.forgeCharges = CFG.BASE_FORGE + game.modifiers.filter(m=>m==='forge_master').length*2;
   game.nudgeTokens  = CFG.BASE_NUDGE + game.modifiers.filter(m=>m==='second_chance').length*2;
   game.holdTokens   = CFG.BASE_HOLD  + game.modifiers.filter(m=>m==='anchor').length*2;
-  game.forgeMode=false; game.pinnedSymbols=[null,null,null,null,null];
+  game.forgeMode=false; game.holdMode=false; game.pinnedSymbols=[null,null,null,null,null];
   game.heldReels=[false,false,false,false,false];
+  document.getElementById('last-chance-hint')?.classList.remove('active');
   document.getElementById('phase-pre-round')?.classList.remove('active');
   document.getElementById('result-card')?.classList.add('hidden');
+  UI.clearPaylineLines();
   UI.hidePostSpinActions();
   UI.fillReels(game.playerDeck, game.lastGrid);
   UI.updateHUD(game); UI.updateSidebar(game);
@@ -1746,6 +1943,7 @@ function advanceToShop(){
 }
 
 function proceedFromShop(){
+  UI.clearPaylineLines();
   const stage=CFG.STAGES[game.stageIndex];
   game.roundIndex++;
   if(game.roundIndex>=stage.rounds.length){ game.roundIndex=0; game.stageIndex++; }
@@ -1754,37 +1952,113 @@ function proceedFromShop(){
   showPreRound();
 }
 
-// ── Forge / Token actions ──────────────────────────────────
-function toggleForgeMode(){
-  if(game.spinning||game.phase!=='playing') return;
-  if(game.forgeCharges<=0&&!game.forgeMode){ showToast('No Forge Charges left!','#ff7c2a'); return; }
-  game.forgeMode=!game.forgeMode;
+// ── Forge ─────────────────────────────────────────────────
+let _forgeTarget = null; // {ri, rowIdx}
+
+function toggleHoldMode(){
+  if(game.spinning || game.phase==='pre_round') return;
+  if(game.holdTokens<=0 && !game.holdMode){ showToast('No Hold Tokens left!','#f5c518'); return; }
+  game.holdMode = !game.holdMode;
+  if(game.holdMode) game.forgeMode = false; // cancel forge if active
   UI.updateReelVisuals(game); UI.updateTokenHUD(game);
+  if(game.holdMode) showToast('Hold Mode — click a reel to lock it','#f5c518');
 }
 
-function onReelClick(ri){
-  if(game.spinning||game.phase!=='playing') return;
-  if(!game.forgeMode) return;
-  if(game.pinnedSymbols[ri]){
-    // Un-pin: refund charge
-    game.pinnedSymbols[ri]=null; game.forgeCharges++;
-    game.forgeMode=false;
+function toggleForgeMode(){
+  // Only usable post-spin (strips must exist)
+  if(game.spinning || !game.spinStrips) return;
+  if(game.phase!=='playing'&&game.phase!=='round_lost') return;
+  if(game.forgeCharges<=0 && !game.forgeMode){ showToast('No Forge Charges left!','#ff7c2a'); return; }
+  game.forgeMode = !game.forgeMode;
+  UI.updateReelVisuals(game); UI.updateTokenHUD(game);
+  if(game.forgeMode) showToast('Forge Mode — click a symbol to replace it','#ff7c2a');
+}
+
+function onReelClick(ri, e){
+  if(game.spinning) return;
+  // Hold mode takes priority
+  if(game.holdMode){
+    if(game.phase!=='playing'&&game.phase!=='round_lost') return;
+    toggleHoldReel(ri);
+    game.holdMode = false;
     UI.updateReelVisuals(game); UI.updateTokenHUD(game);
-    showToast('Forge pin removed, charge refunded.','#ff7c2a');
     return;
   }
+  if(!game.forgeMode) return;
+  if(game.phase!=='playing'&&game.phase!=='round_lost') return;
   if(game.forgeCharges<=0){ showToast('No Forge Charges left!','#ff7c2a'); return; }
-  UI.showForgeModal(ri, game.playerDeck);
+  if(game.heldReels[ri]){ showToast("Can't forge a held reel",'#ff3d3d'); return; }
+  // Detect which of the 3 visible rows was clicked from y position
+  const reel = document.getElementById('reel-'+ri);
+  if(!reel) return;
+  const rect = reel.getBoundingClientRect();
+  const relY = (e?.clientY ?? rect.top + rect.height/2) - rect.top;
+  const rowIdx = Math.min(2, Math.max(0, Math.floor(relY / rect.height * 3)));
+
+  _forgeTarget = { ri, rowIdx };
+  const stop = game.spinStops[ri];
+  const currentSym = game.spinStrips[ri][stop + rowIdx];
+  const rowLabel = ['Top','Mid','Bot'][rowIdx];
+
+  // Show symbol picker
+  const symGrid = document.getElementById('forge-sym-grid');
+  if(symGrid){
+    symGrid.innerHTML = CFG.FORGE_POOL.map(sym=>{
+      const info = CFG.SYMBOLS[sym];
+      return `<div class="forge-sym-btn" onclick="selectForgeSym('${sym}')">
+        <span class="forge-sym-icon">${sym}</span>
+        <span class="forge-sym-name">${info?.name??''}</span>
+        <span class="forge-sym-count">+${info?.chips??0}⚡</span>
+      </div>`;
+    }).join('');
+  }
+  document.getElementById('forge-reel-num').textContent = ri+1;
+  const sub = document.getElementById('forge-modal-sub');
+  if(sub) sub.textContent = `Replace ${currentSym} (${rowLabel}) with…`;
+  document.getElementById('forge-modal')?.classList.add('active');
+  game.forgeMode = false;
+  UI.updateReelVisuals(game);
 }
 
-function selectForgeSym(ri, sym){
+function selectForgeSym(sym){
+  if(!_forgeTarget){ closeForgeModal(); return; }
+  const {ri, rowIdx} = _forgeTarget;
+  _forgeTarget = null;
   UI.hideForgeModal();
-  game.pinnedSymbols[ri]=sym; game.forgeCharges--;
-  game.forgeMode=false;
-  UI.updateReelVisuals(game); UI.updateTokenHUD(game);
-  showToast(`${sym} forged onto Reel ${ri+1}!`,'#ff7c2a');
+
+  // Swap the cell in the strip
+  const stop = game.spinStops[ri];
+  game.spinStrips[ri][stop + rowIdx] = sym;
+  game.forgeCharges--;
+
+  // Rebuild grid and rescore like nudge
+  const grid = Engine.gridFromState(game.spinStrips, game.spinStops);
+  window._lastGrid = grid;
+  UI.injectSingleReel(ri, [grid[ri][0], grid[ri][1], grid[ri][2]]);
+
+  const result = Engine.calculateScore(grid, game.modifiers, game.playerDeck, false, game.winStreak, game.lastPinned);
+  const scoreDelta = result.score - (game._lastSpinScore ?? 0);
+  game.roundScore  += scoreDelta;
+  game.totalScore  += scoreDelta;
+  if(result.score > game.bestSpin) game.bestSpin = result.score;
+  game._lastSpinScore = result.score;
+
+  UI.showResultCard(result, true);
+  UI.highlightPaylines(result.lineResults);
+  if(result.hitLines.length>0) UI.spawnScorePopups(result.hitLines, grid);
+  UI.updateHUD(game);
+  UI.updateTokenHUD(game);
+  UI.showPostSpinActions(game);
+  game._pendingResult = result; game._pendingGrid = grid;
+  showToast(`⚡ ${sym} forged onto Reel ${ri+1}!`,'#ff7c2a');
+  save();
+  if(game.spinsLeft<=0) checkRoundEnd();
 }
-function closeForgeModal(){ UI.hideForgeModal(); game.forgeMode=false; UI.updateReelVisuals(game); }
+
+function closeForgeModal(){ UI.hideForgeModal(); _forgeTarget=null; game.forgeMode=false; game.holdMode=false; UI.updateReelVisuals(game); UI.updateTokenHUD(game); }
+
+function forgeSelectRow(){} // no-op, kept for safety
+function forgeBackToRows(){} // no-op
 
 function buyNudge(){
   if(game.phase!=='playing') return;
@@ -1798,6 +2072,7 @@ function buyNudge(){
 
 function nudgeReel(ri, dir){
   if(!game.spinStrips||!game.spinStops) return;
+  if(game.phase!=='playing'&&game.phase!=='round_lost') return;
   if(game.nudgeTokens<=0){ showToast('No Nudge Tokens left!','#00d4ff'); return; }
   if(game.heldReels[ri]){ showToast("Can't nudge a held reel",'#ff3d3d'); return; }
   const newStop=game.spinStops[ri]+dir;
@@ -1826,6 +2101,7 @@ function nudgeReel(ri, dir){
   UI.showPostSpinActions(game);
   game._pendingResult=result; game._pendingGrid=grid;
   save();
+  if(game.spinsLeft<=0) checkRoundEnd();
 }
 
 function toggleHoldReel(ri){
@@ -1842,9 +2118,136 @@ function toggleHoldReel(ri){
   UI.updateReelVisuals(game); UI.updateTokenHUD(game); UI.showPostSpinActions(game); save();
 }
 
+
+// ── Bonus Round ───────────────────────────────────────────
+function startBonusRound(scatterResult) {
+  const spins = scatterResult.bonusSpins ?? 2;
+  game.bonusSpinsLeft  = spins;
+  game.bonusTotalSpins = spins;
+  game.phase = 'bonus_draft';
+  updateSpinBtn(true);
+  UI.showBonusBanner(spins);
+  // Small delay so the scatter result card is readable first
+  setTimeout(() => showBonusDraft(), 900);
+}
+
+function showBonusDraft() {
+  // Pick 3 unique random symbols from deck (no skulls)
+  const pool = [...new Set(game.playerDeck.filter(s => !CFG.SYMBOLS[s]?.penalty))];
+  const shuffled = pool.sort(() => Math.random() - 0.5).slice(0, 3);
+  const current  = game.bonusTotalSpins - game.bonusSpinsLeft + 1;
+
+  const grid = document.getElementById('bonus-sym-grid');
+  if (grid) {
+    grid.innerHTML = shuffled.map(sym => {
+      const info = CFG.SYMBOLS[sym];
+      return `<div class="bonus-sym-card" onclick="selectBonusSym('${sym}')">
+        <span class="b-sym">${sym}</span>
+        <span class="b-name">${info.name}</span>
+        <span class="b-chips">+${info.chips}⚡</span>
+      </div>`;
+    }).join('');
+  }
+  document.getElementById('bonus-spin-current').textContent = current;
+  document.getElementById('bonus-spin-total').textContent   = game.bonusTotalSpins;
+
+  const starStr = '⭐'.repeat(Math.min(current + 2, 5));
+  const starsEl = document.getElementById('bonus-draft-stars');
+  if (starsEl) starsEl.textContent = starStr;
+
+  document.getElementById('bonus-draft-modal')?.classList.add('active');
+}
+
+function selectBonusSym(sym) {
+  document.getElementById('bonus-draft-modal')?.classList.remove('active');
+  // Pin chosen symbol to first 4 reels, middle row
+  game.pinnedSymbols = [sym, sym, sym, sym, null];
+  // Highlight the 4 pinned reels
+  document.querySelectorAll('.reel').forEach((r,i) => {
+    r.classList.toggle('bonus-pinned', i < 4);
+  });
+  setTimeout(() => executeBonusSpin(), 300);
+}
+
+async function executeBonusSpin() {
+  if (spinning) return;
+  spinning = true; updateSpinBtn(true);
+  game.phase = 'bonus_spinning';
+
+  document.getElementById('result-card')?.classList.add('hidden');
+  UI.clearPaylineLines(); UI.hidePostSpinActions();
+  document.querySelectorAll('.symbol').forEach(el => {
+    el.classList.remove('sym-win','sym-dim'); el.removeAttribute('data-glow'); el.style.removeProperty('box-shadow');
+  });
+
+  game.lastPinned = [...game.pinnedSymbols];
+  const {strips, stops} = Engine.buildStrips(game.playerDeck, game.pinnedSymbols, [false,false,false,false,false], game.spinStrips, game.spinStops);
+  game.spinStrips = strips; game.spinStops = stops;
+  game.pinnedSymbols = [null,null,null,null,null];
+  game.forgeMode = false;
+
+  const grid = Engine.gridFromState(strips, stops);
+  window._lastGrid = grid;
+  UI.injectGrid(grid);
+
+  // Animate all reels (no held reels during bonus)
+  await Promise.all(Array.from({length: CFG.NUM_REELS}, (_,i) => UI.animateReel(i, i)));
+
+  // Clear bonus-pinned highlight
+  document.querySelectorAll('.reel').forEach(r => r.classList.remove('bonus-pinned'));
+
+  // Score — not first spin, use current streak
+  const result = Engine.calculateScore(grid, game.modifiers, game.playerDeck, false, game.winStreak, game.lastPinned);
+  const isWin = result.hitLines.length > 0;
+  game.winStreak = isWin ? game.winStreak + 1 : 0;
+
+  // Bonus scores don't have a _lastSpinScore delta — just add directly
+  game.roundScore  += result.score;
+  game.totalScore  += result.score;
+  if (result.score > game.bestSpin) game.bestSpin = result.score;
+  game.lastGrid = grid;
+
+  UI.highlightPaylines(result.lineResults);
+  if (result.hitLines.length > 0) UI.spawnScorePopups(result.hitLines, grid);
+  UI.showResultCard(result, false);
+  if (result.bestComboKey === 'JACKPOT') setTimeout(() => UI.triggerJackpot(result.score), 350);
+  UI.updateHUD(game); UI.updateSidebar(game); UI.updateReelVisuals(game); UI.updateTokenHUD(game);
+
+  game.bonusSpinsLeft--;
+  UI.showBonusBanner(game.bonusSpinsLeft);
+  spinning = false; save();
+
+  if (game.bonusSpinsLeft > 0) {
+    game.phase = 'bonus_draft';
+    setTimeout(() => showBonusDraft(), 1100);
+  } else {
+    endBonusRound();
+  }
+}
+
+function endBonusRound() {
+  game.bonusSpinsLeft = 0;
+  game.bonusTotalSpins = 0;
+  game.phase = 'playing';
+  UI.hideBonusBanner();
+  document.getElementById('bonus-draft-modal')?.classList.remove('active');
+  showToast('Bonus Round Complete!', '#f5c518');
+
+  // Now run the deferred round win/fail check
+  const round = getCurrentRound();
+  if (round && game.roundScore >= getEffectiveTarget(round)) {
+    setTimeout(roundWin, 600);
+  } else if (game.spinsLeft <= 0) {
+    updateSpinBtn(true);
+    setTimeout(() => { if (game.roundScore < getEffectiveTarget(round)) roundFail(); }, 600);
+  } else {
+    updateSpinBtn(false);
+  }
+}
+
 // ── Spin ──────────────────────────────────────────────────
 async function spin(){
-  if(spinning||!['playing'].includes(game.phase)||game.spinsLeft<=0) return;
+  if(spinning||!['playing'].includes(game.phase)||game.spinsLeft<=0||game.bonusSpinsLeft>0) return;
   spinning=true; updateSpinBtn(true);
   document.getElementById('result-card')?.classList.add('hidden');
   UI.clearPaylineLines(); UI.hidePostSpinActions();
@@ -1892,24 +2295,48 @@ async function spin(){
 
   UI.highlightPaylines(result.lineResults);
   if(result.hitLines.length>0) UI.spawnScorePopups(result.hitLines, grid);
-  UI.showResultCard(result, (game.nudgeTokens>0||game.holdTokens>0));
+  UI.showResultCard(result, (game.nudgeTokens>0||game.holdTokens>0||game.forgeCharges>0));
   if(result.bestComboKey==='JACKPOT') setTimeout(()=>UI.triggerJackpot(result.score),350);
   UI.updateHUD(game); UI.updateSidebar(game);
   UI.updateReelVisuals(game); UI.updateTokenHUD(game);
 
   // Show post-spin actions if tokens remain
-  if(game.nudgeTokens>0||game.holdTokens>0) UI.showPostSpinActions(game);
+  if(game.nudgeTokens>0||game.holdTokens>0||game.forgeCharges>0) UI.showPostSpinActions(game);
 
   // After holds are used for next spin (not cleared yet — they persist until next spin call)
   spinning=false; save();
 
   const round=getCurrentRound();
-  if(round&&game.roundScore>=getEffectiveTarget(round)){
-    setTimeout(roundWin,600);
-  } else if(game.spinsLeft<=0){
-    updateSpinBtn(true); setTimeout(()=>{ if(game.roundScore<getEffectiveTarget(round)) roundFail(); },600);
-  } else {
-    updateSpinBtn(false);
+  // Scatter bonus check — only triggers on normal spins, not during bonus
+  if(result.scatterResult && result.scatterResult.bonusSpins && game.bonusSpinsLeft===0){
+    setTimeout(()=>startBonusRound(result.scatterResult), 700);
+    return; // round win/fail deferred to endBonusRound()
+  }
+  checkRoundEnd();
+  if(game.spinsLeft>0) updateSpinBtn(false);
+}
+
+function checkRoundEnd(){
+  const round = getCurrentRound(); if(!round) return;
+  if(game.roundScore >= getEffectiveTarget(round)){
+    // Hide hint if showing — they made it!
+    document.getElementById('last-chance-hint')?.classList.remove('active');
+    setTimeout(roundWin, 600);
+  } else if(game.spinsLeft<=0 && game.phase!=='round_lost'){
+    // Normal fail — but hint if tokens remain
+    updateSpinBtn(true);
+    setTimeout(()=>{ if(game.roundScore < getEffectiveTarget(round)) roundFail(); }, 600);
+  }
+  // If phase===round_lost and no win, update hint to show tokens are spent
+  if(game.phase==='round_lost'){
+    const hint=document.getElementById('last-chance-hint');
+    if(hint&&hint.classList.contains('active')){
+      const tokensLeft=game.forgeCharges>0||game.nudgeTokens>0;
+      if(!tokensLeft){
+        hint.textContent="The reels have spoken. Better luck next time!";
+        UI.hidePostSpinActions();
+      }
+    }
   }
 }
 
@@ -1944,12 +2371,25 @@ function roundFail(){
     btn.style.boxShadow='0 4px 24px rgba(255,61,61,0.4),0 2px 0 rgba(0,0,0,0.4)';
     btn.onclick=confirmNewRun;
   }
-  game.phase='round_lost'; save();
+  game.phase='round_lost';
+
+  // If tokens remain, show last-chance hint and keep action row live
+  const hasForge  = game.forgeCharges>0;
+  const hasNudge  = game.nudgeTokens>0;
+  const hint = document.getElementById('last-chance-hint');
+  if(hint && (hasForge||hasNudge)){
+    const tools = [hasForge?'⚡ Forge':'', hasNudge?'↕ Nudge':''].filter(Boolean).join(' & ');
+    hint.textContent = `${tools} remaining — use it for one last chance!`;
+    hint.classList.add('active');
+    if(game.spinStrips) UI.showPostSpinActions(game);
+  }
+  save();
 }
 
 function confirmNewRun(){
   const btn=document.getElementById('spin-btn');
   if(btn){ btn.textContent='SPIN'; btn.style.background=''; btn.style.boxShadow=''; btn.onclick=spin; }
+  document.getElementById('last-chance-hint')?.classList.remove('active');
   endRun('Out of Spins');
 }
 
@@ -1996,7 +2436,7 @@ function resetRun(){
   ['phase-game-over','phase-shop','phase-pre-round'].forEach(id=>document.getElementById(id)?.classList.remove('active'));
   document.getElementById('result-card')?.classList.add('hidden');
   document.querySelectorAll('.symbol').forEach(el=>el.classList.remove('sym-win','sym-dim'));
-  UI.hidePostSpinActions(); UI.fillReels(game.playerDeck,null);
+  UI.clearPaylineLines(); UI.hidePostSpinActions(); UI.fillReels(game.playerDeck,null);
   UI.updateTokenHUD(game); UI.updateReelVisuals(game);
   showPreRound();
 }
@@ -2056,6 +2496,9 @@ Object.assign(window,{
   handleRemoveSymbol, closeRemoveModal, resetRun, buyMeta, confirmForfeit,
   toggleSidebar, closeSidebar,
   confirmNewRun, buyNudge, handleShopHold,
+  selectBonusSym,
+  selectForgeSym, closeForgeModal, forgeSelectRow, forgeBackToRows,
+  toggleHoldMode,
 });
 </script>
 </body>
