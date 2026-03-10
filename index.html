@@ -88,8 +88,8 @@ body::before {
   border-radius: 7px; font-size: 0.77rem;
 }
 .deck-sym { font-size: 1rem; }
-.deck-name { color: var(--text-muted); }
-.deck-count { color: var(--text-dim); font-size: 0.68rem; }
+.deck-name { color: var(--text-muted); display:flex; align-items:center; gap:4px; }
+.deck-count-badge { color: var(--cyan); font-size: 0.62rem; font-weight:700; background:rgba(0,212,255,0.1); border:1px solid rgba(0,212,255,0.25); border-radius:4px; padding:0 4px; line-height:1.4; }
 .chip-pos { color: var(--gold); font-weight: 700; font-size: 0.7rem; }
 .chip-neg { color: var(--red);  font-weight: 700; font-size: 0.7rem; }
 .mod-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 9px; padding: 8px 9px; margin-bottom: 6px; position: relative; overflow: hidden; }
@@ -414,6 +414,68 @@ body::before {
 .cyan  { color: var(--cyan);  }
 small  { color: var(--text-muted); }
 
+
+/* ── Score popups ── */
+.score-popup {
+  position: fixed; pointer-events: none; z-index: 400;
+  font-family: 'Cinzel', serif; font-weight: 900;
+  font-size: 0.95rem; letter-spacing: 0.05em;
+  color: #69f0ae; text-shadow: 0 0 10px rgba(105,240,174,0.7);
+  animation: scorePopUp 1.1s cubic-bezier(0.22,1,0.36,1) forwards;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+.score-popup.big {
+  font-size: 1.3rem;
+  color: var(--gold); text-shadow: 0 0 14px rgba(245,197,24,0.8);
+}
+@keyframes scorePopUp {
+  0%   { opacity: 1;   transform: translateX(-50%) translateY(0); }
+  60%  { opacity: 1;   transform: translateX(-50%) translateY(-38px); }
+  100% { opacity: 0;   transform: translateX(-50%) translateY(-60px); }
+}
+
+
+/* ── Nudge peek symbols ── */
+.nudge-peek {
+  font-size: 1.1rem; line-height: 1; text-align: center;
+  opacity: 0.38; filter: saturate(0.5);
+  transition: opacity 0.2s;
+  min-height: 1.2rem;
+  pointer-events: none; user-select: none;
+}
+.nudge-peek.has-peek { opacity: 0.55; filter: saturate(0.7); }
+
+
+/* ── Buy nudge button ── */
+.btn-buy-nudge {
+  background: rgba(0,212,255,0.1); border: 1px solid rgba(0,212,255,0.3);
+  color: var(--nudge); border-radius: 5px; padding: 1px 5px;
+  font-family: 'Cinzel', serif; font-size: 0.52rem; font-weight: 700;
+  cursor: pointer; transition: background 0.14s, opacity 0.14s;
+  letter-spacing: 0.04em; white-space: nowrap;
+}
+.btn-buy-nudge:hover:not(:disabled) { background: rgba(0,212,255,0.22); }
+.btn-buy-nudge:disabled { opacity: 0.25; cursor: not-allowed; }
+
+
+/* ── Shop hold button & held badge ── */
+.shop-hold-btn {
+  background: rgba(245,197,24,0.1); border: 1px solid rgba(245,197,24,0.3);
+  color: var(--hold); border-radius: 6px; padding: 5px 7px;
+  font-family: 'Cinzel', serif; font-size: 0.65rem; font-weight: 700;
+  cursor: pointer; transition: background 0.12s; white-space: nowrap;
+  letter-spacing: 0.04em;
+}
+.shop-hold-btn:hover { background: rgba(245,197,24,0.2); }
+.shop-card-held { border-color: rgba(245,197,24,0.4) !important; box-shadow: 0 0 10px rgba(245,197,24,0.1); }
+.held-from-badge {
+  position: absolute; top: 0; left: 0;
+  background: linear-gradient(135deg, var(--gold-dim), var(--gold));
+  color: #0a0e1a; font-size: 0.44rem; font-weight: 700; padding: 2px 6px;
+  border-radius: 9px 0 6px 0; letter-spacing: 0.1em;
+}
+
 /* ── Mobile drawer toggle button ── */
 .sidebar-toggle {
   display: none;
@@ -558,6 +620,7 @@ small  { color: var(--text-muted); }
       <div class="token-group">
         <span class="token-label nudge-lbl">↕ NUDGE</span>
         <div class="token-pips" id="nudge-pips"></div>
+        <button class="btn-buy-nudge" id="btn-buy-nudge" onclick="buyNudge()" title="Buy 1 Nudge for 5G">+5G</button>
       </div>
       <div class="token-sep"></div>
       <div class="token-group">
@@ -634,7 +697,7 @@ small  { color: var(--text-muted); }
     <div class="shop-grid" id="shop-items"></div>
     <div class="shop-actions">
       <button class="btn-secondary" id="shop-reroll-btn" onclick="handleShopReroll()">↺ Reroll (1G)</button>
-      <button class="btn-skip"     onclick="handleShopSkip()">Skip (+2G)</button>
+      <button class="btn-skip" id="shop-skip-btn" onclick="handleShopSkip()">Skip (+2G)</button>
       <button class="btn-continue" onclick="handleShopContinue()">Continue →</button>
     </div>
   </div>
@@ -804,7 +867,7 @@ const CFG = {
   BASE_HOLD:  1,
   META_UPGRADES:{
     starterGold:{ baseCost:5,  perLevel:5, label:'Starter Fund',  desc:'+5 Gold at run start' },
-    taxLvl:     { baseCost:10, perLevel:5, label:'Lucky Breaks',  desc:'Slower target scaling' },
+    taxLvl:     { baseCost:10, perLevel:5, label:'Lucky Breaks',  desc:'-10% round target per level' },
     deckSlot:   { baseCost:8,  perLevel:8, label:'Modifier Slot', desc:'+1 Modifier slot'      },
   },
 };
@@ -933,7 +996,13 @@ const Engine = (() => {
         case 'combo_chips':    { const c=hitLines.filter(r=>r.comboKey===e.combo).length; if(c) cd=e.value*c; break;}
         case 'combo_mult_scale':{ const c=hitLines.filter(r=>r.comboKey===e.combo).length; if(c) bestMult=parseFloat((bestMult*Math.pow(e.scale,c)).toFixed(2)); break;}
         case 'deck_count_mult':{ const c=deck.filter(s=>s===e.symbol).length; if(c) md=e.value*c; break;}
-        case 'first_spin_scale': if(isFirstSpin) bestMult=parseFloat((bestMult*e.scale).toFixed(2)); break;
+        case 'first_spin_scale':
+          if(isFirstSpin && hitLines.length>0) {
+            const prevMult=bestMult;
+            bestMult=parseFloat((bestMult*e.scale).toFixed(2));
+            effects.push({modId, chipsDelta:0, multDelta:parseFloat((bestMult-prevMult).toFixed(2))});
+          }
+          break;
         case 'specific_five_chips': if(bestComboKey==='FIVE_KIND'&&allSymbols.filter(s=>s===e.symbol).length>=5) cd=e.value; break;
         case 'per_hit_line':   if(hitLines.length>0) cd=e.value*hitLines.length; break;
         case 'streak_mult':    if(winStreak>0) md=e.value*winStreak; break;
@@ -948,6 +1017,10 @@ const Engine = (() => {
 
     const hasFortuneTeller = modIds.includes('fortune_teller');
     const trulyNoWin = hitLines.length===0;
+    // Fortune Teller effect line — push AFTER modifier loop so it shows separately
+    if(trulyNoWin && hasFortuneTeller && rawConsChips>0) {
+      effects.push({modId:'fortune_teller', chipsDelta: consolationChips - rawConsChips, multDelta:0});
+    }
 
     let chips, mult;
     if (trulyNoWin) {
@@ -977,8 +1050,11 @@ const Engine = (() => {
 
     const score = paylineScore + scatterBonus;
 
+    // Total skull chip penalty across all winning lines (for display only)
+    const skullPenalty = hitLines.reduce((s,r)=>s+r.skullCount*4,0);
     return {chips, mult, score, paylineScore, scatterBonus, scatterResult,
-            bestComboKey, lineResults, hitLines, effects, allSymbols, trulyNoWin, consolationChips};
+            bestComboKey, lineResults, hitLines, effects, allSymbols, trulyNoWin, consolationChips,
+            skullPenalty, consolationRaw: rawConsChips};
   }
 
   return { buildStrips, gridFromState, calculateScore, weightedDraw };
@@ -1001,7 +1077,7 @@ const Shop = (() => {
       cost:m.cost, desc:m.desc, rarity:m.rarity,
     }));
     const remove = { type:'remove', cost:CFG.REMOVE_SYMBOL_COST, name:'REMOVE SYMBOL', desc:'Remove one copy of any symbol from your reel pool.', emoji:'🗑️' };
-    return { items:[...syms,...mods,remove], rerolled:0 };
+    return { items:[...syms,...mods,remove], rerolled:0, purchased:false };
   }
 
   function rerollShop(shop, modIds) {
@@ -1164,6 +1240,8 @@ const UI = (() => {
     renderPips('hold-pips',  game.holdTokens,   CFG.BASE_HOLD +bonusHold(game),  'pip-hold');
     const lbl=document.getElementById('forge-label');
     if(lbl) { lbl.classList.toggle('active', !!game.forgeMode); }
+    const bnb=document.getElementById('btn-buy-nudge');
+    if(bnb){ bnb.disabled=game.phase!=='playing'||game.gold<5; bnb.style.display=game.phase==='playing'?'':'none'; }
   }
 
   function bonusForge(game){ return game.modifiers.filter(m=>m==='forge_master').length*2; }
@@ -1187,10 +1265,18 @@ const UI = (() => {
       const col=document.createElement('div'); col.className='reel-action-col';
       const canNudge=game.nudgeTokens>0&&!game.heldReels[ri];
       const isHeld=game.heldReels[ri];
+      const strip=game.spinStrips?.[ri];
+      const stop =game.spinStops?.[ri]??CFG.STRIP_INIT_STOP;
+      const maxStop=strip?(strip.length-CFG.VISIBLE_ROWS):0;
+      // Peek: symbol that would enter if nudged
+      const peekUp  =strip&&stop<maxStop ? strip[stop+CFG.VISIBLE_ROWS] : null;
+      const peekDown=strip&&stop>0        ? strip[stop-1]               : null;
       col.innerHTML=`
-        <button class="btn-nudge btn-nudge-up" ${!canNudge?'disabled':''} onclick="nudgeReel(${ri},-1)">↑</button>
+        <div class="nudge-peek${peekDown?' has-peek':''}" title="${peekDown?'Nudge ↓ reveals: '+peekDown:''}">${peekDown??''}</div>
+        <button class="btn-nudge btn-nudge-up" ${!canNudge||!peekUp?'disabled':''} onclick="nudgeReel(${ri},+1)">↑</button>
         <button class="btn-hold btn-hold-reel" onclick="toggleHoldReel(${ri})">${isHeld?'🔒 HELD':'HOLD'}</button>
-        <button class="btn-nudge btn-nudge-down" ${!canNudge?'disabled':''} onclick="nudgeReel(${ri},+1)">↓</button>
+        <button class="btn-nudge btn-nudge-down" ${!canNudge||!peekDown?'disabled':''} onclick="nudgeReel(${ri},-1)">↓</button>
+        <div class="nudge-peek${peekUp?' has-peek':''}" title="${peekUp?'Nudge ↑ reveals: '+peekUp:''}">${peekUp??''}</div>
       `;
       container.appendChild(col);
     }
@@ -1214,7 +1300,7 @@ const UI = (() => {
 
   // ── Result card ───────────────────────────────────────────
   function showResultCard(result, isPending) {
-    const {chips,mult,score,bestComboKey,hitLines,effects,lineResults,trulyNoWin,consolationChips,scatterResult,scatterBonus}=result;
+    const {chips,mult,score,bestComboKey,hitLines,effects,lineResults,trulyNoWin,consolationChips,consolationRaw,scatterResult,scatterBonus,skullPenalty}=result;
     _lastLineResults=lineResults;
     const bestCombo=CFG.COMBOS[bestComboKey];
     const CRANK=['JACKPOT','FIVE_KIND','FOUR_KIND','THREE_KIND','SCATTER','NO_WIN'];
@@ -1240,16 +1326,28 @@ const UI = (() => {
     }).join('');
 
     let effectLines='';
+    // Skull penalty line — shown on winning spins where skulls reduced chips
+    if(!trulyNoWin && skullPenalty>0){
+      effectLines+=`<div class="effect-line" style="color:#ff6b6b">💀 Skull penalty: <span class="chips-tag sm" style="background:rgba(255,61,61,0.18);color:#ff6b6b;border-color:rgba(255,61,61,0.4)">-${skullPenalty}⚡</span></div>`;
+    }
     for(const e of effects){
       const mod=CFG.MODIFIERS.find(m=>m.id===e.modId); if(!mod) continue;
       const parts=[];
-      if(e.chipsDelta) parts.push(`<span class="chips-tag sm">+${e.chipsDelta}⚡</span>`);
-      if(e.multDelta)  parts.push(`<span class="mult-tag sm">+${e.multDelta.toFixed(1)}×</span>`);
+      if(e.chipsDelta && e.chipsDelta>0) parts.push(`<span class="chips-tag sm">+${e.chipsDelta}⚡</span>`);
+      if(e.chipsDelta && e.chipsDelta<0) parts.push(`<span class="chips-tag sm" style="background:rgba(255,61,61,0.18);color:#ff6b6b;border-color:rgba(255,61,61,0.4)">${e.chipsDelta}⚡</span>`);
+      if(e.multDelta && e.multDelta>0)  parts.push(`<span class="mult-tag sm">+${e.multDelta.toFixed(1)}×</span>`);
+      if(e.multDelta && e.multDelta<0)  parts.push(`<span class="mult-tag sm" style="background:rgba(255,61,61,0.18);color:#ff6b6b;border-color:rgba(255,61,61,0.4)">${e.multDelta.toFixed(1)}×</span>`);
       if(parts.length) effectLines+=`<div class="effect-line">${mod.emoji} ${mod.name}: ${parts.join(' ')}</div>`;
     }
 
     const headClass= trulyNoWin ? 'result-hand consolation' : 'result-hand';
-    const headLabel= trulyNoWin ? `CONSOLATION (+${consolationChips}⚡)` : bestCombo.name;
+    let headLabel;
+    if(trulyNoWin){
+      const symSum = consolationRaw * 6; // reverse the ÷6
+      headLabel = `CONSOLATION (${symSum}÷6 = +${consolationChips}⚡)`;
+    } else {
+      headLabel = bestCombo.name;
+    }
     const scatterHTML= scatterResult
       ? `<div class="effect-line" style="color:#fff9c4">⭐ ${scatterResult.name}: +${scatterBonus}</div>` : '';
 
@@ -1287,6 +1385,8 @@ const UI = (() => {
         const color=PAYLINE_COLORS[plIdx]||'#f5c518';
         const lr=_lastLineResults[plIdx];
         spotlightPayline(plIdx,color,lr);
+        if(lr && lr.comboKey!=='NO_WIN' && window._lastGrid)
+          spawnScorePopups([lr], window._lastGrid);
       });
       list.addEventListener('mouseleave',()=>{
         list.querySelectorAll('.line-win-row').forEach(r=>r.classList.remove('row-hover'));
@@ -1334,7 +1434,7 @@ const UI = (() => {
     if(rn) round?.boss?rn.classList.add('boss'):rn.classList.remove('boss');
     const maxSlots=(window.META?.deckSlot??0)+CFG.MAX_MODIFIERS;
     setText('mod-slot-count',`${game.modifiers.length}/${maxSlots} MODS`);
-    updateProgress(game.roundScore,round?.target??1);
+    updateProgress(game.roundScore, round ? getEffectiveTarget(round) : 1);
   }
 
   // ── Sidebar ───────────────────────────────────────────────
@@ -1344,8 +1444,13 @@ const UI = (() => {
       const counts={}; game.playerDeck.forEach(s=>counts[s]=(counts[s]||0)+1);
       deckEl.innerHTML=Object.keys(counts).sort().map(sym=>{
         const info=CFG.SYMBOLS[sym];
-        const chipText=info.penalty?`<span class="chip-neg">-${info.penalty}⚡</span>`:`<span class="chip-pos">+${info.chips}⚡</span>`;
-        return `<div class="deck-row"><span class="deck-sym">${sym}</span><span class="deck-name">${info.name}</span>${chipText}<span class="deck-count">×${counts[sym]}</span></div>`;
+        const cnt=counts[sym];
+        const totalChips=info.penalty ? info.penalty : info.chips*cnt;
+        const chipText=info.penalty
+          ?`<span class="chip-neg">-${info.penalty}⚡</span>`
+          :`<span class="chip-pos">+${totalChips}⚡</span>`;
+        const countBadge=cnt>1?`<span class="deck-count-badge">×${cnt}</span>`:'';
+        return `<div class="deck-row"><span class="deck-sym">${sym}</span><span class="deck-name">${info.name}${countBadge}</span>${chipText}</div>`;
       }).join('');
     }
     const modEl=document.getElementById('modifier-list');
@@ -1373,14 +1478,22 @@ const UI = (() => {
       const rc=item.rarity==='rare'?'badge-rare':item.rarity==='uncommon'?'badge-uncommon':item.type==='symbol'?'badge-symbol':'';
       const icon=item.emoji??item.symbol??'';
       const soldTag=alreadyOwned?'<div class="sold-badge">OWNED</div>':'';
-      return `<div class="shop-card ${disabled?'shop-disabled':''} ${rc}">${soldTag}
+      const heldBadge=item.wasHeld?'<div class="held-from-badge">HELD</div>':'';
+      const holdBtn=(!item.wasHeld&&item.type!=='remove')
+        ?`<button class="shop-hold-btn" onclick="handleShopHold(${idx})" title="Hold for next visit">HOLD</button>`:'';
+      return `<div class="shop-card ${disabled?'shop-disabled':''} ${rc} ${item.wasHeld?'shop-card-held':''}">${soldTag}${heldBadge}
         <div class="shop-icon">${icon}</div>
         <div class="shop-item-name">${item.name}</div>
         <div class="shop-item-desc">${item.desc}</div>
-        <button class="shop-buy-btn" onclick="handleShopBuy(${idx})" ${disabled?'disabled':''}>${item.cost}G</button>
+        <div style="display:flex;gap:4px;margin-top:3px;width:100%">
+          <button class="shop-buy-btn" style="flex:1" onclick="handleShopBuy(${idx})" ${disabled?'disabled':''}>${item.cost}G</button>
+          ${holdBtn}
+        </div>
       </div>`;
     }).join('');
     const rb=document.getElementById('shop-reroll-btn'); if(rb) rb.disabled=game.gold<CFG.REROLL_COST;
+    const sb=document.getElementById('shop-skip-btn');
+    if(sb) sb.style.display=shop.purchased?'none':'';
   }
 
   // ── Phase overlays ────────────────────────────────────────
@@ -1389,7 +1502,11 @@ const UI = (() => {
     if(phase==='pre_round'){
       const stage=CFG.STAGES[game.stageIndex]; const round=stage?.rounds[game.roundIndex];
       setText('pre-round-name',round?.name??'');
-      setText('pre-target',round?round.target.toLocaleString():'');
+      const effTarget = getEffectiveTarget(round);
+      const taxNote = (window.META?.taxLvl??0)>0
+        ? ` <small style="color:var(--green);font-size:0.7rem">(−${Math.round((1-Math.pow(0.9,window.META.taxLvl))*100)}%)</small>` : '';
+      const preTargetEl = document.getElementById('pre-target');
+      if(preTargetEl) preTargetEl.innerHTML = effTarget.toLocaleString() + taxNote;
       setText('pre-spins',round?.spins??8);
       setText('pre-reward',`+${round?.reward??0}G`);
       setText('pre-stage-label',`Stage ${game.stageIndex+1} · Round ${game.roundIndex+1}/3`);
@@ -1488,6 +1605,41 @@ const UI = (() => {
 
   function setText(id,val){ const el=document.getElementById(id); if(el) el.textContent=val; }
 
+
+  // ── Score popups over winning symbols ────────────────────
+  function spawnScorePopups(hitLines, grid) {
+    // Collect unique winning cells: key = "reel-row" → best chip value
+    const cellChips = {};
+    hitLines.forEach(lr => {
+      const pl = CFG.PAYLINES[lr.plIdx];
+      for (let ri = 0; ri < lr.runLen; ri++) {
+        const rowIdx = pl[ri];
+        const sym    = grid[ri][rowIdx];
+        const chips  = CFG.SYMBOLS[sym]?.chips ?? 0;
+        const key    = ri + '-' + rowIdx;
+        if (!cellChips[key] || chips > cellChips[key].chips)
+          cellChips[key] = { ri, rowIdx, chips, sym };
+      }
+    });
+
+    Object.values(cellChips).forEach(({ ri, rowIdx, chips }, i) => {
+      if (chips <= 0) return;
+      const cont = document.querySelector('#reel-' + ri + ' .symbols-container');
+      if (!cont) return;
+      const el = cont.children[TARGET_IDX - 1 + rowIdx];
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const popup = document.createElement('div');
+      popup.className = 'score-popup' + (chips >= 7 ? ' big' : '');
+      popup.textContent = '+' + chips + '⚡';
+      popup.style.left = (rect.left + rect.width / 2) + 'px';
+      popup.style.top  = (rect.top + rect.height * 0.15) + 'px';
+      popup.style.animationDelay = (i * 60) + 'ms';
+      document.body.appendChild(popup);
+      setTimeout(() => popup.remove(), 1200 + i * 60);
+    });
+  }
+
   return {
     buildReelDOM, fillReels, injectGrid, injectSingleReel, animateReel,
     highlightPaylines, clearPaylineLines,
@@ -1498,6 +1650,7 @@ const UI = (() => {
     showForgeModal, hideForgeModal,
     showPostSpinActions, hidePostSpinActions,
     updateTokenHUD, updateReelVisuals,
+    spawnScorePopups,
   };
 })();
 
@@ -1532,6 +1685,7 @@ function newRunState(){
     lastPinned:  [null,null,null,null,null], // for hot_forge detection
     spinStrips:  null,
     spinStops:   null,
+    heldShopItem: null,
   };
 }
 
@@ -1548,6 +1702,12 @@ function loadRun(){
     if(s){ const p=JSON.parse(s); if(p&&Array.isArray(p.playerDeck)) return p; }
   } catch(e){}
   return newRunState();
+}
+
+function getEffectiveTarget(round){
+  if(!round) return 0;
+  const reduction = Math.pow(0.9, window.META?.taxLvl??0);
+  return Math.round(round.target * reduction);
 }
 
 function getCurrentRound(){ return CFG.STAGES[game.stageIndex]?.rounds[game.roundIndex]??null; }
@@ -1577,6 +1737,11 @@ function showPreRound(){
 
 function advanceToShop(){
   game.phase='shop'; currentShop=Shop.generateShop(game.modifiers);
+  // Re-inject held item from last visit as first slot
+  if(game.heldShopItem){
+    currentShop.items.unshift({...game.heldShopItem, wasHeld:true});
+    game.heldShopItem=null;
+  }
   UI.showPhase('shop',game); UI.renderShop(currentShop,game); UI.updateHUD(game); save();
 }
 
@@ -1621,6 +1786,16 @@ function selectForgeSym(ri, sym){
 }
 function closeForgeModal(){ UI.hideForgeModal(); game.forgeMode=false; UI.updateReelVisuals(game); }
 
+function buyNudge(){
+  if(game.phase!=='playing') return;
+  const COST=5;
+  if(game.gold<COST){ showToast('Need 5G to buy a nudge!','#ff3d3d'); return; }
+  game.gold-=COST; game.nudgeTokens++;
+  UI.updateHUD(game); UI.updateTokenHUD(game);
+  if(game.spinStrips) UI.showPostSpinActions(game); // refresh peek + buttons
+  showToast('Nudge purchased! (+1 ↕)','#00d4ff'); save();
+}
+
 function nudgeReel(ri, dir){
   if(!game.spinStrips||!game.spinStops) return;
   if(game.nudgeTokens<=0){ showToast('No Nudge Tokens left!','#00d4ff'); return; }
@@ -1636,11 +1811,19 @@ function nudgeReel(ri, dir){
   const grid=Engine.gridFromState(game.spinStrips,game.spinStops);
   window._lastGrid=grid;
   const result=Engine.calculateScore(grid,game.modifiers,game.playerDeck,false,game.winStreak,game.lastPinned);
+  // Update running totals by delta so progress bar stays accurate
+  const scoreDelta = result.score - (game._lastSpinScore ?? 0);
+  game.roundScore  += scoreDelta;
+  game.totalScore  += scoreDelta;
+  if(result.score > game.bestSpin) game.bestSpin = result.score;
+  game._lastSpinScore = result.score;
+
   UI.showResultCard(result,true);
   UI.highlightPaylines(result.lineResults);
+  if(result.hitLines.length>0) UI.spawnScorePopups(result.hitLines, grid);
+  UI.updateHUD(game);
   UI.updateTokenHUD(game);
   UI.showPostSpinActions(game);
-  // Store result for commit
   game._pendingResult=result; game._pendingGrid=grid;
   save();
 }
@@ -1661,7 +1844,7 @@ function toggleHoldReel(ri){
 
 // ── Spin ──────────────────────────────────────────────────
 async function spin(){
-  if(spinning||game.phase!=='playing'||game.spinsLeft<=0) return;
+  if(spinning||!['playing'].includes(game.phase)||game.spinsLeft<=0) return;
   spinning=true; updateSpinBtn(true);
   document.getElementById('result-card')?.classList.add('hidden');
   UI.clearPaylineLines(); UI.hidePostSpinActions();
@@ -1677,8 +1860,9 @@ async function spin(){
   const {strips,stops}=Engine.buildStrips(game.playerDeck,game.pinnedSymbols,game.heldReels,game.spinStrips,game.spinStops);
   game.spinStrips=strips; game.spinStops=stops;
 
-  // Clear pins (consumed this spin)
+  // Clear pins and holds — both consumed by this spin
   game.pinnedSymbols=[null,null,null,null,null];
+  game.heldReels=[false,false,false,false,false];
   game.forgeMode=false;
 
   // Inject grid before animation
@@ -1701,11 +1885,13 @@ async function spin(){
   const isWin=result.hitLines.length>0;
   game.winStreak=isWin?game.winStreak+1:0;
 
+  game._lastSpinScore=result.score;
   game.roundScore+=result.score; game.totalScore+=result.score;
   if(result.score>game.bestSpin) game.bestSpin=result.score;
   game.lastGrid=grid;
 
   UI.highlightPaylines(result.lineResults);
+  if(result.hitLines.length>0) UI.spawnScorePopups(result.hitLines, grid);
   UI.showResultCard(result, (game.nudgeTokens>0||game.holdTokens>0));
   if(result.bestComboKey==='JACKPOT') setTimeout(()=>UI.triggerJackpot(result.score),350);
   UI.updateHUD(game); UI.updateSidebar(game);
@@ -1718,10 +1904,10 @@ async function spin(){
   spinning=false; save();
 
   const round=getCurrentRound();
-  if(round&&game.roundScore>=round.target){
+  if(round&&game.roundScore>=getEffectiveTarget(round)){
     setTimeout(roundWin,600);
   } else if(game.spinsLeft<=0){
-    updateSpinBtn(true); setTimeout(()=>{ if(game.roundScore<round.target) roundFail(); },600);
+    updateSpinBtn(true); setTimeout(()=>{ if(game.roundScore<getEffectiveTarget(round)) roundFail(); },600);
   } else {
     updateSpinBtn(false);
   }
@@ -1749,7 +1935,23 @@ function proceedToShop(){
   advanceToShop();
 }
 
-function roundFail(){ endRun('Out of Spins'); }
+function roundFail(){
+  const btn=document.getElementById('spin-btn');
+  if(btn){
+    btn.disabled=false;
+    btn.textContent='NEW RUN →';
+    btn.style.background='linear-gradient(135deg,#ff3d3d,#a00)';
+    btn.style.boxShadow='0 4px 24px rgba(255,61,61,0.4),0 2px 0 rgba(0,0,0,0.4)';
+    btn.onclick=confirmNewRun;
+  }
+  game.phase='round_lost'; save();
+}
+
+function confirmNewRun(){
+  const btn=document.getElementById('spin-btn');
+  if(btn){ btn.textContent='SPIN'; btn.style.background=''; btn.style.boxShadow=''; btn.onclick=spin; }
+  endRun('Out of Spins');
+}
 
 // ── Shop handlers ─────────────────────────────────────────
 function handleShopBuy(idx){
@@ -1760,11 +1962,22 @@ function handleShopBuy(idx){
   else if(item.type==='modifier'){ if(game.modifiers.length>=maxMods){showToast('Modifier slots full!','#f5c518');return;} game.gold-=item.cost; game.modifiers.push(item.id); currentShop.items[idx]=null; showToast(`Equipped ${item.emoji} ${item.name}!`,'#7ee8fa'); }
   else if(item.type==='remove'){ game.gold-=item.cost; currentShop.items[idx]=null; UI.showRemovePrompt(game.playerDeck); }
   currentShop.items=currentShop.items.filter(Boolean);
+  currentShop.purchased=true;
   UI.renderShop(currentShop,game); UI.updateHUD(game); UI.updateSidebar(game); save();
 }
 
 function handleShopReroll(){ if(game.gold<CFG.REROLL_COST) return; game.gold-=CFG.REROLL_COST; currentShop=Shop.rerollShop(currentShop,game.modifiers); UI.renderShop(currentShop,game); UI.updateHUD(game); save(); }
-function handleShopSkip(){ game.gold+=2; showToast('+2G for skipping shop!','#f5c518'); proceedFromShop(); }
+function handleShopHold(idx){
+  if(!currentShop) return;
+  const item=currentShop.items[idx]; if(!item||item.wasHeld) return;
+  if(game.heldShopItem){ showToast('Already holding an item!','#f5c518'); return; }
+  game.heldShopItem={...item};
+  currentShop.items.splice(idx,1);
+  showToast(`${item.emoji??item.symbol??'Item'} held for next visit!`,'#f5c518');
+  UI.renderShop(currentShop,game); save();
+}
+
+function handleShopSkip(){ if(currentShop?.purchased){ showToast('Cannot skip after purchasing!','#ff3d3d'); return; } game.gold+=2; showToast('+2G for skipping shop!','#f5c518'); proceedFromShop(); }
 function handleShopContinue(){ proceedFromShop(); }
 function handleRemoveSymbol(sym){ const idx=game.playerDeck.indexOf(sym); if(idx===-1)return; game.playerDeck.splice(idx,1); UI.hideRemovePrompt(); UI.updateSidebar(game); showToast(`Removed ${sym} from reel pool`,'#ef5350'); save(); }
 function closeRemoveModal(){ UI.hideRemovePrompt(); }
@@ -1821,6 +2034,7 @@ function closeSidebar(){
 }
 
 function init(){
+  window.scrollTo(0,0);
   UI.buildReelDOM();
   game=loadRun();
   UI.updateHUD(game); UI.updateSidebar(game);
@@ -1841,6 +2055,7 @@ Object.assign(window,{
   handleShopBuy, handleShopReroll, handleShopSkip, handleShopContinue,
   handleRemoveSymbol, closeRemoveModal, resetRun, buyMeta, confirmForfeit,
   toggleSidebar, closeSidebar,
+  confirmNewRun, buyNudge, handleShopHold,
 });
 </script>
 </body>
