@@ -49,7 +49,7 @@ body::before {
 }
 
 /* ── Layout ─────────────────────────────────────────────── */
-.layout { display: flex; flex-direction: row; min-height: 100vh; position: relative; z-index: 1; }
+.layout { display: flex; flex-direction: row; height: 100vh; overflow: hidden; position: relative; z-index: 1; }
 
 /* ── Sidebar ─────────────────────────────────────────────── */
 .sidebar {
@@ -147,7 +147,14 @@ body.phase-shop .mod-card.expanded .mod-sell-row { display: flex; }
 /* ── Main game area ──────────────────────────────────────── */
 .game-area {
   flex: 1; display: flex; flex-direction: column; align-items: center;
-  padding: 16px 14px 28px; max-width: 580px; margin: 0 auto; width: 100%;
+  padding: 16px 14px 80px; max-width: 580px;
+  /* Centre in the remaining viewport width */
+  margin: 0 auto;
+  width: 100%;
+  /* Allow vertical scroll within this column */
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 100vh;
 }
 
 /* ── HUD ─────────────────────────────────────────────────── */
@@ -426,6 +433,18 @@ body.overlay-open { overflow: hidden; position: fixed; width: 100%; }
 .help-tag.hold  { background: rgba(245,197,24,0.1); color: var(--hold); border: 1px solid rgba(245,197,24,0.25); }
 .help-tip { background: rgba(0,212,255,0.06); border: 1px solid rgba(0,212,255,0.15); border-radius: 8px; padding: 8px 10px; font-size: 0.76rem; color: var(--text-muted); line-height: 1.5; margin-top: 8px; }
 .help-tip strong { color: var(--cyan); }
+
+/* ── Help paytable tab ──────────────────────────────────── */
+.pt-combo-row { display:flex; align-items:center; padding:5px 0; border-bottom:1px solid rgba(255,255,255,0.05); font-size:0.76rem; gap:8px; }
+.pt-combo-row:last-child { border-bottom:none; }
+.pt-combo-name { flex:1; color:var(--text); font-weight:600; }
+.pt-combo-chips { color:#69f0ae; font-weight:700; min-width:52px; text-align:right; }
+.pt-combo-mult  { color:var(--gold); font-weight:700; min-width:40px; text-align:right; }
+.pt-pl-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:4px; }
+.pt-pl-item { background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:8px; padding:6px 8px; display:flex; align-items:center; gap:8px; }
+.pt-pl-name { font-size:0.68rem; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex:1; }
+.pt-pl-svg  { flex-shrink:0; }
+
 /* ── Help & Tutorial buttons in sidebar footer ── */
 .sidebar-footer-btns { display: flex; flex-direction: column; gap: 6px; }
 .btn-help { width: 100%; background: none; border: 1px solid var(--border); color: var(--text-muted); padding: 7px; border-radius: 8px; cursor: pointer; font-family: 'Cinzel', serif; font-size: 0.75rem; letter-spacing: 0.1em; transition: all 0.2s; }
@@ -679,11 +698,9 @@ small  { color: var(--text-muted); }
 
 
 /* ── Scrollbar styling ───────────────────────────────────── */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: var(--surface2); border-radius: 3px; }
-::-webkit-scrollbar-thumb { background: #2a3a5e; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--cyan); }
-* { scrollbar-width: thin; scrollbar-color: #2a3a5e var(--surface2); }
+::-webkit-scrollbar { display: none; }
+* { scrollbar-width: none; }
+.sidebar { overflow-x: hidden; }
 
 /* ── Mobile drawer toggle button ── */
 .sidebar-toggle {
@@ -767,6 +784,75 @@ small  { color: var(--text-muted); }
   /* ── Spin button sits above toggle ── */
   .spin-btn { font-size: 1rem; padding: 14px; border-radius: 12px; }
 }
+
+/* ── Tutorial Overlay ────────────────────────────────────────── */
+#tut-overlay {
+  display: none; position: fixed; inset: 0; z-index: 1000;
+  pointer-events: all;
+}
+#tut-overlay.active { display: block; }
+#tut-spot {
+  display: none; position: fixed; z-index: 1001; pointer-events: none;
+  transition: top 0.3s ease, left 0.3s ease, width 0.3s ease, height 0.3s ease;
+}
+#tut-card {
+  display: none; position: fixed; z-index: 1002;
+  pointer-events: all;
+}
+.tut-card-inner {
+  background: linear-gradient(145deg, #0d1b40, #060e25);
+  border: 1px solid var(--cyan-dim);
+  border-radius: 14px;
+  padding: 18px 18px 14px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.8), 0 0 0 1px rgba(0,212,255,0.1);
+}
+.tut-card-header {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+}
+.tut-icon { font-size: 1.4rem; flex-shrink: 0; }
+.tut-title {
+  font-family: 'Cinzel', serif; font-size: 0.9rem; font-weight: 900;
+  color: var(--cyan); letter-spacing: 0.08em;
+}
+.tut-body {
+  font-size: 0.8rem; line-height: 1.55; color: var(--text-muted);
+  margin-bottom: 14px;
+}
+.tut-btn {
+  width: 100%; padding: 9px; background: linear-gradient(135deg, var(--cyan-dim), #0066aa);
+  border: none; border-radius: 8px; color: #fff; font-family: 'Cinzel', serif;
+  font-size: 0.8rem; font-weight: 700; letter-spacing: 0.08em; cursor: pointer;
+  transition: opacity 0.15s;
+}
+.tut-btn:hover { opacity: 0.85; }
+.tut-progress {
+  display: flex; gap: 5px; justify-content: center; margin-top: 12px;
+}
+.tut-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--border); transition: background 0.2s;
+}
+.tut-dot.active { background: var(--cyan); }
+.tut-skip {
+  display: block; margin: 8px auto 0; background: none; border: none;
+  color: var(--text-dim); font-size: 0.68rem; cursor: pointer;
+  font-family: 'Cinzel', serif; letter-spacing: 0.06em; opacity: 0.6;
+  transition: opacity 0.15s;
+}
+.tut-skip:hover { opacity: 1; color: var(--text-muted); }
+/* Pulse animation for action targets */
+@keyframes tutPulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(0,212,255,0.7); }
+  50%      { box-shadow: 0 0 0 8px rgba(0,212,255,0); }
+}
+.tut-pulse {
+  animation: tutPulse 1.2s ease infinite !important;
+  outline: 2px solid var(--cyan) !important;
+  outline-offset: 2px !important;
+}
+/* Un-disable the tutorial button */
+.btn-tutorial { opacity: 1 !important; cursor: pointer !important; }
+
 </style>
 </head>
 <body>
@@ -797,14 +883,14 @@ small  { color: var(--text-muted); }
     <div class="sidebar-footer">
       <div class="sidebar-footer-btns">
         <button class="btn-help" onclick="openHelp()">? How to Play</button>
-        <button class="btn-tutorial" title="Coming soon" disabled>▷ Tutorial (Coming Soon)</button>
+        <button class="btn-tutorial" onclick="TUT.start()">▷ Tutorial</button>
         <button class="btn-forfeit" onclick="confirmForfeit()">✕ Forfeit Run</button>
       </div>
     </div>
   </aside>
 
   <!-- ── MAIN ────────────────────────────────────────────── -->
-  <main class="game-area">
+  <main class="game-area" id="game-main">
 
     <!-- Sidebar reopen button (desktop only, shown when sidebar collapsed) -->
     <button class="btn-sidebar-open" id="btn-sidebar-open" onclick="expandSidebar()" aria-label="Open sidebar">
@@ -994,6 +1080,7 @@ small  { color: var(--text-muted); }
       <button class="help-tab" onclick="showHelpTab('symbols',this)">Symbols</button>
       <button class="help-tab" onclick="showHelpTab('shop',this)">Shop</button>
       <button class="help-tab" onclick="showHelpTab('strategy',this)">Strategy</button>
+      <button class="help-tab" onclick="showHelpTab('paytable',this)">Paytable</button>
     </div>
 
     <!-- BASICS -->
@@ -1090,6 +1177,24 @@ small  { color: var(--text-muted); }
         <div class="help-row"><span class="help-label">SELL</span><span class="help-desc">Your equipped modifiers appear below the grid. Sell any for half its original cost to free a slot.</span></div>
       </div>
       <div class="help-tip"><strong>Tip:</strong> Skip early shops if nothing fits your build — the +2G compounds. But don't skip modifier deals that synergise with symbols you already have.</div>
+    </div>
+
+    <!-- PAYTABLE -->
+    <div class="help-panel" id="help-paytable">
+      <div class="help-section">
+        <div class="help-section-title">Spin Combos</div>
+        <div id="help-combos-list"></div>
+      </div>
+      <div class="help-section" style="margin-top:12px">
+        <div class="help-section-title">⭐ Scatter Bonus</div>
+        <div class="help-row"><span class="help-sym">3⭐</span><span class="help-desc">+22 chips, ×0.6, 2 bonus spins</span></div>
+        <div class="help-row"><span class="help-sym">4⭐</span><span class="help-desc">+55 chips, ×1.2, 3 bonus spins</span></div>
+        <div class="help-row"><span class="help-sym">5⭐</span><span class="help-desc">+120 chips, ×2.5, 4 bonus spins</span></div>
+      </div>
+      <div class="help-section" style="margin-top:12px">
+        <div class="help-section-title">Paylines (20 active)</div>
+        <div id="help-paylines-grid" class="pt-pl-grid"></div>
+      </div>
     </div>
 
     <!-- STRATEGY -->
@@ -2375,6 +2480,7 @@ function nudgeReel(ri, dir){
   game._pendingResult=result; game._pendingGrid=grid;
   save();
   checkRoundEnd();
+  if(window._tutMode==='nudge') TUT.onNudgeDone();
 }
 
 function toggleHoldReel(ri){
@@ -2520,6 +2626,7 @@ function endBonusRound() {
 
 // ── Spin ──────────────────────────────────────────────────
 async function spin(){
+  if(window._tutMode==='spin'){ TUT.doScriptedSpin(); return; }
   if(spinning||!['playing'].includes(game.phase)||game.spinsLeft<=0||game.bonusSpinsLeft>0) return;
   spinning=true; updateSpinBtn(true);
   document.getElementById('result-card')?.classList.add('hidden');
@@ -2676,6 +2783,65 @@ function showHelpTab(tab, btn){
   document.querySelectorAll('.help-tab').forEach(b=>b.classList.remove('active'));
   document.getElementById('help-'+tab)?.classList.add('active');
   btn.classList.add('active');
+  if(tab==='paytable') renderHelpPaytable();
+}
+
+function renderHelpPaytable(){
+  // Combos
+  const cl = document.getElementById('help-combos-list');
+  if(cl && !cl.dataset.built){
+    const rows = [
+      ['🎰 JACKPOT!','5× 💎 or 7️⃣','+250⚡','×12'],
+      ['FIVE OF A KIND','5× same symbol','+120⚡','×6'],
+      ['FOUR IN A ROW','4× from left','+55⚡','×3.5'],
+      ['THREE IN A ROW','3× from left','+22⚡','×2'],
+      ['NO WIN','No payline match','—','×1'],
+    ];
+    cl.innerHTML = rows.map(([name,note,chips,mult])=>`
+      <div class="pt-combo-row">
+        <div class="pt-combo-name">${name}<span style="color:var(--text-dim);font-size:0.68rem;display:block">${note}</span></div>
+        <div class="pt-combo-chips">${chips}</div>
+        <div class="pt-combo-mult">${mult}</div>
+      </div>`).join('');
+    cl.dataset.built='1';
+  }
+  // Paylines — mini SVG diagrams
+  const pg = document.getElementById('help-paylines-grid');
+  if(pg && !pg.dataset.built){
+    const W=70, H=36, rW=W/5, rH=H/3;
+    const COLORS=['#00d4ff','#f5c518','#ff6b6b','#69f0ae','#cc88ff',
+                  '#ff9944','#44ddff','#ffcc00','#88ff88','#ff88cc',
+                  '#ccffaa','#ffaacc','#aaccff','#ffddaa','#aaffdd',
+                  '#ff8888','#88ccff','#ccaaff','#aaffcc','#ffccaa'];
+    pg.innerHTML = CFG.PAYLINES.map((pl,i)=>{
+      const name = CFG.PAYLINE_NAMES[i]||('L'+(i+1));
+      const col  = COLORS[i % COLORS.length];
+      const pts  = pl.map((row,reel)=>{
+        const cx = reel*rW + rW/2;
+        const cy = row*rH + rH/2;
+        return cx+','+cy;
+      }).join(' ');
+      // Draw dot grid background + the line
+      let dots='';
+      for(let r=0;r<5;r++) for(let row=0;row<3;row++){
+        const cx=r*rW+rW/2, cy=row*rH+rH/2;
+        dots+=`<circle cx="${cx}" cy="${cy}" r="2" fill="rgba(255,255,255,0.12)"/>`;
+      }
+      // Highlight the cells on this payline
+      pl.forEach((row,reel)=>{
+        const cx=reel*rW+rW/2, cy=row*rH+rH/2;
+        dots+=`<circle cx="${cx}" cy="${cy}" r="3.5" fill="${col}" opacity="0.85"/>`;
+      });
+      return `<div class="pt-pl-item">
+        <svg class="pt-pl-svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+          ${dots}
+          <polyline points="${pts}" fill="none" stroke="${col}" stroke-width="1.5" stroke-linejoin="round" opacity="0.7"/>
+        </svg>
+        <span class="pt-pl-name">${i+1}. ${name}</span>
+      </div>`;
+    }).join('');
+    pg.dataset.built='1';
+  }
 }
 
 function toggleModCard(el){
@@ -2809,7 +2975,7 @@ function closeSidebar(){
 }
 
 function init(){
-  window.scrollTo(0,0);
+  document.getElementById('game-main')?.scrollTo(0,0);
   UI.buildReelDOM();
   game=loadRun();
   UI.updateHUD(game); UI.updateSidebar(game);
@@ -2819,7 +2985,312 @@ function init(){
   else if(game.phase==='shop'){ currentShop=Shop.generateShop(game.modifiers); UI.showPhase('shop',game); UI.renderShop(currentShop,game); }
   else if(game.phase==='game_over'){ UI.showPhase('game_over',game); }
   else { showPreRound(); }
+  // Auto-start tutorial for first-time players
+  if(!META.tutorialDone){ setTimeout(()=>TUT.start(), 400); }
 }
+
+
+// ── Tutorial ──────────────────────────────────────────────────────
+const TUT = (function(){
+  'use strict';
+
+  // Scripted spin: 3×🍒 on middle row
+  // grid[reel] = [top, mid, bot]  (stop=0 means strip[0..2])
+  const S_STRIPS = [
+    ['🍋','🍒','🍎','🍀','🍋','🍒'],  // stop 0 → [🍋,🍒,🍎]  mid=🍒
+    ['🍎','🍒','🍋','🍎','🍒','🍋'],  // stop 0 → [🍎,🍒,🍋]  mid=🍒
+    ['🍀','🍒','🍋','🍀','🍒','🍋'],  // stop 0 → [🍀,🍒,🍋]  mid=🍒
+    ['🍒','🍎','🍒','🍋','🍎','🍒'],  // stop 0 → [🍒,🍎,🍒]  mid=🍎; nudge down (stop+1) → mid=🍒
+    ['🍎','🍋','🍒','🍎','🍋','🍒'],  // stop 0 → [🍎,🍋,🍒]  mid=🍋
+  ];
+  const S_STOPS = [0,0,0,0,0];
+
+  const STEPS = [
+    { type:'card', icon:'🎰', title:'Welcome to ForgeSlot',
+      body:"ForgeSlot is a slot machine roguelike. Spin reels to score points, build your symbol deck, and survive all four stages.\n\nThis quick tour shows you everything you need — takes about 2 minutes.",
+      btn:'Start Tour →' },
+
+    { type:'spotlight', sel:'.progress-wrap', pos:'below', icon:'🎯', title:'Your Target',
+      body:"Each round has a score target. The progress bar fills as you score. Hit the target before your spins run out to advance.\n\nMiss it and the run ends.",
+      btn:'Got it →' },
+
+    { type:'spotlight', sel:'.hud', pos:'below', icon:'📊', title:'Your Resources',
+      body:"Track your Spins remaining (left), Gold for the shop (right), and your Round Score vs target in the progress bar.\n\nAll three matter every round.",
+      btn:'Got it →' },
+
+    { type:'spotlight', sel:'.token-hud', pos:'above', icon:'🎮', title:'Your Action Tokens',
+      body:"After each spin you get three tools:\n⚡ Forge — swap any visible symbol\n↕ Nudge — shift a reel one row\n🔒 Hold — lock a reel for next spin\n\nEach costs one token per round. Use them to rescue bad spins.",
+      btn:'Got it →' },
+
+    { type:'action', waitFor:'spin', icon:'🎰', title:"Let's Spin!",
+      body:'Click the SPIN button to roll the reels. Try it now!',
+      pulse:'#spin-btn' },
+
+    { type:'spotlight', sel:'#result-card', pos:'auto', icon:'✨', title:'You Scored!',
+      body:"Three matching symbols in a row — a winning payline!\n\nScore = Chips × Multiplier. Each combo type adds both. Highlighted symbols show which cells contributed.",
+      btn:'Next →' },
+
+    { type:'action', waitFor:'nudge', icon:'↕', title:'Try a Nudge',
+      body:"See the triangle arrows on the reels? Click any one to shift that reel one row.\n\nThe ghost symbol peeking out shows what's coming. Watch the score change live!",
+      pulse:'.reel-nudge-btn' },
+
+    { type:'spotlight', sel:'#result-card', pos:'auto', icon:'💡', title:'Score Updated!',
+      body:"The score changed instantly — no extra spin needed.\n\nA nudge can turn a 3-of-a-kind into a 4-of-a-kind for a huge chip swing. It's your most powerful mid-spin tool.",
+      btn:'Nice →' },
+
+    { type:'spotlight', sel:'.token-hud', pos:'above', icon:'⚡', title:'Forge & Hold',
+      body:"⚡ Forge — click the forge icon then tap any reel symbol to swap it out. Great for removing a skull on a winning line.\n\n🔒 Hold — lock a reel so it doesn't spin next turn. Lock a high-value position and spin around it.",
+      btn:'Got it →' },
+
+    { type:'card', icon:'🛒', title:'The Shop',
+      body:"Win a round → visit the shop. Spend gold to:\n\n• Buy Symbols — adds copies to your reel pool (more copies = higher odds)\n• Buy Modifiers — passive bonuses every round\n• Remove Symbol — thin weak symbols from your deck\n• Skip — pass and earn +2G\n\nSynergy beats raw stats. Prioritise modifiers that work with your deck.",
+      btn:'Got it →' },
+
+    { type:'card', icon:'🏆', title:"You're Ready!",
+      body:"That's ForgeSlot. Spin, score, use your tokens at the right moment, and shop smart.\n\nTip: Tap ❓ How to Play in the sidebar anytime for the full reference guide.\n\nGood luck — see how far you can go!",
+      btn:'Start My Run! →' },
+  ];
+
+  let step = 0;
+
+  const getOverlay = () => document.getElementById('tut-overlay');
+  const getSpot    = () => document.getElementById('tut-spot');
+  const getCard    = () => document.getElementById('tut-card');
+
+  function start(){
+    // Close any open overlays
+    ['phase-pre-round','phase-shop','phase-game-over'].forEach(id=>
+      document.getElementById(id)?.classList.remove('active'));
+    document.body.classList.remove('overlay-open','phase-shop');
+    document.getElementById('result-card')?.classList.add('hidden');
+    document.getElementById('last-chance-hint')?.classList.remove('active');
+
+    // Set up a clean tutorial game state
+    game = newRunState();
+    game.phase = 'playing';
+    game.spinsLeft = 8;
+    game.spinsUsedThisRound = 0;
+    game.roundScore = 0;
+    game.forgeCharges = CFG.BASE_FORGE;
+    game.nudgeTokens  = CFG.BASE_NUDGE;
+    game.holdTokens   = CFG.BASE_HOLD;
+
+    UI.clearPaylineLines();
+    UI.hidePostSpinActions();
+    UI.fillReels(game.playerDeck, null);
+    UI.updateHUD(game); UI.updateSidebar(game);
+    UI.updateTokenHUD(game); UI.updateReelVisuals(game);
+    updateSpinBtn(false);
+
+    // Reset and show
+    step = 0;
+    window._tutMode = null;
+    getOverlay().classList.add('active');
+    renderStep();
+  }
+
+  function renderStep(){
+    const s = STEPS[step];
+    if(!s){ finish(); return; }
+
+    const overlay = getOverlay();
+    const spot    = getSpot();
+    const card    = getCard();
+
+    // Clean up any pulse from previous step
+    document.querySelectorAll('.tut-pulse').forEach(el=>el.classList.remove('tut-pulse'));
+
+    if(s.type === 'card'){
+      spot.style.display = 'none';
+      overlay.style.pointerEvents = 'all';
+      overlay.style.background = 'rgba(0,0,0,0.82)';
+      card.innerHTML = buildCardHTML(s);
+      card.style.cssText = [
+        'position:fixed','top:50%','left:50%',
+        'transform:translate(-50%,-50%)',
+        'max-width:340px','width:calc(100% - 48px)',
+        'display:block','z-index:1002'
+      ].join(';');
+    } else if(s.type === 'spotlight'){
+      overlay.style.pointerEvents = 'all';
+      overlay.style.background = 'transparent';
+      const el = document.querySelector(s.sel);
+      positionSpotlight(el, spot);
+      card.innerHTML = buildCardHTML(s);
+      positionCard(el, s.pos, card);
+    } else if(s.type === 'action'){
+      // Pass-through so user can interact
+      overlay.style.background = 'transparent';
+      overlay.style.pointerEvents = 'none';
+      spot.style.display = 'none';
+      card.innerHTML = buildCardHTML(s);
+      card.style.cssText = [
+        'position:fixed','bottom:80px','left:50%',
+        'transform:translateX(-50%)',
+        'max-width:320px','width:calc(100% - 48px)',
+        'display:block','z-index:1002'
+      ].join(';');
+      // Pulse the target element(s)
+      if(s.pulse){
+        setTimeout(()=>{
+          document.querySelectorAll(s.pulse).forEach(el=>el.classList.add('tut-pulse'));
+        }, 100);
+      }
+      window._tutMode = s.waitFor;
+    }
+  }
+
+  function buildCardHTML(s){
+    const body = s.body.replace(/\n/g,'<br>');
+    const btn  = s.btn
+      ? `<button class="tut-btn" onclick="TUT.advance()">${s.btn}</button>`
+      : '';
+    const dots = STEPS.map((_,i)=>`<div class="tut-dot${i===step?' active':''}"></div>`).join('');
+    const isLast = step === STEPS.length - 1;
+    const skip = !isLast
+      ? `<button class="tut-skip" onclick="TUT.finish()">Skip Tutorial</button>` : '';
+    return `<div class="tut-card-inner">
+      <div class="tut-card-header">
+        <span class="tut-icon">${s.icon}</span>
+        <span class="tut-title">${s.title}</span>
+      </div>
+      <div class="tut-body">${body}</div>
+      ${btn}
+      <div class="tut-progress">${dots}</div>
+      ${skip}
+    </div>`;
+  }
+
+  function positionSpotlight(el, spot){
+    if(!el){ spot.style.display='none'; return; }
+    const r   = el.getBoundingClientRect();
+    const pad = 8;
+    Object.assign(spot.style,{
+      display:'block',
+      top:`${r.top-pad}px`, left:`${r.left-pad}px`,
+      width:`${r.width+pad*2}px`, height:`${r.height+pad*2}px`,
+      borderRadius:'12px',
+      boxShadow:'0 0 0 9999px rgba(0,0,0,0.82)',
+      border:'2px solid rgba(0,212,255,0.45)',
+      zIndex:'1001',
+      pointerEvents:'none',
+    });
+  }
+
+  function positionCard(el, pos, card){
+    const fallback = ()=>{
+      card.style.cssText=[
+        'position:fixed','top:50%','left:50%',
+        'transform:translate(-50%,-50%)',
+        'max-width:320px','width:calc(100% - 48px)',
+        'display:block','z-index:1002'
+      ].join(';');
+    };
+    if(!el){ fallback(); return; }
+    const r   = el.getBoundingClientRect();
+    const pad = 12;
+    const cw  = Math.min(320, window.innerWidth - 32);
+    const ch  = 220; // estimated card height
+
+    let top, left;
+    const spaceBelow  = window.innerHeight - r.bottom;
+    const spaceAbove  = r.top;
+
+    if(spaceBelow >= ch + pad || pos === 'below'){
+      top  = r.bottom + pad;
+      left = Math.min(Math.max(r.left + r.width/2 - cw/2, 16), window.innerWidth - cw - 16);
+    } else {
+      top  = Math.max(r.top - ch - pad, 8);
+      left = Math.min(Math.max(r.left + r.width/2 - cw/2, 16), window.innerWidth - cw - 16);
+    }
+    card.style.cssText=[
+      'position:fixed',`top:${top}px`,`left:${left}px`,
+      `width:${cw}px`,'display:block','z-index:1002',
+      'transform:none'
+    ].join(';');
+  }
+
+  function advance(){
+    document.querySelectorAll('.tut-pulse').forEach(el=>el.classList.remove('tut-pulse'));
+    window._tutMode = null;
+    step++;
+    if(step >= STEPS.length){ finish(); return; }
+    renderStep();
+  }
+
+  async function doScriptedSpin(){
+    window._tutMode = null;
+    document.querySelectorAll('.tut-pulse').forEach(el=>el.classList.remove('tut-pulse'));
+    // Re-block overlay while spin animates
+    const overlay = getOverlay();
+    overlay.style.pointerEvents = 'all';
+
+    spinning=true; updateSpinBtn(true);
+    document.getElementById('result-card')?.classList.add('hidden');
+    UI.clearPaylineLines(); UI.hidePostSpinActions();
+    document.querySelectorAll('.symbol').forEach(el=>{
+      el.classList.remove('sym-win','sym-dim');
+      el.removeAttribute('data-glow'); el.style.removeProperty('box-shadow');
+    });
+
+    game.spinsLeft--; game.spinsUsedThisRound++;
+    UI.updateHUD(game);
+
+    game.spinStrips   = S_STRIPS.map(s=>[...s]);
+    game.spinStops    = [...S_STOPS];
+    game.lastPinned   = [null,null,null,null,null];
+    game.pinnedSymbols= [null,null,null,null,null];
+    game.heldReels    = [false,false,false,false,false];
+    game.forgeMode    = false;
+
+    const grid = Engine.gridFromState(game.spinStrips, game.spinStops);
+    window._lastGrid = grid;
+    UI.injectGrid(grid);
+    await Promise.all(Array.from({length:CFG.NUM_REELS},(_,i)=>UI.animateReel(i,i)));
+
+    const result = Engine.calculateScore(grid, game.modifiers, game.playerDeck, true, game.winStreak, game.lastPinned);
+    game._pendingResult = result; game._pendingGrid = grid;
+    game._lastSpinScore = result.score;
+    game.winStreak = result.hitLines.length > 0 ? 1 : 0;
+    game.roundScore  += result.score;
+    game.totalScore  += result.score;
+    if(result.score > game.bestSpin) game.bestSpin = result.score;
+
+    UI.highlightPaylines(result.lineResults);
+    if(result.hitLines.length>0) UI.spawnScorePopups(result.hitLines, grid);
+    UI.showResultCard(result, true);
+    UI.updateHUD(game); UI.updateTokenHUD(game);
+    UI.showPostSpinActions(game);
+    spinning = false;
+
+    // Advance to post-spin step after a moment
+    setTimeout(()=>{ step++; renderStep(); }, 900);
+  }
+
+  function onNudgeDone(){
+    window._tutMode = null;
+    document.querySelectorAll('.tut-pulse').forEach(el=>el.classList.remove('tut-pulse'));
+    getOverlay().style.pointerEvents = 'all';
+    step++;
+    setTimeout(()=>renderStep(), 500);
+  }
+
+  function finish(){
+    document.querySelectorAll('.tut-pulse').forEach(el=>el.classList.remove('tut-pulse'));
+    window._tutMode = null;
+    getOverlay().classList.remove('active');
+    getSpot().style.display = 'none';
+    getCard().style.display = 'none';
+
+    META.tutorialDone = true;
+    game = newRunState();
+    save();
+    showPreRound();
+    UI.updateHUD(game); UI.updateSidebar(game); UI.updateTokenHUD(game);
+  }
+
+  return { start, advance, finish, doScriptedSpin, onNudgeDone };
+})();
 
 window.addEventListener('DOMContentLoaded', init);
 
@@ -2831,12 +3302,18 @@ Object.assign(window,{
   handleRemoveSymbol, closeRemoveModal, resetRun, buyMeta, confirmForfeit,
   sellModifier, toggleModCard, openHelp, closeHelp, closeHelpOnBackdrop, showHelpTab,
   collapseSidebar, expandSidebar,
-  toggleSidebar, closeSidebar,
+  toggleSidebar, closeSidebar, TUT,
   confirmNewRun, buyNudge, handleShopHold,
   selectBonusSym,
   selectForgeSym, closeForgeModal, forgeSelectRow, forgeBackToRows,
   toggleHoldMode,
 });
 </script>
+
+<!-- ── TUTORIAL ─────────────────────────────────────────── -->
+<div id="tut-overlay"></div>
+<div id="tut-spot"></div>
+<div id="tut-card"></div>
+
 </body>
 </html>
