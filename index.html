@@ -33,11 +33,12 @@
   --sym-size:   76px;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { height: 100%; }
+html { height: 100%; overflow-x: hidden; }
 body {
   background: var(--bg); color: var(--text);
   font-family: 'Rajdhani', system-ui, sans-serif;
   font-size: 16px; min-height: 100%; overflow-x: hidden;
+  touch-action: manipulation; /* disable double-tap zoom on iOS */
 }
 body::before {
   content: ''; position: fixed; inset: 0;
@@ -56,7 +57,32 @@ body::before {
   border-right: 1px solid var(--border);
   display: flex; flex-direction: column;
   position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  transition: width 0.25s cubic-bezier(0.22,1,0.36,1), opacity 0.2s;
 }
+.sidebar.collapsed {
+  width: 0; opacity: 0; overflow: hidden; border-right: none; pointer-events: none;
+}
+.btn-sidebar-collapse {
+  background: rgba(255,255,255,0.04); border: 1px solid var(--border); color: var(--text-muted); cursor: pointer;
+  font-size: 0.7rem; padding: 4px 9px; border-radius: 6px; line-height: 1;
+  font-family: 'Cinzel', serif; font-weight: 700; letter-spacing: 0.06em;
+  display: flex; align-items: center; gap: 5px;
+  transition: color 0.15s, border-color 0.15s;
+}
+.btn-sidebar-collapse:hover { color: var(--gold); border-color: var(--gold-dim); }
+.btn-sidebar-open {
+  display: none; position: fixed; top: 12px; left: 12px; z-index: 50;
+  background: var(--surface2); border: 1px solid var(--border-hi);
+  color: var(--text-muted); border-radius: 8px; padding: 6px 10px;
+  font-size: 0.75rem; font-family: 'Cinzel', serif; font-weight: 700;
+  letter-spacing: 0.07em; cursor: pointer;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+  transition: border-color 0.15s, color 0.15s;
+  align-items: center; gap: 6px;
+}
+.btn-sidebar-open:hover { border-color: var(--gold); color: var(--gold); }
+.sidebar.collapsed ~ * .btn-sidebar-open,
+body.sidebar-collapsed .btn-sidebar-open { display: flex; }
 .sidebar-header {
   display: flex; align-items: center; justify-content: space-between;
   padding: 14px 14px 12px; border-bottom: 1px solid var(--border);
@@ -303,9 +329,10 @@ body.phase-shop .mod-card.expanded .mod-sell-row { display: flex; }
 .result-card.pending-update { border-color: rgba(0,212,255,0.3); }
 
 /* ── Overlays ────────────────────────────────────────────── */
-.overlay { display: none; position: fixed; inset: 0; background: rgba(2,5,15,0.95); backdrop-filter: blur(5px); z-index: 100; align-items: center; justify-content: center; padding: 16px; }
+.overlay { display: none; position: fixed; inset: 0; background: rgba(2,5,15,0.95); backdrop-filter: blur(5px); z-index: 100; align-items: center; justify-content: center; padding: 16px; padding-bottom: max(16px, env(safe-area-inset-bottom)); }
+body.overlay-open { overflow: hidden; position: fixed; width: 100%; }
 .overlay.active { display: flex; }
-.overlay-card { background: var(--surface); border: 1px solid var(--border-hi); border-radius: 19px; padding: 24px 20px; width: 100%; max-width: 430px; max-height: 92vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,30,0.85), 0 0 0 1px rgba(255,255,255,0.04); }
+.overlay-card { background: var(--surface); border: 1px solid var(--border-hi); border-radius: 19px; padding: 24px 20px; width: 100%; max-width: 430px; max-height: 88vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,30,0.85), 0 0 0 1px rgba(255,255,255,0.04); }
 .overlay-eyebrow { font-family: 'Cinzel', serif; font-size: 0.75rem; letter-spacing: 0.2em; color: var(--text-dim); margin-bottom: 4px; text-transform: uppercase; }
 .overlay-title { font-family: 'Cinzel', serif; font-size: 1.45rem; font-weight: 900; letter-spacing: 0.08em; margin-bottom: 18px; line-height: 1.1; }
 .overlay-title.gold { color: var(--gold); text-shadow: 0 0 24px var(--gold-glow); }
@@ -374,6 +401,37 @@ body.phase-shop .mod-card.expanded .mod-sell-row { display: flex; }
 .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(2,5,15,0.92); z-index: 200; align-items: center; justify-content: center; padding: 16px; }
 .modal-backdrop.active { display: flex; }
 .modal-box { background: var(--surface); border: 1px solid var(--border-hi); border-radius: 15px; padding: 20px; width: 100%; max-width: 320px; }
+/* ── Help modal ── */
+#help-modal { z-index: 250; }
+.help-box { background: var(--surface); border: 1px solid var(--border-hi); border-radius: 19px; padding: 20px 18px; width: 100%; max-width: 480px; max-height: 88vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,30,0.85); }
+.help-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+.help-title { font-family: 'Cinzel', serif; font-size: 1.05rem; font-weight: 900; color: var(--gold); letter-spacing: 0.1em; }
+.help-close { background: none; border: 1px solid var(--border); color: var(--text-muted); border-radius: 7px; padding: 4px 10px; font-size: 0.85rem; cursor: pointer; font-family: 'Cinzel', serif; transition: all 0.14s; }
+.help-close:hover { border-color: var(--cyan-dim); color: var(--cyan); }
+.help-tabs { display: flex; gap: 5px; margin-bottom: 14px; flex-wrap: wrap; }
+.help-tab { background: var(--surface2); border: 1px solid var(--border); color: var(--text-muted); border-radius: 7px; padding: 5px 10px; font-size: 0.75rem; font-family: 'Cinzel', serif; font-weight: 700; cursor: pointer; letter-spacing: 0.06em; transition: all 0.14s; }
+.help-tab.active { background: rgba(0,212,255,0.1); border-color: var(--cyan-dim); color: var(--cyan); }
+.help-panel { display: none; }
+.help-panel.active { display: block; }
+.help-section { margin-bottom: 14px; }
+.help-section-title { font-family: 'Cinzel', serif; font-size: 0.78rem; font-weight: 700; color: var(--gold); letter-spacing: 0.1em; margin-bottom: 7px; padding-bottom: 4px; border-bottom: 1px solid var(--border); text-transform: uppercase; }
+.help-row { display: flex; gap: 8px; align-items: flex-start; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 0.78rem; line-height: 1.4; }
+.help-row:last-child { border-bottom: none; }
+.help-sym { font-size: 1.1rem; width: 26px; flex-shrink: 0; text-align: center; }
+.help-label { font-weight: 700; color: var(--text); min-width: 70px; flex-shrink: 0; }
+.help-desc { color: var(--text-muted); flex: 1; }
+.help-tag { display: inline-block; font-size: 0.68rem; font-weight: 700; padding: 1px 6px; border-radius: 10px; margin-right: 4px; font-family: 'Cinzel', serif; }
+.help-tag.forge { background: rgba(255,124,42,0.15); color: var(--forge); border: 1px solid rgba(255,124,42,0.3); }
+.help-tag.nudge { background: rgba(0,212,255,0.1); color: var(--nudge); border: 1px solid rgba(0,212,255,0.25); }
+.help-tag.hold  { background: rgba(245,197,24,0.1); color: var(--hold); border: 1px solid rgba(245,197,24,0.25); }
+.help-tip { background: rgba(0,212,255,0.06); border: 1px solid rgba(0,212,255,0.15); border-radius: 8px; padding: 8px 10px; font-size: 0.76rem; color: var(--text-muted); line-height: 1.5; margin-top: 8px; }
+.help-tip strong { color: var(--cyan); }
+/* ── Help & Tutorial buttons in sidebar footer ── */
+.sidebar-footer-btns { display: flex; flex-direction: column; gap: 6px; }
+.btn-help { width: 100%; background: none; border: 1px solid var(--border); color: var(--text-muted); padding: 7px; border-radius: 8px; cursor: pointer; font-family: 'Cinzel', serif; font-size: 0.75rem; letter-spacing: 0.1em; transition: all 0.2s; }
+.btn-help:hover { border-color: var(--cyan-dim); color: var(--cyan); }
+.btn-tutorial { width: 100%; background: none; border: 1px solid var(--border); color: var(--text-dim); padding: 7px; border-radius: 8px; cursor: pointer; font-family: 'Cinzel', serif; font-size: 0.75rem; letter-spacing: 0.1em; transition: all 0.2s; opacity: 0.5; }
+.btn-tutorial:hover { border-color: var(--gold-dim); color: var(--gold); opacity: 1; }
 .modal-box h3 { font-family: 'Cinzel', serif; font-size: 0.9rem; color: var(--text); margin-bottom: 3px; }
 .remove-list { display: flex; flex-direction: column; gap: 5px; }
 .remove-sym-btn { display: flex; align-items: center; gap: 9px; background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 8px 11px; border-radius: 7px; cursor: pointer; font-size: 0.84rem; transition: border-color 0.14s; text-align: left; }
@@ -631,14 +689,17 @@ small  { color: var(--text-muted); }
 .sidebar-toggle {
   display: none;
   position: fixed; bottom: 16px; left: 16px; z-index: 600;
-  width: 44px; height: 44px; border-radius: 50%;
+  height: 40px; padding: 0 14px; border-radius: 20px;
   background: var(--surface2); border: 1px solid var(--border-hi);
-  color: var(--text-muted); font-size: 1.1rem; cursor: pointer;
-  align-items: center; justify-content: center;
+  color: var(--text-muted); font-size: 0.75rem; font-family: 'Cinzel', serif;
+  font-weight: 700; letter-spacing: 0.08em; cursor: pointer;
+  align-items: center; justify-content: center; gap: 7px;
   box-shadow: 0 4px 16px rgba(0,0,0,0.5);
-  transition: border-color 0.15s, color 0.15s;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  white-space: nowrap;
 }
-.sidebar-toggle:hover { border-color: var(--gold); color: var(--gold); }
+.sidebar-toggle:hover { border-color: var(--gold); color: var(--gold); background: rgba(245,197,24,0.06); }
+.sidebar-toggle.open { border-color: var(--cyan-dim); color: var(--cyan); background: rgba(0,212,255,0.07); }
 .sidebar-open-overlay {
   display: none; position: fixed; inset: 0; z-index: 590;
   background: rgba(2,5,15,0.35);
@@ -710,7 +771,7 @@ small  { color: var(--text-muted); }
 </head>
 <body>
 <!-- Mobile sidebar drawer toggle -->
-<button class="sidebar-toggle" id="sidebar-toggle" onclick="toggleSidebar()" aria-label="Open deck & mods">☰</button>
+<button class="sidebar-toggle" id="sidebar-toggle" onclick="toggleSidebar()" aria-label="Open deck & mods">☰ Deck &amp; Mods</button>
 <div class="sidebar-open-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
 
 <div class="layout">
@@ -722,7 +783,10 @@ small  { color: var(--text-muted); }
         <span class="game-title">FORGESLOT</span>
         <span class="game-subtitle">REEL ROGUELIKE</span>
       </div>
-      <div class="shard-badge" id="shard-count">✧ 0</div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="shard-badge" id="shard-count">✧ 0</div>
+        <button class="btn-sidebar-collapse" onclick="collapseSidebar()" title="Hide sidebar">◀ Hide</button>
+      </div>
     </div>
     <div class="sidebar-body">
       <div class="section-label">Reel Pool</div>
@@ -731,12 +795,21 @@ small  { color: var(--text-muted); }
       <div id="modifier-list"><div class="empty-mods">No modifiers yet</div></div>
     </div>
     <div class="sidebar-footer">
-      <button class="btn-forfeit" onclick="confirmForfeit()">✕ Forfeit Run</button>
+      <div class="sidebar-footer-btns">
+        <button class="btn-help" onclick="openHelp()">? How to Play</button>
+        <button class="btn-tutorial" title="Coming soon" disabled>▷ Tutorial (Coming Soon)</button>
+        <button class="btn-forfeit" onclick="confirmForfeit()">✕ Forfeit Run</button>
+      </div>
     </div>
   </aside>
 
   <!-- ── MAIN ────────────────────────────────────────────── -->
   <main class="game-area">
+
+    <!-- Sidebar reopen button (desktop only, shown when sidebar collapsed) -->
+    <button class="btn-sidebar-open" id="btn-sidebar-open" onclick="expandSidebar()" aria-label="Open sidebar">
+      ▶ <span style="font-size:0.72rem">Deck & Mods</span>
+    </button>
 
     <!-- HUD -->
     <div class="hud">
@@ -905,6 +978,140 @@ small  { color: var(--text-muted); }
     <p style="font-size:0.68rem;color:var(--text-muted);margin:4px 0 12px">Choose one copy to remove from your reel pool.</p>
     <div class="remove-list" id="remove-list"></div>
     <button class="forge-cancel-btn" style="margin-top:10px" onclick="closeRemoveModal()">Cancel</button>
+  </div>
+</div>
+
+<!-- ── HELP MODAL ────────────────────────────────── -->
+<div class="modal-backdrop" id="help-modal" onclick="closeHelpOnBackdrop(event)">
+  <div class="help-box">
+    <div class="help-header">
+      <span class="help-title">📖 HOW TO PLAY</span>
+      <button class="help-close" onclick="closeHelp()">✕ Close</button>
+    </div>
+    <div class="help-tabs">
+      <button class="help-tab active" onclick="showHelpTab('basics',this)">Basics</button>
+      <button class="help-tab" onclick="showHelpTab('actions',this)">Actions</button>
+      <button class="help-tab" onclick="showHelpTab('symbols',this)">Symbols</button>
+      <button class="help-tab" onclick="showHelpTab('shop',this)">Shop</button>
+      <button class="help-tab" onclick="showHelpTab('strategy',this)">Strategy</button>
+    </div>
+
+    <!-- BASICS -->
+    <div class="help-panel active" id="help-basics">
+      <div class="help-section">
+        <div class="help-section-title">The Goal</div>
+        <div class="help-row"><div class="help-desc">Each round has a score <strong>target</strong>. Hit it before you run out of spins to advance. Miss it and the run ends. Score = <strong>Chips × Multiplier</strong> each spin, added to your running round total.</div></div>
+      </div>
+      <div class="help-section">
+        <div class="help-section-title">Winning Lines</div>
+        <div class="help-row"><div class="help-desc">20 paylines run left-to-right across the 5 reels. 3+ matching symbols on a line = a win. Longer runs = bigger combos. Coloured dots on the reel frame sides show which paylines are active.</div></div>
+        <div class="help-row"><span class="help-sym">3</span><span class="help-label">Three in a Row</span><span class="help-desc">+22 chips, ×2 mult</span></div>
+        <div class="help-row"><span class="help-sym">4</span><span class="help-label">Four in a Row</span><span class="help-desc">+55 chips, ×3.5 mult</span></div>
+        <div class="help-row"><span class="help-sym">5</span><span class="help-label">Five of a Kind</span><span class="help-desc">+120 chips, ×6 mult</span></div>
+        <div class="help-row"><span class="help-sym">🎰</span><span class="help-label">Jackpot</span><span class="help-desc">5× 💎 or 7️⃣ — +250 chips, ×12 mult</span></div>
+      </div>
+      <div class="help-section">
+        <div class="help-section-title">Skulls 💀</div>
+        <div class="help-row"><div class="help-desc">Skulls break paylines and apply −4 chips per skull visible. Some modifiers turn skulls into assets instead.</div></div>
+      </div>
+      <div class="help-section">
+        <div class="help-section-title">Star Bonus ⭐</div>
+        <div class="help-row"><span class="help-sym">3⭐</span><span class="help-desc">+22 chips, ×0.6, 2 bonus spins</span></div>
+        <div class="help-row"><span class="help-sym">4⭐</span><span class="help-desc">+55 chips, ×1.2, 3 bonus spins</span></div>
+        <div class="help-row"><span class="help-sym">5⭐</span><span class="help-desc">+120 chips, ×2.5, 4 bonus spins</span></div>
+        <div class="help-tip">During bonus spins, your chosen symbol is pinned to the middle row of the first 4 reels. Pick a symbol that synergises with your modifiers.</div>
+      </div>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="help-panel" id="help-actions">
+      <div class="help-section">
+        <div class="help-section-title">Post-Spin Actions</div>
+        <div class="help-row">
+          <span class="help-sym">⚡</span>
+          <div>
+            <div><span class="help-tag forge">FORGE</span><strong>1 charge/round</strong></div>
+            <div class="help-desc" style="margin-top:3px">Click ⚡ FORGE, then click any visible symbol. A menu appears — pick a replacement. Score recalculates instantly. Best used to fix a skull on a winning line, or complete a near-miss combo.</div>
+          </div>
+        </div>
+        <div class="help-row">
+          <span class="help-sym">↕</span>
+          <div>
+            <div><span class="help-tag nudge">NUDGE</span><strong>1 token/round (+5G to buy more)</strong></div>
+            <div class="help-desc" style="margin-top:3px">After spinning, triangle arrows appear on each reel's top and bottom edge. Click one to shift that reel one row. A ghost symbol shows what's coming before you commit. Score updates live.</div>
+          </div>
+        </div>
+        <div class="help-row">
+          <span class="help-sym">🔒</span>
+          <div>
+            <div><span class="help-tag hold">HOLD</span><strong>1 token/round</strong></div>
+            <div class="help-desc" style="margin-top:3px">Click 🔒 HOLD, then click a reel. That reel won't spin next turn — it stays in position. Useful for locking a high-value reel while you spin the others around it.</div>
+          </div>
+        </div>
+      </div>
+      <div class="help-section">
+        <div class="help-section-title">Last Chance</div>
+        <div class="help-row"><div class="help-desc">If spins run out below target, a hint banner appears if you still have forge or nudge tokens. Use them for one final push — if your score crosses the target, the round is saved.</div></div>
+      </div>
+      <div class="help-tip"><strong>Tip:</strong> Forge and nudge recalculate score immediately. If a nudge or forge pushes you over the round target mid-round, you advance right away — no extra spin needed.</div>
+    </div>
+
+    <!-- SYMBOLS -->
+    <div class="help-panel" id="help-symbols">
+      <div class="help-section">
+        <div class="help-section-title">Symbol Values</div>
+        <div class="help-row"><span class="help-sym">💎</span><span class="help-label">Diamond</span><span class="help-desc">8 chips — rare, high value</span></div>
+        <div class="help-row"><span class="help-sym">7️⃣</span><span class="help-label">Seven</span><span class="help-desc">7 chips — rare</span></div>
+        <div class="help-row"><span class="help-sym">⭐</span><span class="help-label">Star</span><span class="help-desc">5 chips — triggers bonus round</span></div>
+        <div class="help-row"><span class="help-sym">🔔</span><span class="help-label">Bell</span><span class="help-desc">4 chips</span></div>
+        <div class="help-row"><span class="help-sym">🍀</span><span class="help-label">Clover</span><span class="help-desc">4 chips — starter</span></div>
+        <div class="help-row"><span class="help-sym">🪙</span><span class="help-label">Coin</span><span class="help-desc">4 chips — starter</span></div>
+        <div class="help-row"><span class="help-sym">🍒</span><span class="help-label">Cherry</span><span class="help-desc">3 chips — starter</span></div>
+        <div class="help-row"><span class="help-sym">🍋</span><span class="help-label">Lemon</span><span class="help-desc">3 chips — starter (×2 copies)</span></div>
+        <div class="help-row"><span class="help-sym">🍎</span><span class="help-label">Apple</span><span class="help-desc">2 chips — starter, weakest</span></div>
+        <div class="help-row"><span class="help-sym">💀</span><span class="help-label">Skull</span><span class="help-desc">0 chips, −4 penalty, breaks lines</span></div>
+      </div>
+      <div class="help-tip"><strong>Tip:</strong> Buying a symbol adds a copy to your pool, increasing how often it appears. The sidebar shows your full pool and counts.</div>
+    </div>
+
+    <!-- SHOP -->
+    <div class="help-panel" id="help-shop">
+      <div class="help-section">
+        <div class="help-section-title">Shop Items</div>
+        <div class="help-row"><span class="help-sym">🟢</span><span class="help-label">Symbol</span><span class="help-desc">Adds a copy to your reel pool. More copies = higher odds that symbol appears.</span></div>
+        <div class="help-row"><span class="help-sym">🟣</span><span class="help-label">Modifier</span><span class="help-desc">Passive ability active every round. Up to 5 slots (upgradeable). Bought early compounds the most.</span></div>
+        <div class="help-row"><span class="help-sym">🗑️</span><span class="help-label">Remove Symbol</span><span class="help-desc">Strip one copy of any symbol from your pool. Use to thin out weak symbols and improve deck density.</span></div>
+      </div>
+      <div class="help-section">
+        <div class="help-section-title">Shop Actions</div>
+        <div class="help-row"><span class="help-label">↺ Reroll</span><span class="help-desc">Refresh all shop offers for 1G.</span></div>
+        <div class="help-row"><span class="help-label">Skip</span><span class="help-desc">Pass on this shop visit and earn +2G.</span></div>
+        <div class="help-row"><span class="help-label">HOLD</span><span class="help-desc">Save one item to appear at your next shop visit. One held item at a time.</span></div>
+        <div class="help-row"><span class="help-label">SELL</span><span class="help-desc">Your equipped modifiers appear below the grid. Sell any for half its original cost to free a slot.</span></div>
+      </div>
+      <div class="help-tip"><strong>Tip:</strong> Skip early shops if nothing fits your build — the +2G compounds. But don't skip modifier deals that synergise with symbols you already have.</div>
+    </div>
+
+    <!-- STRATEGY -->
+    <div class="help-panel" id="help-strategy">
+      <div class="help-section">
+        <div class="help-section-title">Early Run</div>
+        <div class="help-row"><div class="help-desc">Buy modifiers early — they apply every round after purchase. Prioritise synergy: if you have Gold Fever, buy Coins. If you have Lucky Lemon, buy Lemons.</div></div>
+        <div class="help-row"><div class="help-desc">Don't thin your deck too aggressively in Stage 1. Your pool is small and you need diversity to hit paylines reliably.</div></div>
+      </div>
+      <div class="help-section">
+        <div class="help-section-title">Mid Run</div>
+        <div class="help-row"><div class="help-desc">Once you have a modifier theme, start removing weak symbols to increase pool density. An 🍎 you never want to see is hurting your odds.</div></div>
+        <div class="help-row"><div class="help-desc">Multiplier stacks beat raw chips. A ×6 spin with 80 chips beats a ×2 spin with 200 chips. Prioritise modifiers that add mult.</div></div>
+      </div>
+      <div class="help-section">
+        <div class="help-section-title">Action Tips</div>
+        <div class="help-row"><div class="help-desc"><strong>Forge:</strong> Best used to rescue a near-miss — swap a skull breaking a five-of-a-kind, not to gain +1 chip on an already-winning line.</div></div>
+        <div class="help-row"><div class="help-desc"><strong>Nudge:</strong> Always check the peek ghost first. A skull ghost means don't nudge that direction even if the board looks promising.</div></div>
+        <div class="help-row"><div class="help-desc"><strong>Hold:</strong> Lock high-value reel positions so you can spin weaker reels around them next turn.</div></div>
+      </div>
+      <div class="help-tip"><strong>Skulls:</strong> Without skull modifiers, keep at most 1 skull in your pool. With Skull Pact + Void Walker, flip the strategy — you want more skulls, not fewer.</div>
+    </div>
   </div>
 </div>
 
@@ -1740,6 +1947,9 @@ const UI = (() => {
   function showPhase(phase,game){
     ['phase-pre-round','phase-shop','phase-game-over'].forEach(id=>document.getElementById(id)?.classList.remove('active'));
     document.body.classList.remove('phase-shop');
+    // Lock scroll when overlay opens, unlock when returning to game
+    const isOverlay = ['pre_round','shop','game_over'].includes(phase);
+    document.body.classList.toggle('overlay-open', isOverlay);
     if(phase==='pre_round'){
       const stage=CFG.STAGES[game.stageIndex]; const round=stage?.rounds[game.roundIndex];
       setText('pre-round-name',round?.name??'');
@@ -2115,7 +2325,7 @@ function selectForgeSym(sym){
   game._pendingResult = result; game._pendingGrid = grid;
   showToast(`⚡ ${sym} forged onto Reel ${ri+1}!`,'#ff7c2a');
   save();
-  if(game.spinsLeft<=0) checkRoundEnd();
+  checkRoundEnd();
 }
 
 function closeForgeModal(){ UI.hideForgeModal(); _forgeTarget=null; game.forgeMode=false; game.holdMode=false; UI.updateReelVisuals(game); UI.updateTokenHUD(game); }
@@ -2164,7 +2374,7 @@ function nudgeReel(ri, dir){
   UI.showPostSpinActions(game);
   game._pendingResult=result; game._pendingGrid=grid;
   save();
-  if(game.spinsLeft<=0) checkRoundEnd();
+  checkRoundEnd();
 }
 
 function toggleHoldReel(ri){
@@ -2449,6 +2659,25 @@ function roundFail(){
   save();
 }
 
+function openHelp(){
+  document.getElementById('help-modal')?.classList.add('active');
+  document.body.classList.add('overlay-open');
+  closeSidebar();
+}
+function closeHelp(){
+  document.getElementById('help-modal')?.classList.remove('active');
+  document.body.classList.remove('overlay-open');
+}
+function closeHelpOnBackdrop(e){
+  if(e.target===document.getElementById('help-modal')) closeHelp();
+}
+function showHelpTab(tab, btn){
+  document.querySelectorAll('.help-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.help-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('help-'+tab)?.classList.add('active');
+  btn.classList.add('active');
+}
+
 function toggleModCard(el){
   const wasExpanded = el.classList.contains('expanded');
   document.querySelectorAll('.mod-card.expanded').forEach(c=>c.classList.remove('expanded'));
@@ -2522,6 +2751,7 @@ function resetRun(){
   ['phase-game-over','phase-shop','phase-pre-round'].forEach(id=>document.getElementById(id)?.classList.remove('active'));
   document.getElementById('result-card')?.classList.add('hidden');
   document.querySelectorAll('.symbol').forEach(el=>el.classList.remove('sym-win','sym-dim'));
+  document.body.classList.remove('overlay-open');
   UI.clearPaylineLines(); UI.hidePostSpinActions(); UI.fillReels(game.playerDeck,null);
   UI.updateTokenHUD(game); UI.updateReelVisuals(game);
   showPreRound();
@@ -2548,15 +2778,34 @@ function showToast(msg,color){
 function setText(id,val){ const el=document.getElementById(id); if(el) el.textContent=val; }
 
 // ── Init ──────────────────────────────────────────────────
+function collapseSidebar(){
+  // Desktop collapse only — on mobile use the drawer
+  if(window.innerWidth<=700) return;
+  document.querySelector('.sidebar')?.classList.add('collapsed');
+  document.body.classList.add('sidebar-collapsed');
+  const btn=document.getElementById('btn-sidebar-open');
+  if(btn) btn.style.display='flex';
+}
+function expandSidebar(){
+  document.querySelector('.sidebar')?.classList.remove('collapsed');
+  document.body.classList.remove('sidebar-collapsed');
+  const btn=document.getElementById('btn-sidebar-open');
+  if(btn) btn.style.display='none';
+}
+
 function toggleSidebar(){
   const sb=document.querySelector('.sidebar');
   const ov=document.getElementById('sidebar-overlay');
+  const btn=document.getElementById('sidebar-toggle');
   const open=sb.classList.toggle('drawer-open');
   ov.classList.toggle('active',open);
+  if(btn){ btn.classList.toggle('open',open); btn.innerHTML=open?'✕ Close':'☰ Deck &amp; Mods'; }
 }
 function closeSidebar(){
   document.querySelector('.sidebar')?.classList.remove('drawer-open');
   document.getElementById('sidebar-overlay')?.classList.remove('active');
+  const btn=document.getElementById('sidebar-toggle');
+  if(btn){ btn.classList.remove('open'); btn.innerHTML='☰ Deck &amp; Mods'; }
 }
 
 function init(){
@@ -2580,7 +2829,8 @@ Object.assign(window,{
   nudgeReel, toggleHoldReel,
   handleShopBuy, handleShopReroll, handleShopSkip, handleShopContinue,
   handleRemoveSymbol, closeRemoveModal, resetRun, buyMeta, confirmForfeit,
-  sellModifier, toggleModCard,
+  sellModifier, toggleModCard, openHelp, closeHelp, closeHelpOnBackdrop, showHelpTab,
+  collapseSidebar, expandSidebar,
   toggleSidebar, closeSidebar,
   confirmNewRun, buyNudge, handleShopHold,
   selectBonusSym,
