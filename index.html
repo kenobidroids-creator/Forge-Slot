@@ -759,25 +759,31 @@ small  { color: var(--text-muted); }
   /* ── Below-spin: self-contained scroll container ── */
   #below-spin {
     width: 100%;
-    max-height: calc(100vh - 520px); /* viewport minus sticky top section */
+    /* Use dvh (dynamic viewport height) to account for browser chrome on iOS */
+    max-height: calc(100dvh - 460px);
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    /* Ensure last item isn't hidden behind browser nav bar */
+    padding-bottom: max(80px, env(safe-area-inset-bottom, 80px));
   }
   .result-card { max-height: none; overflow: visible; }
 
   /* ── HUD tighter ── */
-  .hud { padding: 7px 10px; }
-  .hud-spins, .hud-gold { font-size: 1.3rem; }
-  .hud-round-name { font-size: 0.78rem; }
+  .hud { padding: 5px 10px; }
+  .hud-spins, .hud-gold { font-size: 1.2rem; }
+  .hud-round-name { font-size: 0.72rem; }
+  .hud-stat-label { font-size: 0.6rem; }
+  .progress-wrap { padding: 3px 0 2px; }
+  .progress-label { font-size: 0.7rem; }
 
   /* ── Token HUD: wrap into 2 rows ── */
-  .token-hud { flex-wrap: wrap; gap: 8px; padding: 7px 10px; }
+  .token-hud { flex-wrap: nowrap; gap: 4px; padding: 4px 8px; }
   .token-sep  { display: none; }
-  .token-group { flex: 1 1 calc(33% - 8px); justify-content: center; }
-  .token-label { font-size: 0.75rem; }
+  .token-group { flex: 1; justify-content: center; }
+  .token-label { font-size: 0.68rem; }
 
   /* ── Reel frame ── */
-  .reel-frame { padding: 7px 4px; gap: 3px; border-radius: 13px; }
+  .reel-frame { padding: 4px 2px; gap: 2px; border-radius: 11px; }
   .payline-indicators { width: 6px; }
   .pl-dot { width: 5px; height: 5px; }
   .reels-wrap { gap: 3px; }
