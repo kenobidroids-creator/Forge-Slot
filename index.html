@@ -722,25 +722,43 @@ small  { color: var(--text-muted); }
   background: rgba(2,5,15,0.35);
 }
 
+/* Mobile-only elements hidden on desktop */
+#mobile-deck-panel { display: none; }
+
 @media (max-width: 700px) {
   :root { --sym-size: 54px; }
 
-  /* ── Sidebar becomes a slide-in drawer ── */
+  /* ── Sidebar: hidden desktop sidebar, becomes inline panel ── */
   .sidebar-toggle { display: flex; }
 
+  /* Desktop sidebar hidden on mobile */
   .sidebar {
-    position: fixed; left: 0; top: 0; bottom: 0; z-index: 600;
-    transform: translateX(-100%);
-    transition: transform 0.28s cubic-bezier(0.22,1,0.36,1);
-    width: 240px; height: 100%;
-    box-shadow: 4px 0 24px rgba(0,0,0,0.6);
+    display: none !important;
   }
-  .sidebar.drawer-open { transform: translateX(0); }
-  .sidebar-open-overlay.active { display: block; }
 
-  /* ── Game area fills full width ── */
-  .layout { flex-direction: column; }
-  .game-area { max-width: 100%; padding: 10px 8px 90px; }
+  /* Inline mobile deck panel — lives below result card */
+  #mobile-deck-panel {
+    display: none;
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    overflow: hidden;
+    margin-top: 10px;
+  }
+  #mobile-deck-panel.open { display: block; }
+
+  .mobile-panel-section { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+  .mobile-panel-section:last-child { border-bottom: none; }
+  .mobile-panel-footer { display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; }
+
+  /* ── Game area fills full width, page scrolls naturally ── */
+  .layout { flex-direction: column; height: auto; overflow: visible; }
+  .game-area { max-width: 100%; padding: 10px 8px 90px; overflow: visible; height: auto; }
+
+  /* ── Below-spin: normal flow, page scrolls ── */
+  #below-spin { width: 100%; }
+  .result-card { max-height: none; overflow: visible; }
 
   /* ── HUD tighter ── */
   .hud { padding: 7px 10px; }
@@ -783,6 +801,20 @@ small  { color: var(--text-muted); }
 
   /* ── Spin button sits above toggle ── */
   .spin-btn { font-size: 1rem; padding: 14px; border-radius: 12px; }
+}
+
+
+/* ── Game fixed upper section ── */
+#game-fixed { width: 100%; }
+
+@media (max-width: 700px) {
+  #game-fixed {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--bg);
+    padding-bottom: 6px;
+  }
 }
 
 /* ── Tutorial Overlay ────────────────────────────────────────── */
@@ -897,6 +929,9 @@ small  { color: var(--text-muted); }
       ▶ <span style="font-size:0.72rem">Deck & Mods</span>
     </button>
 
+    <!-- Fixed upper section (HUD + reels) -->
+    <div id="game-fixed">
+
     <!-- HUD -->
     <div class="hud">
       <div class="hud-left">
@@ -960,14 +995,38 @@ small  { color: var(--text-muted); }
       </div>
     </div>
 
+    </div><!-- /game-fixed -->
+
     <!-- Last chance hint -->
     <div id="last-chance-hint"></div>
 
     <!-- Spin button -->
     <button class="spin-btn" id="spin-btn" onclick="spin()">SPIN</button>
 
+    <!-- Scrollable below-spin block (result + mobile panel) -->
+    <div id="below-spin">
+
     <!-- Result card -->
     <div class="result-card hidden" id="result-card"></div>
+
+    <!-- Mobile inline deck/mods panel -->
+    <div id="mobile-deck-panel">
+      <div class="mobile-panel-section">
+        <div class="section-label">Reel Pool</div>
+        <div id="mobile-deck-list"></div>
+      </div>
+      <div class="mobile-panel-section">
+        <div class="section-label">Modifiers <span id="mobile-mod-count" style="font-weight:400;color:var(--text-dim);letter-spacing:0"></span></div>
+        <div id="mobile-modifier-list"><div class="empty-mods">No modifiers yet</div></div>
+      </div>
+      <div class="mobile-panel-footer">
+        <button class="btn-help" onclick="openHelp()">? How to Play</button>
+        <button class="btn-tutorial" onclick="TUT.start()">▷ Tutorial</button>
+        <button class="btn-forfeit" onclick="confirmForfeit()">✕ Forfeit Run</button>
+      </div>
+    </div>
+
+    </div><!-- /below-spin -->
 
   </main>
 </div>
@@ -2959,19 +3018,50 @@ function expandSidebar(){
   if(btn) btn.style.display='none';
 }
 
+function isMobile(){ return window.innerWidth <= 700; }
+
 function toggleSidebar(){
-  const sb=document.querySelector('.sidebar');
-  const ov=document.getElementById('sidebar-overlay');
-  const btn=document.getElementById('sidebar-toggle');
-  const open=sb.classList.toggle('drawer-open');
-  ov.classList.toggle('active',open);
-  if(btn){ btn.classList.toggle('open',open); btn.innerHTML=open?'✕ Close':'☰ Deck &amp; Mods'; }
+  if(isMobile()){
+    const panel = document.getElementById('mobile-deck-panel');
+    const btn   = document.getElementById('sidebar-toggle');
+    if(!panel) return;
+    const open = panel.classList.toggle('open');
+    if(btn){ btn.classList.toggle('open', open); btn.innerHTML = open ? '✕ Close' : '☰ Deck &amp; Mods'; }
+    if(open) syncMobilePanel();
+  } else {
+    const sb  = document.querySelector('.sidebar');
+    const ov  = document.getElementById('sidebar-overlay');
+    const btn = document.getElementById('sidebar-toggle');
+    const open = sb.classList.toggle('drawer-open');
+    ov.classList.toggle('active', open);
+    if(btn){ btn.classList.toggle('open', open); btn.innerHTML = open ? '✕ Close' : '☰ Deck &amp; Mods'; }
+  }
 }
 function closeSidebar(){
-  document.querySelector('.sidebar')?.classList.remove('drawer-open');
-  document.getElementById('sidebar-overlay')?.classList.remove('active');
-  const btn=document.getElementById('sidebar-toggle');
-  if(btn){ btn.classList.remove('open'); btn.innerHTML='☰ Deck &amp; Mods'; }
+  if(isMobile()){
+    const panel = document.getElementById('mobile-deck-panel');
+    const btn   = document.getElementById('sidebar-toggle');
+    panel?.classList.remove('open');
+    if(btn){ btn.classList.remove('open'); btn.innerHTML='☰ Deck &amp; Mods'; }
+  } else {
+    document.querySelector('.sidebar')?.classList.remove('drawer-open');
+    document.getElementById('sidebar-overlay')?.classList.remove('active');
+    const btn=document.getElementById('sidebar-toggle');
+    if(btn){ btn.classList.remove('open'); btn.innerHTML='☰ Deck &amp; Mods'; }
+  }
+}
+
+function syncMobilePanel(){
+  // Mirror deck-list into mobile panel
+  const src = document.getElementById('deck-list');
+  const dst = document.getElementById('mobile-deck-list');
+  if(src && dst) dst.innerHTML = src.innerHTML;
+  const msrc = document.getElementById('modifier-list');
+  const mdst = document.getElementById('mobile-modifier-list');
+  if(msrc && mdst) mdst.innerHTML = msrc.innerHTML;
+  const cntSrc = document.getElementById('sidebar-mod-count');
+  const cntDst = document.getElementById('mobile-mod-count');
+  if(cntSrc && cntDst) cntDst.textContent = cntSrc.textContent;
 }
 
 function init(){
